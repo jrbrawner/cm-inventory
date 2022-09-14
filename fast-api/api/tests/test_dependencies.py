@@ -5,4 +5,3 @@ from sqlalchemy.orm import Session
 
 def test_db(db: Session = Depends(get_db)):
     assert db is not None
-    

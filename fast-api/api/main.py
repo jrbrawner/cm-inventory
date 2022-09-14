@@ -7,6 +7,7 @@ app = FastAPI()
 
 app.include_router(hello_world.router)
 
+
 @app.on_event("startup")
 async def startup():
     # create db tables
