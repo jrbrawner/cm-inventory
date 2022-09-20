@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from api.schemas import TokenSchemas, UserSchemas
-from api.dependencies import get_db, get_current_active_user
+from api.dependencies import get_db, get_current_user
 from sqlalchemy.orm import Session
 import api.services.UserServices as UserServices
 from api.settings import settings
@@ -31,5 +31,6 @@ async def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/user/me", response_model=UserSchemas.UserBase)
-async def read_users_me(current_user: UserSchemas.UserBase = Depends(get_current_active_user)):
-    return current_user
+def read_users_me(current_user: UserSchemas.UserBase = Depends(get_current_user)):
+    user = current_user
+    return user
