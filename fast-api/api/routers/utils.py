@@ -10,14 +10,14 @@ from api.models.UserModels import UserModel
 import logging
 
 router = APIRouter()
-
+#https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/auth_jwt/
 
 @router.get("/")
 async def hello_world():
     return {"Hello": "World"}
 
 
-@router.post("/token", response_model=TokenSchemas.Token)
+@router.post("/token")  
 async def login_for_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
@@ -35,7 +35,8 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/user/me", response_model=UserSchemas.User)
+@router.get("/user/me", response_model=UserSchemas.UserDisplay)
 def read_users_me(current_user: UserSchemas.User = Depends(get_current_user)):
+    print(current_user.username)
     user = current_user
     return user
