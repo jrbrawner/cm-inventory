@@ -14,8 +14,8 @@ engine = sa.create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-#Credit for this testing setup
-#https://stackoverflow.com/questions/67255653/how-to-set-up-and-tear-down-a-database-between-tests-in-fastapi
+# Credit for this testing setup
+# https://stackoverflow.com/questions/67255653/how-to-set-up-and-tear-down-a-database-between-tests-in-fastapi
 
 # Set up the database once
 Base.metadata.drop_all(bind=engine)
@@ -24,7 +24,7 @@ Base.metadata.create_all(bind=engine)
 
 # These two event listeners are only needed for sqlite for proper
 # SAVEPOINT / nested transaction support. Other databases like postgres
-# don't need them. 
+# don't need them.
 # From: https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#serializable-isolation-savepoints-transactional-ddl
 @sa.event.listens_for(engine, "connect")
 def do_connect(dbapi_connection, connection_record):

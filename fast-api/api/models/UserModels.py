@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 
+
 class UserModel(Base):
     """User account model."""
 
@@ -19,4 +20,3 @@ class UserModel(Base):
     created_on = Column(DateTime, index=False, unique=False, nullable=True)
     last_login = Column(DateTime, index=False, unique=False, nullable=True)
     profile_pic = Column(String(), index=False, unique=False, nullable=True)
-

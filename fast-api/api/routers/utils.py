@@ -7,6 +7,7 @@ from api.settings import settings
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 from api.models.UserModels import UserModel
+import logging
 
 router = APIRouter()
 
@@ -15,9 +16,12 @@ router = APIRouter()
 async def hello_world():
     return {"Hello": "World"}
 
+
 @router.post("/token", response_model=TokenSchemas.Token)
-async def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = UserServices.authenticate_user(db, form_data.username, form_data.password)
+async def login_for_access_token(
+    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+):
+    user = UserServices.get_user_by_username(db, username=form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -30,7 +34,8 @@ async def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/user/me", response_model=UserSchemas.UserBase)
-def read_users_me(current_user: UserSchemas.UserBase = Depends(get_current_user)):
+
+@router.get("/user/me", response_model=UserSchemas.User)
+def read_users_me(current_user: UserSchemas.User = Depends(get_current_user)):
     user = current_user
     return user
