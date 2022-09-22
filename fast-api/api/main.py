@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends
 from api.routers import utils, User
 from api.db import Base, engine
-from api.dependencies import get_current_user
 
 app = FastAPI()
 

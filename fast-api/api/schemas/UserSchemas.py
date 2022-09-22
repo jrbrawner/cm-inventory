@@ -17,7 +17,7 @@ class UserCreate(UserBase):
     password: str
 
 class UserDisplay(UserBase):
-    id: int
+    username: str
 
 
 class User(UserBase):
