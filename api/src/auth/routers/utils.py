@@ -1,17 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from api.schemas import TokenSchemas, UserSchemas
 from api.dependencies import get_db, get_current_user
 from sqlalchemy.orm import Session
 import api.services.UserServices as UserServices
 from api.settings import settings
 from fastapi.security import OAuth2PasswordRequestForm
-from datetime import datetime, timedelta
+from datetime import timedelta
 from api.models.UserModels import UserModel
-import logging
 from typing import Any
 
 router = APIRouter()
-#https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/auth_jwt/
+# https://www.jetbrains.com/pycharm/guide/tutorials/fastapi-aws-kubernetes/auth_jwt/
 
 
 @router.post("/login/access-token", response_model=TokenSchemas.Token)
@@ -26,7 +25,7 @@ def login_access_token(
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
-    #elif not crud.user.is_active(user):
+    # elif not crud.user.is_active(user):
     #    raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {

@@ -1,8 +1,5 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
-from api.db import Base
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-from datetime import datetime, timedelta
+from sqlalchemy import Column, DateTime, Integer, String
+from api.src.db import Base
 
 
 class UserModel(Base):

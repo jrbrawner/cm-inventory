@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from api.routers import utils, User
 from api.db import Base, engine
 

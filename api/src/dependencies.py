@@ -1,19 +1,16 @@
-from tokenize import Token
 from api.db import SessionLocal
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from api.schemas import TokenSchemas
-from api.schemas import UserSchemas
 from sqlalchemy.orm import Session
 import api.services.UserServices as UserServices
 from api.settings import settings
 from api.models.UserModels import UserModel
 from pydantic import ValidationError
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"/login/access-token"
-)
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"/login/access-token")
+
 
 def get_db():
     db = SessionLocal()
@@ -21,6 +18,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
@@ -39,6 +37,7 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
 
 def get_current_active_user(
     current_user: UserModel = Depends(get_current_user),

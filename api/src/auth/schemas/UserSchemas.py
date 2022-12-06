@@ -4,9 +4,11 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     username: str
 
+
 class Login(BaseModel):
     username: str
     password: str
+
 
 class UserInDB(UserBase):
     hashed_password: str
@@ -15,6 +17,7 @@ class UserInDB(UserBase):
 class UserCreate(UserBase):
     email: str
     password: str
+
 
 class UserDisplay(UserBase):
     username: str
