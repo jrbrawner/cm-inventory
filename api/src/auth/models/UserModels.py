@@ -7,10 +7,7 @@ class UserModel(Base):
 
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String, nullable=True, unique=False)
-    last_name = Column(String, nullable=True, unique=False)
-    major = Column(String, nullable=True, unique=False)
-    grad_year = Column(String(4), nullable=True, unique=False)
+    name = Column(String, nullable=True, unique=False)
     username = Column(String(16), nullable=True, unique=True)
     email = Column(String(40), unique=True, nullable=False)
     password = Column(String(200), primary_key=False, unique=False, nullable=False)

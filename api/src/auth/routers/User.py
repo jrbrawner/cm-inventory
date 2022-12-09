@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 import src.auth.schemas.UserSchemas as UserSchemas
 import src.auth.services.UserServices as User
 from src.dependencies import get_db
+from enum import Enum
 
 router = APIRouter()
+
+class UserLookup(str, Enum):
+    Username = "username"
+    Id = "id"
 
 
 @router.post("/user", response_model=UserSchemas.User)
@@ -21,19 +26,21 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return users
 
 
-@router.get("/user/{username}", response_model=UserSchemas.User)
-def read_username(username: str, db: Session = Depends(get_db)):
-    db_user = User.get_user_by_username(db, username)
-    if db_user is None:
-        raise HTTPException(
-            status_code=404, detail="User with that username not found."
-        )
-    return db_user
+@router.get("/user/{type}/{value}", response_model=UserSchemas.User)
+def read_user(type : UserLookup, value : str or int,  db: Session = Depends(get_db)):
+
+    if type is UserLookup.Id:
+        db_user = User.get_user(db, user_id=value)
+        if db_user is None:
+            raise HTTPException(status_code=404, detail="User with that id not found.")
+        return db_user
+    if type is UserLookup.Username:
+        db_user = User.get_user_by_username(db, username=value)
+        if db_user is None:
+            raise HTTPException(
+                status_code=404, detail="User with that username not found."
+            )
+        return db_user
 
 
-@router.get("/user/{id}", response_model=UserSchemas.User)
-def read_user(id: int, db: Session = Depends(get_db)):
-    db_user = User.get_user(db, user_id=id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+
