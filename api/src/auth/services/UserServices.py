@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
-from api.models.UserModels import UserModel as User
-import api.schemas.UserSchemas as UserSchemas
+from src.auth.models.UserModels import UserModel as User
+import src.auth.schemas.UserSchemas as UserSchemas
 import bcrypt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from jose import jwt
-from api.settings import settings
+from src.settings import settings
 from typing import Union, Any, Optional
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

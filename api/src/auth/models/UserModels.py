@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, String
-from api.src.db import Base
+from src.db import Base
 
 
 class UserModel(Base):
