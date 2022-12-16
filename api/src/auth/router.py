@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import src.auth.schemas.UserSchemas as UserSchemas
-import src.auth.services.UserServices as User
+import src.auth.UserSchemas as UserSchemas
+import src.auth.UserServices as User
 from src.dependencies import get_db
 from enum import Enum
 

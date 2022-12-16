@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.auth.models.UserModels import UserModel as User
-import src.auth.schemas.UserSchemas as UserSchemas
+from src.auth.UserModels import UserModel as User
+import src.auth.UserSchemas as UserSchemas
 import bcrypt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
