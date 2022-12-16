@@ -13,7 +13,7 @@ from src.dependencies import get_current_user
 router = APIRouter()
 
 
-@router.post("/user", response_model=User)
+@router.post("/user", response_model=User, tags=["auth"])
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = services.get_user_by_email(db, email=user.email)
     if db_user:
@@ -21,13 +21,13 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return services.create_user(db=db, user=user)
 
 
-@router.get("/user", response_model=list[User])
+@router.get("/user", response_model=list[User], tags=["auth"])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = services.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@router.get("/user/{type}/{value}", response_model=User)
+@router.get("/user/{type}/{value}", response_model=User, tags=["auth"])
 def read_user(type: UserLookup, value: str or int, db: Session = Depends(get_db)):
 
     if type is UserLookup.Id:
@@ -44,7 +44,7 @@ def read_user(type: UserLookup, value: str or int, db: Session = Depends(get_db)
         return db_user
 
 
-@router.post("/login/access-token", response_model=Token)
+@router.post("/login/access-token", response_model=Token, tags=["auth"])
 def login_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ) -> Any:
@@ -67,7 +67,7 @@ def login_access_token(
     }
 
 
-@router.post("/login/test-token", response_model=User)
+@router.post("/login/test-token", response_model=User, tags=["auth"])
 def test_token(current_user: User = Depends(get_current_user)) -> Any:
     """
     Test access token

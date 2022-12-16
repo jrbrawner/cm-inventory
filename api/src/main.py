@@ -3,6 +3,17 @@ from src.db import Base, engine
 from src.auth.router import router as user_router
 from src.quiz.router import router as quiz_router
 
+tags_metadata = [
+    {
+        "name": "auth",
+        "description": "Operations with users. The **login** logic is also here.",
+    },
+    {
+        "name": "quiz",
+        "description": "Create and manage quizzes.",
+    },
+]
+
 app = FastAPI()
 
 app.include_router(user_router)

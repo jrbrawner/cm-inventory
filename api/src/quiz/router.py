@@ -8,7 +8,7 @@ from src.quiz import services
 router = APIRouter()
 
 
-@router.post("/quiz", response_model=QuizCreate)
+@router.post("/quiz", response_model=QuizCreate, tags=['quiz'])
 def create_quiz(
     quiz: QuizCreate,
     db: Session = Depends(get_db),
