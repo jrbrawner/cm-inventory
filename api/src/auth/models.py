@@ -2,7 +2,7 @@ from sqlalchemy import Column, DateTime, Integer, String
 from src.db import Base
 
 
-class UserModel(Base):
+class User(Base):
     """User account model."""
 
     __tablename__ = "Users"

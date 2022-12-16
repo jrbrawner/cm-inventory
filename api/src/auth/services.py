@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.auth.UserModels import UserModel as User
-import src.auth.UserSchemas as UserSchemas
+from src.auth.models import User
+from src.auth.schemas import UserCreate
 import bcrypt
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
@@ -27,13 +27,21 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: UserSchemas.UserCreate):
+def create_user(db: Session, user: UserCreate):
     hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
     db_user = User(email=user.email, password=hashed_password, username=user.username)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
 
 def authenticate(db: Session, *, email: str, password: str) -> Optional[User]:
@@ -59,11 +67,3 @@ def create_access_token(
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded_jwt
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)

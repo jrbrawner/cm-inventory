@@ -2,11 +2,11 @@ from src.db import SessionLocal
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from src.auth import TokenSchemas
 from sqlalchemy.orm import Session
-import src.auth.UserServices as UserServices
+from src.auth.schemas import TokenPayload
+import src.auth.services as UserServices
 from src.settings import settings
-from src.auth.UserModels import UserModel
+from src.auth.models import User
 from pydantic import ValidationError
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"/login/access-token")
@@ -22,12 +22,12 @@ def get_db():
 
 def get_current_user(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
-) -> UserModel:
+) -> User:
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        token_data = TokenSchemas.TokenPayload(**payload)
+        token_data = TokenPayload(**payload)
     except (JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -40,8 +40,8 @@ def get_current_user(
 
 
 def get_current_active_user(
-    current_user: UserModel = Depends(get_current_user),
-) -> UserModel:
+    current_user: User = Depends(get_current_user),
+) -> User:
     if not UserServices.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
