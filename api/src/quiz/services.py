@@ -14,7 +14,7 @@ def create_quiz(db: Session, quiz: QuizCreate, current_user: User):
     db.refresh(db_quiz)
     return db_quiz
 
-def get_quiz(db : Session, id):
+def get_quiz(db : Session, id: int):
     return db.query(Quiz).filter(Quiz.id == id).first()
 
 def update_quiz(db: Session, db_quiz: Quiz, quiz : QuizUpdate):
@@ -22,5 +22,13 @@ def update_quiz(db: Session, db_quiz: Quiz, quiz : QuizUpdate):
     db.commit()
     db.refresh(db_quiz)
     return db_quiz
+
+def delete_quiz(db: Session, quiz : Quiz, current_user: User):
+    if quiz.author == current_user.id:
+        db.delete(quiz)
+        db.commit()
+        return {'msg':'Quiz deleted.'}
+    else:
+        return {'msg': 'You must be the author of a quiz to delete it.'}
 
     

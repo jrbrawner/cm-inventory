@@ -30,3 +30,10 @@ def update_quiz(id: int, quiz: QuizUpdate, db: Session = Depends(get_db)):
         raise HTTPException(404, 'Quiz with that id not found.')
     db_quiz = services.update_quiz(db, db_quiz, quiz)
     return db_quiz
+
+@router.delete("/quiz/{id}", tags=['quiz'])
+def delete_quiz(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db_quiz = services.get_quiz(db, id)
+    if db_quiz is None:
+        raise HTTPException(404, 'Quiz with that id not found.')
+    return services.delete_quiz(db, db_quiz, current_user)
