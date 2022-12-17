@@ -17,11 +17,7 @@ class QuizCreate(BaseModel):
             raise ValueError("Quiz cannot have more than 50 questions.")
         return v
 
-class QuizDisplay(QuizCreate):
-    author : int
-
 class QuizQuestionAnswerDisplay(BaseModel):
-    question_id : int | None = None
     text : str | None = None
     correct : bool | None = None
 
@@ -36,7 +32,12 @@ class QuizQuestionDisplay(BaseModel):
     class Config:
         orm_mode = True
 
+class QuizDisplay(QuizCreate):
+    author : int
+    questions : List[QuizQuestionDisplay] | None = None
 
 class QuizUpdate(QuizCreate):
     questions : List[QuizQuestionDisplay] | None = None
+
+
 
