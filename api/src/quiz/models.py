@@ -13,7 +13,7 @@ class Quiz(Base):
     name = Column(String(64))
     description = Column(String())
     num_questions = Column(Integer)
-    questions = relationship("QuizQuestion")
+    questions = relationship("QuizQuestion", cascade="all, delete")
     date_created = Column(DateTime, default=datetime.utcnow())
 
 
@@ -23,7 +23,7 @@ class QuizQuestion(Base):
     quiz_id = Column(Integer, ForeignKey(Quiz.id), index=True)
     text = Column(String(256))
     type = Column(Enum(QuizTypeEnum))
-    answers = relationship("QuizQuestionAnswer")
+    answers = relationship("QuizQuestionAnswer", cascade="all, delete")
 
 
 class QuizQuestionAnswer(Base):
