@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db, get_current_user
 from src.auth.models import User
 from src.quiz import services
+from typing import List
 
 router = APIRouter()
 
@@ -73,4 +74,29 @@ def create_quiz_question_answer(question_id: int, quiz_question_answer: QuizQues
         raise HTTPException(404, 'Question with that id not found.')
     return quiz_question_answer
 
+@router.get("/question/{question_id}/answer", response_model=List[QuizQuestionAnswerDisplay], tags=['quiz'])
+def get_question_answers(question_id: int, db: Session = Depends(get_db)):
+    question_answers = services.get_question_answers(db, question_id)
+    return question_answers
+
+@router.get("/question/answer/{question_answer_id}", response_model=QuizQuestionAnswerDisplay, tags=['quiz'])
+def get_question_answer(question_answer_id: int, db: Session = Depends(get_db)):
+    question_answer = services.get_question_answer(db, question_answer_id)
+    if question_answer is None:
+        raise HTTPException(404, 'Question answer with that id not found.')
+    return question_answer
+
+@router.put("/question/answer/{question_answer_id}", response_model=QuizQuestionAnswerDisplay, tags=['quiz'])
+def update_question_answer(question_answer_id: int, question_answer: QuizQuestionAnswerDisplay, db: Session = Depends(get_db)):
+    db_question_answer = services.update_question_answer(db, question_answer_id, question_answer)
+    if db_question_answer is None:
+        raise HTTPException(404, 'Question answer with that id not found.')
+    return db_question_answer
+
+@router.delete("/question/answer/{question_answer_id}", tags=['quiz'])
+def delete_question_answer(question_answer_id: int, db: Session = Depends(get_db)):
+    question_answer = services.delete_question_answer(db, question_answer_id)
+    if question_answer is None:
+        raise HTTPException(404, 'Question answer with that id not found.')
+    return question_answer
 

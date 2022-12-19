@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from src.quiz.models import Quiz, QuizQuestion, QuizQuestionAnswer
 from src.quiz.schemas import QuizCreate, QuizUpdate, QuizQuestionDisplay, QuizQuestionAnswerDisplay
 from src.auth.models import User
-
+from typing import List
 
 
 def create_quiz(db: Session, quiz: QuizCreate, current_user: User) -> Quiz:
@@ -54,12 +54,38 @@ def delete_quiz_question(db: Session, question_id: int):
     db.commit()
     return {'msg': 'Question deleted.'}
     
-
 def create_question_answer(db: Session, quiz_question_answer: QuizQuestionAnswerDisplay, question_id: int) -> QuizQuestionAnswer:
     question = get_question(db, question_id)
-    db_quiz_question_answer = QuizQuestionAnswer(quiz_id = question.quiz_id, question_id = question.id, text = quiz_question_answer.text, correct = quiz_question_answer.correct)
+    quiz = get_quiz(db, question.quiz_id)
+    db_quiz_question_answer = QuizQuestionAnswer(quiz_id = quiz.id, question_id = question.id, text = quiz_question_answer.text, correct = quiz_question_answer.correct)
     db.add(db_quiz_question_answer)
     question.answers.append(db_quiz_question_answer)
     db.commit()
     return db_quiz_question_answer
+
+def get_question_answers(db: Session, question_id: int) -> List[QuizQuestionAnswer]:
+    question = get_question(db, question_id)
+    return question.answers
+
+def get_question_answer(db: Session, question_answer_id: int) -> QuizQuestionAnswer:
+    quiz_question_answer = db.query(QuizQuestionAnswer).filter(QuizQuestionAnswer.id == question_answer_id).first()
+    return quiz_question_answer
+
+def update_question_answer(db: Session, question_answer_id:int, question_answer: QuizQuestionAnswerDisplay) -> QuizQuestionAnswer:
+    db_question_answer = get_question_answer(db, question_answer_id)
+    if db_question_answer is None:
+        return None
+    db_question_answer.text = question_answer.text
+    db_question_answer.correct = question_answer.correct
+    db.commit()
+    return db_question_answer
+
+def delete_question_answer(db: Session, question_answer_id: int) -> dict:
+    question_answer = get_question_answer(db, question_answer_id)
+    if question_answer is None:
+        return None
+    db.delete(question_answer)
+    db.commit()
+    return {'msg': 'Question answer deleted.'}
+
 
