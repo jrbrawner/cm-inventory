@@ -31,4 +31,7 @@ def get_mitre_tactic_techniques(type: MitreLookup, term: str, db: Session = Depe
         tactic = services.get_mitre_tactic_name(db, term)
         if tactic is None:
             raise HTTPException(404, 'No tactic found with that name.')
+        
+        
+        
         return tactic
