@@ -8,6 +8,7 @@ import src.auth.services as UserServices
 from src.settings import settings
 from src.auth.models import User
 from pydantic import ValidationError
+from YaraParser import MultiParser
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"/login/access-token")
 
@@ -57,3 +58,4 @@ def get_current_active_superuser(
         )
     return current_user
 """
+        

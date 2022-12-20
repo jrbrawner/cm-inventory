@@ -3,6 +3,7 @@ from src.mitre.models import Tactic
 from src.db import Base, engine, SessionLocal
 from src.auth.router import router as user_router
 from src.mitre.router import router as mitre_router
+from src.yara.router import router as yara_router
 
 tags_metadata = [
     {
@@ -13,12 +14,17 @@ tags_metadata = [
         "name": "mitre",
         "description": "Create and manage mitre data.",
     },
+    {
+        "name": "yara",
+        "description": "Create and manage yara rules.",
+    }
 ]
 
 app = FastAPI()
 
 app.include_router(user_router)
 app.include_router(mitre_router)
+app.include_router(yara_router)
 
 
 @app.on_event("startup")
