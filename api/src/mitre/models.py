@@ -3,24 +3,11 @@ from src.db import Base, engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
-class YaraRule(Base):
-    __tablename__ = "YaraRule"
-    id = Column(Integer, primary_key=True, index=True, unique=True)
-    name = Column(String, unique=True)
-    meta = Column(String)
-    strings = Column(String)
-    conditions = Column(String)
-    raw_text = Column(String)
-    tactic = Column(String, ForeignKey('Tactic.id'), nullable=True)
-    technique = Column(String, ForeignKey('Technique.id'), nullable=True)
-    subtechnique = Column(String, ForeignKey('Subtechnique.id'), nullable=True)
-
 
 technique_to_tactic = Table('technique_to_tactic', Base.metadata,
     Column(('technique_id'), String, ForeignKey('Technique.id'), primary_key=True),
     Column(('tactic_id'), String, ForeignKey('Tactic.id'), primary_key = True)
     )
-
 
 class TacticReference(Base):
     __tablename__ = "TacticReference"
