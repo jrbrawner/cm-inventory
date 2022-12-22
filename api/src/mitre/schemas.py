@@ -1,12 +1,13 @@
-from pydantic import BaseModel, HttpUrl, ValidationError, validator 
+from pydantic import BaseModel, HttpUrl, ValidationError, validator
+from pydantic.schema import Optional
 from typing import List, Optional
 
 class TacticBase(BaseModel):
     """ Python (Pydantic) model representing a Mitre Attack Framework Tactic. """
-    id: str
-    name: str
-    description: str
-    reference: str
+    id: Optional[str]
+    name: Optional[str]
+    description: Optional[str]
+    reference: Optional[str]
     
     class Config:
         orm_mode = True

@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from src.db import Base, engine
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy.dialects.postgresql import ARRAY
+from src.yara.models import YaraRule, tactic_yara
+
 
 
 technique_to_tactic = Table('technique_to_tactic', Base.metadata,
@@ -23,6 +25,9 @@ class Tactic(Base):
     description = Column(String)
     techniques = relationship("Technique", secondary="technique_to_tactic", back_populates="tactics")
     reference = Column(String)
+    yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
+    secondary=tactic_yara, back_populates="tactic"
+    )
 
 class TechniquePlatform(Base):
     __tablename__ = "TechniquePlatform"

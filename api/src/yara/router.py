@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db, get_current_user
 from src.yara import services
 from typing import List
+from src.yara.constants import YaraRuleFieldSearch
 
 router = APIRouter()
 
@@ -14,6 +15,10 @@ def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in rule creation.')
     return yara_rule_list
 
-@router.get("/yara", response_model=YaraSchema, tags=['yara'])
-def get_yara_rule(rule_name: str, db: Session = Depends(get_db)):
-    pass
+@router.get("/yara/{field}/{value}", response_model=YaraSchema, tags=['yara'])
+def get_yara_rule(field: YaraRuleFieldSearch, value:str,  db: Session = Depends(get_db)):
+    if field is YaraRuleFieldSearch.Name:
+        yara_rule = services.get_yara_rule_name(db, value)
+        if yara_rule is None:
+            raise HTTPException(404, 'No rule found with searching for that field with that value.')
+        return yara_rule

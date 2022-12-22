@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
+from pydantic.schema import Optional
 
 class YaraSchema(BaseModel):
     name : str
@@ -7,9 +8,9 @@ class YaraSchema(BaseModel):
     strings : str
     conditions : str
     raw_text : str
-    tactic : TacticBase | None = None
-    technique : TechniqueBase | None = None
-    subtechnique : SubTechniqueBase | None = None
+    tactic : TacticBase
+    #technique : Optional[TechniqueBase]
+    #subtechnique : Optional[SubTechniqueBase]
 
     class Config:
         orm_mode = True
