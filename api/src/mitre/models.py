@@ -26,7 +26,7 @@ class Tactic(Base):
     techniques = relationship("Technique", secondary="technique_to_tactic", back_populates="tactics")
     reference = Column(String)
     yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
-    secondary=tactic_yara, back_populates="tactic"
+    secondary=tactic_yara, back_populates="tactics", 
     )
 
 class TechniquePlatform(Base):
@@ -66,6 +66,9 @@ class Technique(Base):
     defenses_bypassed = relationship("TechniqueDefenseBypassed")
 
     tactics = relationship("Tactic", secondary="technique_to_tactic", back_populates="techniques")
+    yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
+    secondary=tactic_yara, back_populates="tactics", 
+    )
     subtechniques = relationship("Subtechnique")
 
 class SubtechniquePlatform(Base):
@@ -103,5 +106,8 @@ class Subtechnique(Base):
     references = relationship("SubtechniqueReference")
     data_sources = relationship("SubtechniqueDataSource")
     defenses_bypassed = relationship("SubtechniqueDefenseBypassed")
+    yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
+    secondary=tactic_yara, back_populates="tactics", 
+    )
 
     technique_id = Column(String, ForeignKey('Technique.id'))
