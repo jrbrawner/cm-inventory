@@ -4,10 +4,12 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db, get_current_user
 from src.yara import services
 from src.yara.constants import YaraRuleFieldSearch
+from pydantic.schema import Optional
+from typing import Union
 
 router = APIRouter()
 
-@router.post("/yara", response_model=list[YaraCreate], tags=['yara'])
+@router.post("/yara", response_model=list[Union[YaraCreate, dict]], tags=['yara'])
 def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
     yara_rule_list = services.create_yara_rules(db, rules_text)
     if yara_rule_list is None:
