@@ -1,10 +1,7 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from src.db import Base, engine
 from sqlalchemy.orm import relationship, Mapped
-from sqlalchemy.dialects.postgresql import ARRAY
-from src.yara.models import YaraRule, tactic_yara
-
-
+from src.yara.models import YaraRule, tactic_yara, technique_yara, subtechnique_yara
 
 technique_to_tactic = Table('technique_to_tactic', Base.metadata,
     Column(('technique_id'), String, ForeignKey('Technique.id'), primary_key=True),
@@ -67,7 +64,7 @@ class Technique(Base):
 
     tactics = relationship("Tactic", secondary="technique_to_tactic", back_populates="techniques")
     yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
-    secondary=tactic_yara, back_populates="tactics", 
+    secondary=technique_yara, back_populates="techniques", 
     )
     subtechniques = relationship("Subtechnique")
 
@@ -107,7 +104,7 @@ class Subtechnique(Base):
     data_sources = relationship("SubtechniqueDataSource")
     defenses_bypassed = relationship("SubtechniqueDefenseBypassed")
     yara_rules: Mapped[list[YaraRule]] = relationship("YaraRule",
-    secondary=tactic_yara, back_populates="tactics", 
+    secondary=subtechnique_yara, back_populates="subtechniques", 
     )
 
     technique_id = Column(String, ForeignKey('Technique.id'))

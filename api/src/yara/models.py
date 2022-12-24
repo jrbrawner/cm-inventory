@@ -34,5 +34,9 @@ class YaraRule(Base):
     tactics = relationship("Tactic",
         secondary=tactic_yara, back_populates="yara_rules"
     )
-    technique = Column(String, ForeignKey('Technique.id'), nullable=True)
-    subtechnique = Column(String, ForeignKey('Subtechnique.id'), nullable=True)
+    techniques = relationship("Technique",
+        secondary=technique_yara, back_populates="yara_rules"
+    )
+    subtechniques = relationship("Subtechnique",
+        secondary=subtechnique_yara, back_populates="yara_rules"
+    )

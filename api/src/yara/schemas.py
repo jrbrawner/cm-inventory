@@ -8,9 +8,9 @@ class YaraSchema(BaseModel):
     strings : str
     conditions : str
     raw_text : str
-    tactics : list[TacticBase]
-    #technique : Optional[TechniqueBase]
-    #subtechnique : Optional[SubTechniqueBase]
+    tactics : Optional[list[TacticBase]] | None = None
+    techniques : Optional[list[TechniqueBase]] | None = None
+    subtechniques : Optional[list[SubTechniqueBase]] | None = None
 
     class Config:
         orm_mode = True
@@ -21,9 +21,9 @@ class YaraCreate(BaseModel):
     strings : str
     conditions : str
     raw_text : str
-    tactics : list[TacticBase] | None = None
-    technique : TacticBase | None = None
-    subtechnique : str | None = None
+    tactics : Optional[list[TacticBase]] | None = None
+    techniques : Optional[list[TechniqueBase]] | None = None
+    subtechniques : Optional[list[SubTechniqueBase]] | None = None
 
     class Config:
         orm_mode = True
