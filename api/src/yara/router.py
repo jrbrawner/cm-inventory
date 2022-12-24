@@ -21,5 +21,5 @@ def get_yara_rule(field: YaraRuleFieldSearch, value:str,  db: Session = Depends(
     if field is YaraRuleFieldSearch.Name:
         yara_rules = services.get_yara_rule_name(db, value)
         if yara_rules is None:
-            raise HTTPException(404, 'No rule found with searching for that field with that value.')
+            raise HTTPException(404, 'No rule found searching for that field with that value.')
         return yara_rules

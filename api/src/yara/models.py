@@ -1,6 +1,7 @@
 from src.db import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, DateTime, Boolean
 from sqlalchemy.orm import Mapped, relationship
+from datetime import datetime
 
 tactic_yara = Table(
     "tactic_yara",
@@ -26,11 +27,16 @@ subtechnique_yara = Table(
 class YaraRule(Base):
     __tablename__ = "YaraRule"
     id : Mapped[int] =  Column(Integer, primary_key=True, index=True, unique=True)
-    name = Column(String, unique=True)
-    meta = Column(String)
-    strings = Column(String)
-    conditions = Column(String)
-    raw_text = Column(String)
+    name : Mapped[str] = Column(String, unique=True)
+    meta : Mapped[str] = Column(String)
+    strings : Mapped[str] = Column(String)
+    conditions : Mapped[str] = Column(String)
+    raw_text : Mapped[str] = Column(String)
+    logic_hash : Mapped[str] = Column(String)
+    author : Mapped[str] = Column(String)
+    description : Mapped[str] = Column(String)
+    date_added = Column(DateTime, default=datetime.utcnow)
+    compiles : Mapped[bool] = Column(String)
     tactics = relationship("Tactic",
         secondary=tactic_yara, back_populates="yara_rules"
     )

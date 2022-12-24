@@ -1,5 +1,6 @@
 from pydantic import BaseModel, validator
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
+from datetime import datetime
 
 class YaraSchema(BaseModel):
     name : str
@@ -19,7 +20,12 @@ class YaraCreate(BaseModel):
     meta : str 
     strings : str 
     conditions : str 
-    raw_text : str  
+    raw_text : str
+    logic_hash : str
+    author : str
+    description : str
+    date_added : datetime
+    compiles : bool
     tactics : list[TacticBase] | None = None
     techniques : list[TechniqueBase] | None = None
     subtechniques : list[SubTechniqueBase] | None = None
