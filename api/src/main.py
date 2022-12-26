@@ -17,7 +17,7 @@ tags_metadata = [
     {
         "name": "yara",
         "description": "Create and manage yara rules.",
-    }
+    },
 ]
 
 app = FastAPI()
@@ -31,7 +31,13 @@ app.include_router(yara_router)
 def startup():
     Base.metadata.create_all(bind=engine)
     if SessionLocal().query(Tactic).first() is None:
-        from src.mitre.utils import get_mitre_data, get_mitre_tactics, get_mitre_techniques, get_mitre_subtechniques
+        from src.mitre.utils import (
+            get_mitre_data,
+            get_mitre_tactics,
+            get_mitre_techniques,
+            get_mitre_subtechniques,
+        )
+
         get_mitre_data()
         get_mitre_tactics(SessionLocal())
         get_mitre_techniques(SessionLocal())

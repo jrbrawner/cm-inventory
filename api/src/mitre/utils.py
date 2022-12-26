@@ -3,7 +3,12 @@ from os import path
 import requests
 import json
 from stix2 import MemoryStore, Filter
-from src.mitre.schemas import TechniqueBase, SubTechniqueBase, TacticBase, TechniquePlatformBase
+from src.mitre.schemas import (
+    TechniqueBase,
+    SubTechniqueBase,
+    TacticBase,
+    TechniquePlatformBase,
+)
 from src.mitre.models import (
     Tactic,
     Technique,
@@ -15,7 +20,7 @@ from src.mitre.models import (
     SubtechniquePlatform,
     SubtechniqueReference,
     SubtechniqueDataSource,
-    SubtechniqueDefenseBypassed
+    SubtechniqueDefenseBypassed,
 )
 from sqlalchemy.orm import Session
 
@@ -53,7 +58,9 @@ def get_mitre_data():
         /cti/master/enterprise-attack/enterprise-attack.json"
         ).json()
 
-        with open("src/mitre/data/mitre-enterprise-attack.json", "w", encoding="utf-8") as file:
+        with open(
+            "src/mitre/data/mitre-enterprise-attack.json", "w", encoding="utf-8"
+        ) as file:
             json.dump(stix, file, ensure_ascii=False, indent=4)
         print("Enterprise attack data downloaded.")
     else:
@@ -247,10 +254,10 @@ def get_mitre_techniques(db: Session):
                 techniquePlatforms.clear()
 
         db.commit()
-        print('Techniques populated.')
+        print("Techniques populated.")
     else:
-        print('Techniques already populated.')
-            
+        print("Techniques already populated.")
+
 
 def get_mitre_subtechniques(db: Session):
 
@@ -273,7 +280,7 @@ def get_mitre_subtechniques(db: Session):
         ms = MemoryStore(stix_data=stix["objects"])
 
         techniques = ms.query([Filter("type", "=", "attack-pattern")])
-        
+
         for technique in techniques:
 
             # skip deprecated and revoked
@@ -301,7 +308,7 @@ def get_mitre_subtechniques(db: Session):
                     id=techniqueID,
                     name=techniqueName,
                     description=techniqueDescription,
-                    detection=detection
+                    detection=detection,
                 )
                 db.add(technique_orm)
                 db.commit()
@@ -319,10 +326,11 @@ def get_mitre_subtechniques(db: Session):
                 technique_orm.references = techniqueReferences
                 db.commit()
 
-                
                 for i in technique["x_mitre_platforms"]:
 
-                    platform = SubtechniquePlatform(technique_id=techniqueID, platform=i)
+                    platform = SubtechniquePlatform(
+                        technique_id=techniqueID, platform=i
+                    )
                     db.add(platform)
                     db.commit()
 
@@ -355,7 +363,7 @@ def get_mitre_subtechniques(db: Session):
                     technique_orm.defenses_bypassed = techniqueDefensesBypassed
                     db.commit()
 
-                technique_id = techniqueID.split('.')[0]
+                technique_id = techniqueID.split(".")[0]
 
                 technique = db.query(Technique).get(technique_id)
 
@@ -370,6 +378,6 @@ def get_mitre_subtechniques(db: Session):
                 techniquePlatforms.clear()
 
             db.commit()
-        print('Subtechniques populated.')
+        print("Subtechniques populated.")
     else:
-        print('Subtechniques already populated.')
+        print("Subtechniques already populated.")

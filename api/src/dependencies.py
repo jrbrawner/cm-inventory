@@ -58,4 +58,3 @@ def get_current_active_superuser(
         )
     return current_user
 """
-        
