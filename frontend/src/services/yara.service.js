@@ -3,7 +3,7 @@ import axios from 'axios';
 class YaraDataService {
 
     create(data) {
-        return axios.post(`/yara`, data)
+        return axios.post(`/yara`, JSON.stringify(data))
     }
 
     get(field, value) {
