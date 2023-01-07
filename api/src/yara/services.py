@@ -153,7 +153,7 @@ def get_yara_rules_subtechniques(db: Session, value: str) -> list[YaraRule]:
 def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
     """Update yara rule."""
     db_rule: YaraRule
-    db_rule = db.query(YaraRule).filter(YaraRule.id == id).first()
+    db_rule = db.query(YaraRule).get(id)
     if db_rule is None:
         return None
     parser = SingleParser(rule_text, strip_whitespace=True)
