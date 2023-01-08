@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class SnortSchema(BaseModel):
+    id : int
     action : str
     protocol : str
     src_ip : str

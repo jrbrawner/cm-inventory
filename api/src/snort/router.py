@@ -57,6 +57,11 @@ def get_snort_rules(field: SnortRuleFieldSearch, value: str, db: Session = Depen
         if snort_rules_list is None:
             raise HTTPException(404, 'No snort rules found for that field with that value.')
         return snort_rules_list
+    if field is SnortRuleFieldSearch.ID:
+        snort_rules_list = services.get_snort_rule_id(db, value)
+        if snort_rules_list is None:
+            raise HTTPException(404, 'No snort rules found for that field with that value.')
+        return snort_rules_list
 
 @router.put("/snort/{id}", response_model=SnortSchema, tags=['snort'])
 def update_snort_rule(id: int, rule_text: str, db: Session = Depends(get_db)) -> SnortSchema:
@@ -71,3 +76,10 @@ def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     if msg is None:
         raise HTTPException(400, 'Error in deleting rule.')
     return msg
+
+@router.get("/snort/test/{id}/rebuild", response_model=str, tags=['snort'])
+def test(id: int, db: Session = Depends(get_db)) -> str:
+    str_rule = services.get_rule_str(db, id)
+    if str_rule is None:
+        raise HTTPException(400, 'Error in retrieving string of that rule.')
+    return str_rule

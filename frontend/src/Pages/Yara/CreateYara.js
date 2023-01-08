@@ -1,4 +1,4 @@
-import Create from '../Components/Yara/create';
+import Create from '../../Components/Yara/create';
 
 export default function YaraPage(){
     return (

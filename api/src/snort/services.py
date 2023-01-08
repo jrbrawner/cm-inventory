@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.snort.models import SnortRule
 from SRParser import SnortParser
+import json
 
 def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
@@ -8,7 +9,7 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     snort_rule_list = []
     rules = parser.parse_rules(rules_text)
     for rule in rules:
-        print(rule.body_string)
+        rule_options = json.dumps(rule.body_options)
         db_rule = SnortRule(
             action=rule.action,
             protocol=rule.protocol,
@@ -18,7 +19,7 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
             dst_ip=rule.dest_ip,
             dst_port=rule.dest_port,
             body=rule.body_string,
-            body_options=str(rule.body_options)
+            body_options=rule_options
         )
         db.add(db_rule)
         db.commit()
@@ -29,6 +30,12 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
         snort_rule_list.append(error_msg)
 
     return snort_rule_list
+
+def get_snort_rule_id(db: Session, value: int) -> SnortRule:
+    rules = []
+    rule = db.query(SnortRule).get(value)
+    rules.append(rule)
+    return rules
 
 def get_snort_rule_action(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.action.like(f"%{value}%")).all()
@@ -89,6 +96,23 @@ def delete_snort_rule(db: Session, id: int) -> dict:
     db.delete(rule)
     db.commit()
     return {"msg": f"Snort rule with id {rule_id} deleted."}
+
+def get_rule_str(db: Session, id: int) -> str:
+    rule = db.query(SnortRule).get(id)
+    parser = SnortParser()
+    rebuilt_options = json.loads(rule.body_options)
+
+    rebuilt_rule = parser.rebuild_rule(
+        action=rule.action,
+        protocol=rule.protocol,
+        source_ip=rule.src_ip,
+        source_port=rule.src_port,
+        direction=rule.direction,
+        dest_ip=rule.dst_ip,
+        dest_port=rule.dst_port,
+        body_options=rebuilt_options
+    )
+    return rebuilt_rule
 
 
 

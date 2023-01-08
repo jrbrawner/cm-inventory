@@ -10,3 +10,4 @@ class SnortRuleFieldSearch(Enum):
     Dst_Port = "dst_port"
     Date_Added = "date_added"
     Body_Options = "body_options"
+    ID = "id"
