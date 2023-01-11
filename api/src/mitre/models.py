@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from src.db import Base, engine
 from sqlalchemy.orm import relationship, Mapped
 from src.yara.models import YaraRule, tactic_yara, technique_yara, subtechnique_yara
+from src.snort.models import SnortRule, tactic_snort, technique_snort, subtechnique_snort
 
 technique_to_tactic = Table(
     "technique_to_tactic",
@@ -25,6 +26,11 @@ class Tactic(Base):
     yara_rules: Mapped[list[YaraRule]] = relationship(
         "YaraRule",
         secondary=tactic_yara,
+        back_populates="tactics",
+    )
+    snort_rules: Mapped[list[SnortRule]] = relationship(
+        "SnortRule",
+        secondary=tactic_snort,
         back_populates="tactics",
     )
 
@@ -78,6 +84,11 @@ class Technique(Base):
         secondary=technique_yara,
         back_populates="techniques",
     )
+    snort_rules: Mapped[list[SnortRule]] = relationship(
+        "SnortRule",
+        secondary=technique_snort,
+        back_populates="techniques",
+    )
     subtechniques = relationship("Subtechnique")
 
 
@@ -124,6 +135,11 @@ class Subtechnique(Base):
     yara_rules: Mapped[list[YaraRule]] = relationship(
         "YaraRule",
         secondary=subtechnique_yara,
+        back_populates="subtechniques",
+    )
+    snort_rules: Mapped[list[SnortRule]] = relationship(
+        "SnortRule",
+        secondary=subtechnique_snort,
         back_populates="subtechniques",
     )
 

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from src.snort.models import SnortRule
 from SRParser import SnortParser
+from src.mitre.models import Tactic, Technique, Subtechnique
 import json
 
 def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
@@ -9,6 +10,7 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     snort_rule_list = []
     rules = parser.parse_rules(rules_text)
     for rule in rules:
+    
         rule_options = json.dumps(rule.body_options)
         db_rule = SnortRule(
             action=rule.action,
@@ -21,6 +23,26 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
             body=rule.body_string,
             body_options=rule_options
         )
+
+        #checking for mitre att&ck designations in rem option
+        for option in rule.body_options:
+            for key, value in option.items():
+                if key == 'rem':
+                    value = value.replace('"', '')
+                    mitre = value.split(',')
+                    for i in mitre:
+                        opts = i.split(':')
+                        if opts[0] == 'tactic':
+                            tactic_db = db.query(Tactic).get(opts[1])
+                            db_rule.tactics.append(tactic_db)
+                        if opts[0] == 'technique':
+                            technique_db = db.query(Technique).get(opts[1])
+                            db_rule.techniques.append(technique_db)
+                        if opts[0] == 'subtechnique':
+                            subtechnique_db = db.query(Subtechnique).get(opts[1])
+                            db_rule.subtechniques.append(subtechnique_db)
+
+
         db.add(db_rule)
         db.commit()
         snort_rule_list.append(db_rule)

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
 
 class SnortSchema(BaseModel):
     id : int
@@ -13,6 +14,9 @@ class SnortSchema(BaseModel):
     body : str
     body_options : str
     date_added : datetime
+    tactics : list[TacticBase] | None = None
+    techniques : list[TechniqueBase] | None = None
+    subtechniques : list[SubTechniqueBase] | None = None
 
     class Config:
         orm_mode = True
