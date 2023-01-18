@@ -6,11 +6,11 @@ from YaraParser import MultiParser, SingleParser
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
+    print(rules_text)
     parser = MultiParser(rules_text, strip_whitespace=True)
     rules = parser.get_rules_dict()
     yara_rule_list = []
     # keyword_list = ['tactic', 'technique', 'subtechnique']
-
     for name, rule in rules.items():
 
         if (
@@ -25,25 +25,32 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 conditions=rule["rule_conditions"],
                 raw_text=rule["raw_text"],
                 logic_hash=rule["rule_logic_hash"],
-                compiles=rule["compiles"],
+                compiles=rule["compiles"]
             )
-
-            tactic = parser.get_meta_fields(
-                rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="tactic"
-            )
-            technique = parser.get_meta_fields(
-                rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="technique"
-            )
-            subtechnique = parser.get_meta_fields(
-                rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="subtechnique"
-            )
-            author = parser.get_meta_fields(
-                rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="author"
-            )
-            description = parser.get_meta_fields(
-                rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="description"
-            )
-
+            
+            if rule['rule_meta_kvp'] is None:
+                tactic = None
+                technique = None
+                subtechnique = None
+                author = None
+                description = None
+            else:
+                tactic = parser.get_meta_fields(
+                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="tactic"
+                )
+                technique = parser.get_meta_fields(
+                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="technique"
+                )
+                subtechnique = parser.get_meta_fields(
+                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="subtechnique"
+                )
+                author = parser.get_meta_fields(
+                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="author"
+                )
+                description = parser.get_meta_fields(
+                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="description"
+                )
+        
             if tactic is not None:
                 tactics = tactic.split(",")
                 tactics = [x.strip() for x in tactics]
@@ -56,17 +63,14 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 techniques = technique.split(",")
                 techniques = [x.strip() for x in techniques]
                 technique_db_list = [
-                    db.query(Tactic).filter(Tactic.id == x).first() for x in techniques
+                    db.query(Technique).filter(Technique.id == x).first() for x in techniques
                 ]
                 [yara_rule.techniques.append(x) for x in technique_db_list]
 
             if subtechnique is not None:
                 subtechniques = subtechnique.split(",")
                 subtechniques = [x.strip() for x in subtechniques]
-                subtechnique_db_list = [
-                    db.query(Tactic).filter(Tactic.id == x).first()
-                    for x in subtechniques
-                ]
+                subtechnique_db_list = [db.query(Subtechnique).filter(Subtechnique.id == x).first()for x in subtechniques]
                 [yara_rule.subtechniques.append(x) for x in subtechnique_db_list]
 
             if author is not None:
@@ -76,7 +80,6 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 yara_rule.description = description
 
             db.add(yara_rule)
-            db.commit()
             yara_rule_list.append(yara_rule)
         else:
             yara_rule_list.append(
@@ -86,7 +89,7 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                     )
                 }
             )
-
+    db.commit()
     return yara_rule_list
 
 

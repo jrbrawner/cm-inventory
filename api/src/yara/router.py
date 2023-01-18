@@ -1,13 +1,13 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
 from src.yara.schemas import YaraSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db, get_current_user
 from src.yara import services
 from src.yara.constants import YaraRuleFieldSearch
 from typing import Union
+import time
 
 router = APIRouter()
-
 
 @router.post("/yara", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
 def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
@@ -16,6 +16,16 @@ def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list
 
+@router.post("/yara/file", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
+def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
+    st = time.time()
+    rules_text = file.file.read().decode()
+    yara_rule_list = services.create_yara_rules(db, rules_text)
+    if yara_rule_list is None:
+        raise HTTPException(400, 'Error in rule creation.')
+    et = time.time()
+    print(f'Execution time: {et - st}')
+    return yara_rule_list
 
 @router.get("/yara/{field}/{value}", response_model=list[YaraSchema], tags=["yara"])
 def get_yara_rule(
