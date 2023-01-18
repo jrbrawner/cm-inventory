@@ -24,7 +24,7 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
         )
 
         #checking for mitre att&ck designations in rem option
-        if 'rem' in rule.body_options:
+        if 'rem' in str(rule.body_options):
             for option in rule.body_options:
                 for key, value in option.items():
                     if key == 'rem':
@@ -41,15 +41,20 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
                             if opts[0].strip() == 'subtechnique':
                                 subtechnique_db = db.query(Subtechnique).get(opts[1])
                                 db_rule.subtechniques.append(subtechnique_db)
-
-
+                        
         db.add(db_rule)
-        db.commit()
         snort_rule_list.append(db_rule)
+    db.commit()
 
     for i in parser.error_log:
         error_msg = {'msg': i}
         snort_rule_list.append(error_msg)
+
+    if len(snort_rule_list) > 100:
+        error_msg = f'{len(snort_rule_list)} snort rules processed.'
+        snort_rule_list.clear()
+        msg = {'msg': error_msg}
+        snort_rule_list.append(msg)
 
     return snort_rule_list
 
@@ -105,7 +110,6 @@ def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db_rule.direction = rule.direction
     db_rule.dst_ip = rule.dest_ip
     db_rule.dst_port = rule.dest_port
-    db_rule.body = rule.body_string
     db_rule.body_options = str(rule.body_options)
     db.commit()
     return db_rule

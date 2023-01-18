@@ -6,11 +6,11 @@ class SnortSchema(BaseModel):
     id : int
     action : str
     protocol : str
-    src_ip : str
-    src_port : str
-    direction : str
-    dst_ip : str
-    dst_port : str
+    src_ip : str | None = None
+    src_port : str | None = None
+    direction : str | None = None #service rules will have None for these fields
+    dst_ip : str | None = None
+    dst_port : str | None = None
     body_options : str
     date_added : datetime
     tactics : list[TacticBase] | None = None

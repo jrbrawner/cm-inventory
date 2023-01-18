@@ -23,10 +23,19 @@ def create_snort_rules_file(file: bytes = File(), db: Session = Depends(get_db))
     rules_text = file.decode()
     snort_rules_list = services.create_snort_rules(db, rules_text)
     if snort_rules_list is None:
+        print(snort_rules_list)
         raise HTTPException(400, 'Error in creating rules.')
     et = time.time()
-    print(f'Execution time - {st - et}')
+    
+    print(f'Execution time: {et - st}')
     return snort_rules_list
+
+@router.get("/snort/rebuild/{id}", response_model=str, tags=['snort'])
+def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
+    str_rule = services.get_rule_str(db, id)
+    if str_rule is None:
+        raise HTTPException(400, 'Error in retrieving string of that rule.')
+    return str_rule
 
 @router.get("/snort/{field}/{value}", response_model=list[SnortSchema], tags=['snort'])
 def get_snort_rules(field: SnortRuleFieldSearch, value: str, db: Session = Depends(get_db)):
@@ -76,6 +85,7 @@ def get_snort_rules(field: SnortRuleFieldSearch, value: str, db: Session = Depen
             raise HTTPException(404, 'No snort rules found for that field with that value.')
         return snort_rules_list
 
+
 @router.put("/snort/{id}", response_model=SnortSchema, tags=['snort'])
 def update_snort_rule(id: int, rule_text: str, db: Session = Depends(get_db)) -> SnortSchema:
     updated_rule = services.update_snort_rule(db, id, rule_text)
@@ -89,10 +99,3 @@ def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     if msg is None:
         raise HTTPException(400, 'Error in deleting rule.')
     return msg
-
-@router.get("/snort/test/{id}/rebuild", response_model=str, tags=['snort'])
-def test(id: int, db: Session = Depends(get_db)) -> str:
-    str_rule = services.get_rule_str(db, id)
-    if str_rule is None:
-        raise HTTPException(400, 'Error in retrieving string of that rule.')
-    return str_rule
