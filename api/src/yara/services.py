@@ -6,7 +6,6 @@ from YaraParser import MultiParser, SingleParser
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
-    print(rules_text)
     parser = MultiParser(rules_text, strip_whitespace=True)
     rules = parser.get_rules_dict()
     yara_rule_list = []
