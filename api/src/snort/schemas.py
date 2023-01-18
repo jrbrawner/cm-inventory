@@ -11,7 +11,6 @@ class SnortSchema(BaseModel):
     direction : str
     dst_ip : str
     dst_port : str
-    body : str
     body_options : str
     date_added : datetime
     tactics : list[TacticBase] | None = None

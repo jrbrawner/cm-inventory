@@ -1,10 +1,12 @@
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, APIRouter, File, UploadFile
 from src.snort.schemas import SnortSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.snort import services
 from src.snort.constants import SnortRuleFieldSearch
 from typing import Union
+import timeit
+import time
 
 router = APIRouter()
 
@@ -13,6 +15,17 @@ def create_snort_rules(rules_text: str, db: Session = Depends(get_db)):
     snort_rules_list = services.create_snort_rules(db, rules_text)
     if snort_rules_list is None:
         raise HTTPException(400, 'Error in creating rules.')
+    return snort_rules_list
+
+@router.post("/snort/file", response_model=list[Union[SnortSchema, dict]], tags=['snort'])
+def create_snort_rules_file(file: bytes = File(), db: Session = Depends(get_db)):
+    st = time.time()
+    rules_text = file.decode()
+    snort_rules_list = services.create_snort_rules(db, rules_text)
+    if snort_rules_list is None:
+        raise HTTPException(400, 'Error in creating rules.')
+    et = time.time()
+    print(f'Execution time - {st - et}')
     return snort_rules_list
 
 @router.get("/snort/{field}/{value}", response_model=list[SnortSchema], tags=['snort'])

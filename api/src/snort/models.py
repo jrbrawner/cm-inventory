@@ -34,7 +34,6 @@ class SnortRule(Base):
     direction : Mapped[str] = Column(String)
     dst_ip : Mapped[str] = Column(String)
     dst_port : Mapped[str] = Column(String)
-    body : Mapped[str] = Column(String)
     body_options : Mapped[str] = Column(String)
     date_added : Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
     tactics = relationship("Tactic", secondary=tactic_snort, back_populates="snort_rules")
