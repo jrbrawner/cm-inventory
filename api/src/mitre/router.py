@@ -12,10 +12,9 @@ from src.dependencies import get_db
 from src.mitre import services
 from src.yara.models import YaraRule
 from mitreattack.navlayers import Layer, ToSvg, SVGConfig
-import re
 import json
-from src.yara.schemas import YaraSchema
-from collections import Counter
+from src.snort.models import SnortRule
+from src.mitre.classes import TechniqueLayerList
 
 router = APIRouter()
 
@@ -59,51 +58,39 @@ def get_mitre_tactic_techniques(
 def generate_heatmap(db: Session = Depends(get_db)):
 
     yara_rules_to_viz = db.query(YaraRule).filter(YaraRule.techniques != None).all()
-    yara_techniques_list = []
-    yara_technique_list = []
-    yara_technique_set = set()
+    snort_rules_to_viz = db.query(SnortRule).filter(SnortRule.techniques != None).all()
+
+    
+    rule_list = TechniqueLayerList()
+    
     
     for rule in yara_rules_to_viz:
         for technique in rule.techniques:
-            yara_technique_list.append(technique.id)
-    
-    for technique in yara_technique_list:
-        occ = Counter(yara_technique_list)
-        technique_count = {technique: occ[technique]}
-        yara_technique_set.add(tuple(technique_count.items()))
+            rule_list.add_technique_yara(technique.id)
 
-    
-    for i in yara_technique_set:
-        technique = dict(i)
-        print(technique)
-        yara_techniques_list.append({
-                "techniqueID": str(*technique),
-                "score": technique.pop(*technique),
-                "metadata": [
-                    {
-                        "name": "Coverage",
-                        "value": "Yara"
-                    }
-                ]
-            })
+    for rule in snort_rules_to_viz:
+        for technique in rule.techniques:
+            rule_list.add_technique_snort(technique.id)
 
-        layer = {
-        "name": "test example",
-        "versions": {
-            "layer": "4.4",
-            "navigator": "4.8.0"
-        },
-        "sorting": 3, # descending order of score
-        "description": "testing generation of heatmaps based on countermeasure coverage",
-        "domain": "enterprise-attack",
-        "techniques": yara_techniques_list,
-        }
+    technique_list = rule_list.generate_techniques()
     
-        with open('src/mitre/layers/test_layer.json', "w", encoding="utf-8") as file:
-            json.dump(layer, file, ensure_ascii=False, indent=4)
-        file.close()
+    layer = {
+    "name": "test example",
+    "versions": {
+        "layer": "4.4",
+        "navigator": "4.8.0"
+    },
+    "sorting": 3, # descending order of score
+    "description": "testing generation of heatmaps based on countermeasure coverage",
+    "domain": "enterprise-attack",
+    "techniques": technique_list,
+    }
+
+    with open('src/mitre/layers/test_layer.json', "w", encoding="utf-8") as file:
+        json.dump(layer, file, ensure_ascii=False, indent=4)
+    file.close()
         
-    return 'Layer created with Yara rules data.'
+    return 'Layer created with countermeasure data.'
 
 @router.get("/mitre/create-layer", tags=['mitre'])
 def load_layer_to_svg():
