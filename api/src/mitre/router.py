@@ -72,20 +72,8 @@ def generate_heatmap(db: Session = Depends(get_db)):
         for technique in rule.techniques:
             rule_list.add_technique_snort(technique.id)
 
-    technique_list = rule_list.generate_techniques()
+    layer = rule_list.generate_mitre_layer(layer_name='my_layer', description='idk')
     
-    layer = {
-    "name": "test example",
-    "versions": {
-        "layer": "4.4",
-        "navigator": "4.8.0"
-    },
-    "sorting": 3, # descending order of score
-    "description": "testing generation of heatmaps based on countermeasure coverage",
-    "domain": "enterprise-attack",
-    "techniques": technique_list,
-    }
-
     with open('src/mitre/layers/test_layer.json', "w", encoding="utf-8") as file:
         json.dump(layer, file, ensure_ascii=False, indent=4)
     file.close()

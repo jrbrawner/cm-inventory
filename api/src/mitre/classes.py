@@ -17,7 +17,7 @@ class TechniqueLayerList:
 
         self.final_list = []
 
-    def add_technique_yara(self, technique_id : str):
+    def add_technique_yara(self, technique_id : str) -> None:
         """Method to add yara rules that will be used in generating a mitre layer."""
         if technique_id not in self.yara_technique_list:
             technique_layer = TechniqueLayerObject(
@@ -31,7 +31,7 @@ class TechniqueLayerList:
                     technique_layer.count += 1
                     break
 
-    def add_technique_snort(self, technique_id : str):
+    def add_technique_snort(self, technique_id : str) -> None:
         """Method to add snort rules that will be used in generating a mitre layer."""
         if technique_id not in self.snort_technique_list:
             technique_layer = TechniqueLayerObject(
@@ -45,7 +45,7 @@ class TechniqueLayerList:
                     technique_layer.count += 1
                     break
 
-    def __find_technique_layer(self, rule_type: str, technique_id : str):
+    def __find_technique_layer(self, rule_type: str, technique_id : str) -> int:
         """Finds a specific technique layer in the technique layer list for a given rule type and returns the index of the that technique layer."""
         index = 0
         if rule_type == 'Yara':
@@ -82,7 +82,7 @@ class TechniqueLayerList:
                 self.final_list.append(technique_layer)
         
     
-    def generate_techniques(self):
+    def __generate_techniques(self) -> list:
         """Method to generate techniques description used for generating a mitre layer."""
         self.__compile_techniques()
         technique_list = []
@@ -124,4 +124,21 @@ class TechniqueLayerList:
             })
 
         return technique_list
+    
+    def generate_mitre_layer(self, layer_name : str, description : str ) -> str:
+        """Generate mitre layer that can be utilized to create an SVG or imported into navigator."""
+        techniques = self.__generate_techniques()
+
+        layer = {
+        "name": f'{layer_name}',
+        "versions": {
+            "layer": "4.4",
+            "navigator": "4.8.0"
+        },
+        "sorting": 3, # descending order of score
+        "description": f'{description}',
+        "domain": "enterprise-attack",
+        "techniques": techniques,
+        }
+        return layer
     
