@@ -4,3 +4,5 @@
 development.db
 __pycache__
 /*.pytest_cache
+src/mitre/viz/*
+src/mitre/layers/*
