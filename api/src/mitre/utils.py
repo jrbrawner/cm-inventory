@@ -186,7 +186,7 @@ def get_mitre_techniques(db: Session):
                     # no subtechniques yet
                 )
                 db.add(technique_orm)
-                db.commit()
+                # db.commit()
 
                 for i in technique["external_references"]:
                     ref = i.get("url")
@@ -195,11 +195,11 @@ def get_mitre_techniques(db: Session):
                             technique_id=techniqueID, url=ref
                         )
                         db.add(technique_ref)
-                        db.commit()
+                        # db.commit()
                         techniqueReferences.append(technique_ref)
 
                 technique_orm.references = techniqueReferences
-                db.commit()
+                # db.commit()
 
                 for i in technique["kill_chain_phases"]:
                     tacticName = i.get("phase_name")
@@ -209,18 +209,18 @@ def get_mitre_techniques(db: Session):
                         techniqueTactics.append(tactic)
 
                 technique_orm.tactics = techniqueTactics
-                db.commit()
+                # db.commit()
 
                 for i in technique["x_mitre_platforms"]:
 
                     platform = TechniquePlatform(technique_id=techniqueID, platform=i)
                     db.add(platform)
-                    db.commit()
+                    # db.commit()
 
                     techniquePlatforms.append(platform)
 
                 technique_orm.platforms = techniquePlatforms
-                db.commit()
+                # db.commit()
 
                 if technique_data_sources is not None:
                     for i in technique_data_sources:
@@ -228,11 +228,11 @@ def get_mitre_techniques(db: Session):
                             technique_id=techniqueID, data_source=i
                         )
                         db.add(technique_data_source)
-                        db.commit()
+                        # db.commit()
                         techniqueDataSources.append(technique_data_source)
 
                     technique_orm.data_sources = techniqueDataSources
-                    db.commit()
+                    # db.commit()
 
                 if technique_defenses_bypassed is not None:
                     for i in technique_defenses_bypassed:
@@ -240,11 +240,11 @@ def get_mitre_techniques(db: Session):
                             technique_id=techniqueID, defense_bypassed=i
                         )
                         db.add(technique_defense_bypassed)
-                        db.commit()
+                        # db.commit()
                         techniqueDefensesBypassed.append(technique_defense_bypassed)
 
                     technique_orm.defenses_bypassed = techniqueDefensesBypassed
-                    db.commit()
+                    # db.commit()
 
                 # techniques_list.append(technique)
                 techniqueReferences.clear()
@@ -311,7 +311,7 @@ def get_mitre_subtechniques(db: Session):
                     detection=detection,
                 )
                 db.add(technique_orm)
-                db.commit()
+                # db.commit()
 
                 for i in technique["external_references"]:
                     ref = i.get("url")
@@ -320,11 +320,11 @@ def get_mitre_subtechniques(db: Session):
                             technique_id=techniqueID, url=ref
                         )
                         db.add(technique_ref)
-                        db.commit()
+                        # db.commit()
                         techniqueReferences.append(technique_ref)
 
                 technique_orm.references = techniqueReferences
-                db.commit()
+                # db.commit()
 
                 for i in technique["x_mitre_platforms"]:
 
@@ -332,12 +332,12 @@ def get_mitre_subtechniques(db: Session):
                         technique_id=techniqueID, platform=i
                     )
                     db.add(platform)
-                    db.commit()
+                    # db.commit()
 
                     techniquePlatforms.append(platform)
 
                 technique_orm.platforms = techniquePlatforms
-                db.commit()
+                # db.commit()
 
                 if technique_data_sources is not None:
                     for i in technique_data_sources:
@@ -345,11 +345,11 @@ def get_mitre_subtechniques(db: Session):
                             technique_id=techniqueID, data_source=i
                         )
                         db.add(technique_data_source)
-                        db.commit()
+                        # db.commit()
                         techniqueDataSources.append(technique_data_source)
 
                     technique_orm.data_sources = techniqueDataSources
-                    db.commit()
+                    # db.commit()
 
                 if technique_defenses_bypassed is not None:
                     for i in technique_defenses_bypassed:
@@ -357,18 +357,18 @@ def get_mitre_subtechniques(db: Session):
                             technique_id=techniqueID, defense_bypassed=i
                         )
                         db.add(technique_defense_bypassed)
-                        db.commit()
+                        # db.commit()
                         techniqueDefensesBypassed.append(technique_defense_bypassed)
 
                     technique_orm.defenses_bypassed = techniqueDefensesBypassed
-                    db.commit()
+                # db.commit()
 
                 technique_id = techniqueID.split(".")[0]
 
                 technique = db.query(Technique).get(technique_id)
 
                 technique.subtechniques.append(technique_orm)
-                db.commit()
+                # db.commit()
 
                 # techniques_list.append(technique)
                 techniqueReferences.clear()

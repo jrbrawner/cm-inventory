@@ -4,13 +4,14 @@ from SRParser import SnortParser
 from src.mitre.models import Tactic, Technique, Subtechnique
 import json
 
+
 def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
     parser = SnortParser()
     snort_rule_list = []
     rules = parser.parse_rules(rules_text)
     for rule in rules:
-    
+
         rule_options = json.dumps(rule.body_options)
         db_rule = SnortRule(
             action=rule.action,
@@ -20,43 +21,44 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
             direction=rule.direction,
             dst_ip=rule.dest_ip,
             dst_port=rule.dest_port,
-            body_options=rule_options
+            body_options=rule_options,
         )
 
-        #checking for mitre att&ck designations in rem option
-        if 'rem' in str(rule.body_options):
+        # checking for mitre att&ck designations in rem option
+        if "rem" in str(rule.body_options):
             for option in rule.body_options:
                 for key, value in option.items():
-                    if key == 'rem':
-                        value = value.replace('"', '')
-                        mitre = value.split(',')
+                    if key == "rem":
+                        value = value.replace('"', "")
+                        mitre = value.split(",")
                         for i in mitre:
-                            opts = i.split(':')
-                            if opts[0].strip() == 'tactic':
+                            opts = i.split(":")
+                            if opts[0].strip() == "tactic":
                                 tactic_db = db.query(Tactic).get(opts[1])
                                 db_rule.tactics.append(tactic_db)
-                            if opts[0].strip() == 'technique':
+                            if opts[0].strip() == "technique":
                                 technique_db = db.query(Technique).get(opts[1])
                                 db_rule.techniques.append(technique_db)
-                            if opts[0].strip() == 'subtechnique':
+                            if opts[0].strip() == "subtechnique":
                                 subtechnique_db = db.query(Subtechnique).get(opts[1])
                                 db_rule.subtechniques.append(subtechnique_db)
-                        
+
         db.add(db_rule)
         snort_rule_list.append(db_rule)
     db.commit()
 
     for i in parser.error_log:
-        error_msg = {'msg': i}
+        error_msg = {"msg": i}
         snort_rule_list.append(error_msg)
 
     if len(snort_rule_list) > 100:
-        error_msg = f'{len(snort_rule_list)} snort rules processed.'
+        error_msg = f"{len(snort_rule_list)} snort rules processed."
         snort_rule_list.clear()
-        msg = {'msg': error_msg}
+        msg = {"msg": error_msg}
         snort_rule_list.append(msg)
 
     return snort_rule_list
+
 
 def get_snort_rule_id(db: Session, value: int) -> SnortRule:
     rules = []
@@ -64,41 +66,51 @@ def get_snort_rule_id(db: Session, value: int) -> SnortRule:
     rules.append(rule)
     return rules
 
+
 def get_snort_rule_action(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.action.like(f"%{value}%")).all()
     return rules
+
 
 def get_snort_rule_protocol(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.protocol.like(f"%{value}%")).all()
     return rules
 
+
 def get_snort_rule_src_ip(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.src_ip.like(f"%{value}%")).all()
     return rules
+
 
 def get_snort_rule_src_port(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.src_port.like(f"%{value}%")).all()
     return rules
 
+
 def get_snort_rule_direction(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.direction.like(f"%{value}%")).all()
     return rules
+
 
 def get_snort_rule_dst_ip(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.dst_ip.like(f"%{value}%")).all()
     return rules
 
+
 def get_snort_rule_dst_port(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.dst_port.like(f"%{value}%")).all()
     return rules
+
 
 def get_snort_rule_date_added(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.date_added.like(f"%{value}%")).all()
     return rules
 
+
 def get_snort_rule_body_options(db: Session, value: str) -> list[SnortRule]:
     rules = db.query(SnortRule).filter(SnortRule.body_options.like(f"%{value}%")).all()
     return rules
+
 
 def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db_rule = db.query(SnortRule).get(id)
@@ -114,6 +126,7 @@ def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db.commit()
     return db_rule
 
+
 def delete_snort_rule(db: Session, id: int) -> dict:
     rule = db.query(SnortRule).get(id)
     if rule is None:
@@ -122,6 +135,7 @@ def delete_snort_rule(db: Session, id: int) -> dict:
     db.delete(rule)
     db.commit()
     return {"msg": f"Snort rule with id {rule_id} deleted."}
+
 
 def get_rule_str(db: Session, id: int) -> str:
     rule = db.query(SnortRule).get(id)
@@ -136,9 +150,6 @@ def get_rule_str(db: Session, id: int) -> str:
         direction=rule.direction,
         dest_ip=rule.dst_ip,
         dest_port=rule.dst_port,
-        body_options=rebuilt_options
+        body_options=rebuilt_options,
     )
     return rebuilt_rule
-
-
-

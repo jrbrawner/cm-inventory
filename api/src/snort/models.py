@@ -24,19 +24,22 @@ subtechnique_snort = Table(
     Column("snort_rule_id", ForeignKey("SnortRule.id")),
 )
 
+
 class SnortRule(Base):
     __tablename__ = "SnortRule"
-    id : Mapped[int] = Column(Integer, primary_key=True, index=True)
-    action : Mapped[str] = Column(String)
-    protocol : Mapped[str] = Column(String)
-    src_ip : Mapped[str] = Column(String)
-    src_port : Mapped[str] = Column(String)
-    direction : Mapped[str] = Column(String)
-    dst_ip : Mapped[str] = Column(String)
-    dst_port : Mapped[str] = Column(String)
-    body_options : Mapped[str] = Column(String)
-    date_added : Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
-    tactics = relationship("Tactic", secondary=tactic_snort, back_populates="snort_rules")
+    id: Mapped[int] = Column(Integer, primary_key=True, index=True)
+    action: Mapped[str] = Column(String)
+    protocol: Mapped[str] = Column(String)
+    src_ip: Mapped[str] = Column(String)
+    src_port: Mapped[str] = Column(String)
+    direction: Mapped[str] = Column(String)
+    dst_ip: Mapped[str] = Column(String)
+    dst_port: Mapped[str] = Column(String)
+    body_options: Mapped[str] = Column(String)
+    date_added: Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
+    tactics = relationship(
+        "Tactic", secondary=tactic_snort, back_populates="snort_rules"
+    )
     techniques = relationship(
         "Technique", secondary=technique_snort, back_populates="snort_rules"
     )

@@ -24,6 +24,7 @@ subtechnique_yara = Table(
     Column("yara_rule_id", ForeignKey("YaraRule.id")),
 )
 
+
 class YaraRule(Base):
     __tablename__ = "YaraRule"
     id: Mapped[int] = Column(Integer, primary_key=True, index=True, unique=True)

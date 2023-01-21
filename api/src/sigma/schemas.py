@@ -3,16 +3,12 @@ from datetime import datetime
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
 
 
-class SnortSchema(BaseModel):
+class SigmaBase(BaseModel):
     id: int
-    action: str
-    protocol: str
-    src_ip: str | None = None
-    src_port: str | None = None
-    direction: str | None = None  # service rules will have None for these fields
-    dst_ip: str | None = None
-    dst_port: str | None = None
-    body_options: str
+    logsource: str
+    detection: str
+    condition: str
+    raw_text: str
     date_added: datetime
     tactics: list[TacticBase] | None = None
     techniques: list[TechniqueBase] | None = None

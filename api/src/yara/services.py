@@ -24,10 +24,10 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 conditions=rule["rule_conditions"],
                 raw_text=rule["raw_text"],
                 logic_hash=rule["rule_logic_hash"],
-                compiles=rule["compiles"]
+                compiles=rule["compiles"],
             )
-            
-            if rule['rule_meta_kvp'] is None:
+
+            if rule["rule_meta_kvp"] is None:
                 tactic = None
                 technique = None
                 subtechnique = None
@@ -49,7 +49,7 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 description = parser.get_meta_fields(
                     rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="description"
                 )
-        
+
             if tactic is not None:
                 tactics = tactic.split(",")
                 tactics = [x.strip() for x in tactics]
@@ -62,14 +62,18 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 techniques = technique.split(",")
                 techniques = [x.strip() for x in techniques]
                 technique_db_list = [
-                    db.query(Technique).filter(Technique.id == x).first() for x in techniques
+                    db.query(Technique).filter(Technique.id == x).first()
+                    for x in techniques
                 ]
                 [yara_rule.techniques.append(x) for x in technique_db_list]
 
             if subtechnique is not None:
                 subtechniques = subtechnique.split(",")
                 subtechniques = [x.strip() for x in subtechniques]
-                subtechnique_db_list = [db.query(Subtechnique).filter(Subtechnique.id == x).first()for x in subtechniques]
+                subtechnique_db_list = [
+                    db.query(Subtechnique).filter(Subtechnique.id == x).first()
+                    for x in subtechniques
+                ]
                 [yara_rule.subtechniques.append(x) for x in subtechnique_db_list]
 
             if author is not None:

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class SnortRuleFieldSearch(Enum):
     Action = "action"
     Protocol = "protocol"

@@ -7,7 +7,7 @@ class YaraSchema(BaseModel):
     name: str
     meta: str | None = None
     strings: str | None = None
-    conditions: str 
+    conditions: str
     raw_text: str
     logic_hash: str
     author: str | None = None

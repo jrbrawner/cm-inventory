@@ -5,6 +5,8 @@ from src.auth.router import router as user_router
 from src.mitre.router import router as mitre_router
 from src.yara.router import router as yara_router
 from src.snort.router import router as snort_router
+from src.sigma.router import router as sigma_router
+import time
 
 tags_metadata = [
     {
@@ -22,7 +24,11 @@ tags_metadata = [
     {
         "name": "snort",
         "description": "Create and manage snort rules.",
-    }
+    },
+    {
+        "name": "sigma",
+        "description": "Create and manage sigma rules.",
+    },
 ]
 
 app = FastAPI()
@@ -31,6 +37,8 @@ app.include_router(user_router)
 app.include_router(mitre_router)
 app.include_router(yara_router)
 app.include_router(snort_router)
+app.include_router(sigma_router)
+
 
 @app.on_event("startup")
 def startup():
@@ -43,7 +51,10 @@ def startup():
             get_mitre_subtechniques,
         )
 
+        st = time.time()
         get_mitre_data()
         get_mitre_tactics(SessionLocal())
         get_mitre_techniques(SessionLocal())
         get_mitre_subtechniques(SessionLocal())
+        et = time.time()
+        print(f"Execution time:{et - st}")

@@ -2,7 +2,18 @@ from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from src.db import Base, engine
 from sqlalchemy.orm import relationship, Mapped
 from src.yara.models import YaraRule, tactic_yara, technique_yara, subtechnique_yara
-from src.snort.models import SnortRule, tactic_snort, technique_snort, subtechnique_snort
+from src.snort.models import (
+    SnortRule,
+    tactic_snort,
+    technique_snort,
+    subtechnique_snort,
+)
+from src.sigma.models import (
+    SigmaRule,
+    tactic_sigma,
+    technique_sigma,
+    subtechnique_sigma,
+)
 
 technique_to_tactic = Table(
     "technique_to_tactic",
@@ -31,6 +42,11 @@ class Tactic(Base):
     snort_rules: Mapped[list[SnortRule]] = relationship(
         "SnortRule",
         secondary=tactic_snort,
+        back_populates="tactics",
+    )
+    sigma_rules: Mapped[list[SigmaRule]] = relationship(
+        "SigmaRule",
+        secondary=tactic_sigma,
         back_populates="tactics",
     )
 
@@ -89,6 +105,11 @@ class Technique(Base):
         secondary=technique_snort,
         back_populates="techniques",
     )
+    sigma_rules: Mapped[list[SigmaRule]] = relationship(
+        "SigmaRule",
+        secondary=technique_sigma,
+        back_populates="techniques",
+    )
     subtechniques = relationship("Subtechnique")
 
 
@@ -140,6 +161,11 @@ class Subtechnique(Base):
     snort_rules: Mapped[list[SnortRule]] = relationship(
         "SnortRule",
         secondary=subtechnique_snort,
+        back_populates="subtechniques",
+    )
+    sigma_rules: Mapped[list[SigmaRule]] = relationship(
+        "SigmaRule",
+        secondary=subtechnique_sigma,
         back_populates="subtechniques",
     )
 

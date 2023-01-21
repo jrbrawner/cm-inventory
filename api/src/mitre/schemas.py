@@ -140,3 +140,7 @@ class SubTechniqueExtended(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class TacticTechniqueExtended(TacticBase):
+    techniques: list[TechniqueExtended] | None = None

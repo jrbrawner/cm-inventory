@@ -9,6 +9,7 @@ import time
 
 router = APIRouter()
 
+
 @router.post("/yara", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
 def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
     yara_rule_list = services.create_yara_rules(db, rules_text)
@@ -16,13 +17,15 @@ def create_yara_rules(rules_text: str, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list
 
+
 @router.post("/yara/file", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
 def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
     rules_text = file.file.read().decode()
     yara_rule_list = services.create_yara_rules(db, rules_text)
     if yara_rule_list is None:
-        raise HTTPException(400, 'Error in rule creation.')
+        raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list
+
 
 @router.get("/yara/{field}/{value}", response_model=list[YaraSchema], tags=["yara"])
 def get_yara_rule(
