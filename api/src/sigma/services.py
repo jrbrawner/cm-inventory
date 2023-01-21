@@ -6,6 +6,7 @@ from src.mitre.models import Tactic, Technique, Subtechnique
 import re
 import json
 from src.mitre.utils import convert_tactic
+import yaml
 
 def create_sigma_rules(db: Session, rules_text: str) -> list[SigmaRule]:
     
@@ -21,7 +22,7 @@ def create_sigma_rules(db: Session, rules_text: str) -> list[SigmaRule]:
             logsource = json.dumps(rule.get('logsource')),
             detection = json.dumps(rule.get('detection')),
             condition = json.dumps(rule.get('detection').get('condition')),
-            raw_text = json.dumps(rule)
+            raw_text = yaml.dump(rule)
         )
         
         tags = rule.get('tags')
@@ -58,8 +59,6 @@ def rebuild_rule(db: Session, id: int) -> str:
     """Take id of sigma rule and return YAML representation of original rule."""
     db_rule = db.query(SigmaRule).get(id)
 
-    rule_text = json.loads(db_rule.raw_text)
+    rule_text = db_rule.raw_text
 
-    yaml_rule = _SigmaRule.from_dict(rule_text)
-
-    return str(yaml_rule)
+    return rule_text
