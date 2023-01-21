@@ -29,7 +29,6 @@ class SigmaRule(Base):
     id : Mapped[int] = Column(Integer, primary_key=True)
     author : Mapped[str] = Column(String())
     logsource : Mapped[str] = Column(String())
-    
     detection : Mapped[str] = Column(String())
     condition : Mapped[str] = Column(String())
     raw_text : Mapped[str] = Column(String())

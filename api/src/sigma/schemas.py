@@ -5,6 +5,7 @@ from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
 
 class SigmaBase(BaseModel):
     id: int
+    author : str
     logsource: str
     detection: str
     condition: str

@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from src.sigma.models import SigmaRule
+from sigma.rule import SigmaRule as _SigmaRule
 from sigma.collection import SigmaCollection
 from src.mitre.models import Tactic, Technique, Subtechnique
 import re
@@ -16,6 +17,7 @@ def create_sigma_rules(db: Session, rules_text: str) -> list[SigmaRule]:
         rule = rule.to_dict()
 
         rule_db = SigmaRule(
+            author = rule.get('author'),
             logsource = json.dumps(rule.get('logsource')),
             detection = json.dumps(rule.get('detection')),
             condition = json.dumps(rule.get('detection').get('condition')),
@@ -51,3 +53,13 @@ def create_sigma_rules(db: Session, rules_text: str) -> list[SigmaRule]:
     db.commit()
 
     return sigma_rule_list
+
+def rebuild_rule(db: Session, id: int) -> str:
+    """Take id of sigma rule and return YAML representation of original rule."""
+    db_rule = db.query(SigmaRule).get(id)
+
+    rule_text = json.loads(db_rule.raw_text)
+
+    yaml_rule = _SigmaRule.from_dict(rule_text)
+
+    return str(yaml_rule)
