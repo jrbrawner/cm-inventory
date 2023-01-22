@@ -1,8 +1,6 @@
 import React from 'react';
 import  YaraDataService from '../../services/yara.service';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { useParams, useNavigate } from 'react-router-dom';
-import ButtonUnstyled from '@mui/base/ButtonUnstyled';
 
 
 export default function App(){
@@ -35,13 +33,13 @@ export default function App(){
       return (
               <div>
                 <form onSubmit={handleSubmit}>
-                <TextareaAutosize
+                <textarea
                 name="rules-text"
                 placeholder="Empty"
                 style={{ width: 200 }}
                 onChange={handleInput}
                 />
-                <ButtonUnstyled type="submit">{'Submit'}</ButtonUnstyled>
+                <button type="submit">Submit</button>
                 </form>
               </div>
       )
@@ -49,16 +47,16 @@ export default function App(){
     return (
       <div>
         <form onSubmit={handleSubmit}>
-        <TextareaAutosize
+        <textarea
         name="rules-text"
         placeholder="Empty"
         style={{ width: 200 }}
         onChange={handleInput}
         />
-        <ButtonUnstyled type="submit">{'Submit'}</ButtonUnstyled>
+        <button type="submit">{'Submit'}</button>
         </form>
         <hr/>
-        <TextareaAutosize
+        <textarea
           style={{ width: 200 }}
           value={response}/>
       </div>

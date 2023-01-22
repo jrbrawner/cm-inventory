@@ -1,6 +1,5 @@
 import React from 'react';
 import  YaraDataService from '../../services/yara.service';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function App(){
