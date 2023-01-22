@@ -4,11 +4,15 @@ import CardGroup from 'react-bootstrap/CardGroup';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
+
+    const navigate = useNavigate();
+
     return (
         <>
-            <Row xs={1} md={2} className="g-4">
+            <Row className="auto">
                 <Col>
                     <Card border="dark" style={{ width: '30rem' }}>
                         <Card.Body>
@@ -16,7 +20,7 @@ export default function App() {
                             <Card.Text>
                                 Create and manage Yara rules.
                             </Card.Text>
-                            <Button variant="primary">View</Button>
+                            <Button variant="primary" onClick={() => navigate(`/yara/home`)}>View</Button>
                         </Card.Body>
                     </Card>
                 </Col>

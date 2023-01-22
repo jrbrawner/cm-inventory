@@ -10,6 +10,8 @@ import GetSnortPage from './Pages/Snort/GetSnort';
 import SigmaCreatePage from './Pages/Sigma/CreateSigma';
 import SigmaRebuildPage from './Pages/Sigma/RebuildRule';
 import HomePage from './Pages/Countermeasures/HomePage';
+import YaraHomePage from './Pages/Yara/YaraHomePage';
+import YaraSearchPage from './Pages/Yara/YaraSearchPage';
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
           <Routes>
             <Route path="/countermeasures" element={<HomePage/>}/>
             
+            <Route path="/yara/search" element={<YaraSearchPage/>}/>
+            <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/:field/:value" element={<YaraPage/>}/>
             <Route path="/yara/create" element={<CreateYara/>}/>
 
