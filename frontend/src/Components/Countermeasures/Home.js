@@ -1,51 +1,59 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import CardGroup from 'react-bootstrap/CardGroup';
-
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 export default function App() {
     return (
-        <div>
-            <CardGroup>
-                <div>
-                <Card border="primary">
-                    <Card.Body>
-                        <Card.Title>Yara</Card.Title>
-                        <Card.Text>
-                            Create and manage Yara rules.
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-                </div>
-                <Card border="primary">
-                    <Card.Body>
-                        <Card.Title>Snort</Card.Title>
-                        <Card.Text>
-                            Create and manage Snort rules.
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-                <Card border="primary">
-                    <Card.Body>
-                        <Card.Title>Sigma</Card.Title>
-                        <Card.Text>
-                            Create and manage Sigma rules.
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
-                <Card border="primary" style={{ width: '18rem' }}>
-        <Card.Header>Header</Card.Header>
-        <Card.Body>
-          <Card.Title>Primary Card Title</Card.Title>
-          <Card.Text>
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </Card.Text>
-        </Card.Body>
-      </Card>
-      <br />
-            </CardGroup>
-            
-        </div>
+        <>
+            <Row xs={1} md={2} className="g-4">
+                <Col>
+                    <Card border="dark" style={{ width: '30rem' }}>
+                        <Card.Body>
+                            <Card.Title>Yara</Card.Title>
+                            <Card.Text>
+                                Create and manage Yara rules.
+                            </Card.Text>
+                            <Button variant="primary">View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card border="dark" style={{ width: '30rem' }}>
+                        <Card.Body>
+                            <Card.Title>Snort</Card.Title>
+                            <Card.Text>
+                                Create and manage Snort rules.
+                            </Card.Text>
+                            <Button variant="primary">View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card border="dark" style={{ width: '30rem' }}>
+                        <Card.Body>
+                            <Card.Title>Sigma</Card.Title>
+                            <Card.Text>
+                                Create and manage Sigma rules.
+                            </Card.Text>
+                            <Button variant="primary">View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card border="dark" style={{ width: '30rem' }}>
+                        <Card.Body>
+                            <Card.Title>Mitre</Card.Title>
+                            <Card.Text>
+                                Explore Mitre data.
+                            </Card.Text>
+                            <Button variant="primary">View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </>
     )
 }
