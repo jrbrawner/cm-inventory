@@ -9,7 +9,7 @@ from src.mitre.utils import convert_tactic
 import yaml
 
 def create_sigma_rules(db: Session, rules_text: str) -> list[SigmaRule]:
-    
+
     rules = SigmaCollection.from_yaml(rules_text)
 
     sigma_rule_list = list()

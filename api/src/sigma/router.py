@@ -3,12 +3,16 @@ from src.sigma.schemas import SigmaBase
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.sigma import services
+import tempfile
+import re
+import yaml
+from typing import Generator
 
 router = APIRouter()
 
-
 @router.post("/sigma", tags=["sigma"])
 def create_sigma_rules(rules_text: str, db: Session = Depends(get_db)):
+
     sigma_rule_list = services.create_sigma_rules(db, rules_text)
     if sigma_rule_list is None:
         raise HTTPException(400, "Error in creating sigma rules.")
