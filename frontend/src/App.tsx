@@ -6,6 +6,7 @@ import YaraPage from './Pages/Yara/GetYara';
 import CreateYara from './Pages/Yara/CreateYara';
 import GetSnortPage from './Pages/Snort/GetSnort';
 import SigmaCreatePage from './Pages/Sigma/CreateSigma';
+import SigmaRebuildPage from './Pages/Sigma/RebuildRule';
 
 function App() {
   return (
@@ -14,9 +15,12 @@ function App() {
           <Routes>
             <Route path="/yara/:field/:value" element={<YaraPage/>}/>
             <Route path="/yara/create" element={<CreateYara/>}/>
+
             <Route path="/snort/:field/:value" element={<GetSnortPage/>}/>
 
             <Route path="/sigma/create" element={<SigmaCreatePage/>}/>
+
+            <Route path="/sigma/rebuild/:id" element={<SigmaRebuildPage/>}/>
             
           </Routes>
         </BrowserRouter>

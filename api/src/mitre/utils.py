@@ -44,6 +44,7 @@ def convert_tactic(v):
         "command-and-control": "Command and Control",
         "exfiltration": "Exfiltration",
         "impact": "Impact",
+        "initial_access": "Initial Access"
     }
 
     return tactics.get(v)
