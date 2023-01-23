@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class YaraSchema(BaseModel):
+    id : int
     name: str
     meta: str | None = None
     strings: str | None = None

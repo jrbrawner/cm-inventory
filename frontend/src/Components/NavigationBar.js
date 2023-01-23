@@ -8,7 +8,7 @@ export default function NavigationBar(){
     return (
         <Navbar bg="light" expand="sm">
           <Container>
-            <Nav classname="me-auto">
+            <Nav className="me-auto">
                 <Nav.Link href="/countermeasures">Countermeasures</Nav.Link>
             </Nav>
           </Container>
