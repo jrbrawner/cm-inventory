@@ -109,6 +109,12 @@ def get_yara_rule(
             )
         return yara_rules
 
+@router.get("/yara/{id}", response_model=YaraSchema, tags=["yara"])
+def get_yara_rule(id: int, db: Session = Depends(get_db)):
+    yara_rule = services.get_yara_rule(db, id)
+    if yara_rule is None:
+        raise HTTPException(404, 'No yara rule found with that id.')
+    return yara_rule
 
 @router.put("/yara/{id}", response_model=Union[YaraSchema, dict], tags=["yara"])
 def update_yara_rule(

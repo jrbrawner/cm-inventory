@@ -6,7 +6,11 @@ class YaraDataService {
         return axios.post(`/yara`, JSON.stringify(data))
     }
 
-    get(field, value) {
+    get(id) {
+        return axios.get(`/yara/${id}`)
+    }
+
+    search(field, value) {
         return axios.get(`/yara/${field}/${value}`)
     }
 

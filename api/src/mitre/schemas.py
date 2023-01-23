@@ -2,6 +2,11 @@ from pydantic import BaseModel, HttpUrl, ValidationError, validator
 from pydantic.schema import Optional
 from typing import Optional
 
+class TacticName(BaseModel):
+    name : str
+
+    class Config:
+        orm_mode = True
 
 class TacticBase(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Tactic."""
@@ -13,19 +18,6 @@ class TacticBase(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class TacticExtended(BaseModel):
-    """Python (Pydantic) model representing a Mitre Attack Framework Tactic."""
-
-    id: str
-    name: str
-    description: str
-    reference: str
-
-    class Config:
-        orm_mode = True
-
 
 class TechniquePlatformBase(BaseModel):
     platform: str

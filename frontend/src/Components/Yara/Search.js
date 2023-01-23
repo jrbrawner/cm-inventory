@@ -3,13 +3,17 @@ import Form from 'react-bootstrap/Form';
 import Button from'react-bootstrap/Button';
 import YaraDataService from '../../services/yara.service';
 import Card from 'react-bootstrap/Card';
+import { useNavigate } from 'react-router-dom';
 
 export default function App(){
 
     const [field, setField] = React.useState(null);
     const [value, setValue] = React.useState(null);
     const [searched, setSearched] = React.useState(null);
+    const [searchedField, setSearchedField] = React.useState();
     const [yaraRule, setYaraRule] = React.useState(null);
+    
+    const navigate = useNavigate();
 
     const handleInput = event  => {
         setValue(event.target.value);
@@ -19,9 +23,47 @@ export default function App(){
         setField(event.target.value);
     }
 
-    function highlight(yaraRule){
-        if (field === "name"){
-            return yaraRule.name
+    function highlight(singleRule){
+        if (searchedField === "name"){
+            return singleRule.name;
+        }
+        else if (searchedField === "meta"){
+            return singleRule.meta;
+        }
+        else if (searchedField === "strings"){
+            return singleRule.strings;
+        }
+        else if (searchedField === "conditions"){
+            return singleRule.conditions;
+        }
+        else if (searchedField === "logic hash"){
+            return singleRule.logic_hash;
+        }
+        else if (searchedField === "author"){
+            return singleRule.author;
+        }
+        else if (searchedField === "date added"){
+            return singleRule.date_added;
+        }
+        else if (searchedField === "compiles"){
+            return singleRule.compiles;
+        }
+        else if (searchedField === "tactics"){
+            return singleRule.tactics.map((tactic) => {
+                return (
+                    <p key={tactic.id}>{tactic.id} | {tactic.name}</p>
+                )
+            });
+        }
+        else if (searchedField === "techniques"){
+            return singleRule.techniques.map((technique) => {
+                return (
+                    <p key={technique.id}>{technique.name}</p>
+                )
+            });
+        }
+        else if (searchedField === "subtechniques"){
+            return singleRule.subtechniques;
         }
     }
 
@@ -29,8 +71,9 @@ export default function App(){
         event.preventDefault();
 
         setSearched(true);
+        setSearchedField(field);
         
-        YaraDataService.get(field, value).then((response) => {
+        YaraDataService.search(field, value).then((response) => {
 
             setYaraRule(response.data);
             
@@ -136,11 +179,11 @@ export default function App(){
                     <Card className="text-center">
                         <Card.Header>Rule Name: {rule.name}</Card.Header>
                         <Card.Body>
-                            <Card.Title>Special title treatment</Card.Title>
+                            <Card.Title>{highlight(rule)}</Card.Title>
                             <Card.Text>
-                                
+                               
                             </Card.Text>
-                            <Button variant="primary">Expand Rule</Button>
+                            <Button variant="outline-primary" onClick={() => navigate(`/yara/${rule.id}`)}>Expand Rule</Button>
                         </Card.Body>
                         <Card.Footer className="text-muted">Date Added {rule.date_added}</Card.Footer>
                     </Card>

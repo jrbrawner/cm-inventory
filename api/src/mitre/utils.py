@@ -28,7 +28,7 @@ basedir = path.abspath(path.dirname(__file__))
 path = basedir
 
 
-def convert_tactic(v):
+def convert_tactic(v) -> str | None:
     tactics = {
         "reconnaissance": "Reconnaissance",
         "resource-development": "Resource Development",

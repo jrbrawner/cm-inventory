@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from src.yara.models import YaraRule
 from src.mitre.models import Tactic, Technique, Subtechnique
 from YaraParser import MultiParser, SingleParser
-
+from src.mitre.utils import convert_tactic
+import re
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
@@ -139,21 +140,37 @@ def get_yara_rules_compiles(db: Session, value: str) -> list[YaraRule]:
 
 
 def get_yara_rules_tactics(db: Session, value: str) -> list[YaraRule]:
-    """Search for yara rules using the tactics ID field."""
-    rules = db.query(YaraRule).filter(YaraRule.tactics.any(id=value)).all()
-    return rules
-
+    """Search for yara rules using tactics information."""
+    pattern_tactic = "[T][A][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_tactic, value.upper()):
+        rules = db.query(YaraRule).filter(YaraRule.tactics.any(id=value.upper())).all()
+        return rules
+    tactic_id = db.query(Tactic).filter(Tactic.name.like(f"%{value}%")).first().id
+    if tactic_id is not None:
+        rules = db.query(YaraRule).filter(YaraRule.tactics.any(id=tactic_id)).all()
+        return rules
 
 def get_yara_rules_techniques(db: Session, value: str) -> list[YaraRule]:
-    """Search for yara rules using the tactics ID field."""
-    rules = db.query(YaraRule).filter(YaraRule.techniques.any(id=value)).all()
-    return rules
-
+    """Search for yara rules using the techniques ID field."""
+    pattern_technique = "[T][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_technique, value.upper()):
+        rules = db.query(YaraRule).filter(YaraRule.techniques.any(id=value.upper())).all()
+        return rules
+    technique_id = db.query(Technique).filter(Technique.name.like(f"%{value}%")).first().id
+    if technique_id is not None:
+        rules = db.query(YaraRule).filter(YaraRule.techniques.any(id=technique_id)).all()
+        return rules
 
 def get_yara_rules_subtechniques(db: Session, value: str) -> list[YaraRule]:
-    """Search for yara rules using the tactics ID field."""
-    rules = db.query(YaraRule).filter(YaraRule.subtechniques.any(id=value)).all()
-    return rules
+    """Search for yara rules using the subtechniques ID field."""
+    pattern_subtechnique = "[T][0-9][0-9][0-9][0-9][.][0-9][0-9][0-9]"
+    if re.match(pattern_subtechnique, value.upper()):
+        rules = db.query(YaraRule).filter(YaraRule.subtechniques.any(id=value.upper())).all()
+        return rules
+    subtechnique_id = db.query(Subtechnique).filter(Subtechnique.name.like(f"%{value}%")).first().id
+    if subtechnique_id is not None:
+        rules = db.query(YaraRule).filter(YaraRule.subtechniques.any(id=subtechnique_id)).all()
+        return rules
 
 
 def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
@@ -178,10 +195,18 @@ def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
 
 
 def delete_yara_rule(db: Session, id: int) -> dict:
-    rule = db.query(YaraRule).filter(YaraRule.id == id).first()
+    """Delete yara rule."""
+    rule = db.query(YaraRule).get(id)
     if rule is None:
         return {"msg": "No rule found with that id."}
     rule_name = rule.name
     db.delete(rule)
     db.commit()
     return {"msg": f"Yara rule with name {rule_name} deleted."}
+
+def get_yara_rule(db: Session, id: int) -> YaraRule:
+    """Get single yara rule."""
+    rule = db.query(YaraRule).get(id)
+    if rule is None:
+        return None
+    return rule

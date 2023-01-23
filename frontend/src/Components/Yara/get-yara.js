@@ -9,7 +9,7 @@ export default function App(){
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        YaraDataService.get(params.field, params.value).then((response) => {
+        YaraDataService.search(params.field, params.value).then((response) => {
             setYaraRule(response.data);
         })
     }, []);
