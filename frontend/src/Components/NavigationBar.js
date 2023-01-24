@@ -10,6 +10,7 @@ export default function NavigationBar(){
           <Container>
             <Nav className="me-auto">
                 <Nav.Link href="/countermeasures">Countermeasures</Nav.Link>
+                <Nav.Link href="/mitre">Mitre</Nav.Link>
             </Nav>
           </Container>
         </Navbar>

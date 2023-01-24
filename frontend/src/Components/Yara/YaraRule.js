@@ -25,13 +25,16 @@ export default function App() {
 
     return (
         <>
-                            <div className="text-end">
-                                <Button variant="outline-danger">Delete</Button>
-                            </div>
-           <Card className="text-center mt-3">
+                    <div className="text-end">
+                        <Button variant="outline-success">Test</Button>
+                        <Button variant="outline-primary">Update</Button>
+                        <Button variant="outline-danger">Delete</Button>
+                    </div>
+                    <Card className="text-center mt-3">
                         
                         <Card.Header>
-                            Rule Name: {yaraRule.name}
+                            Rule Name
+                            <h5>{yaraRule.name}</h5>
                         </Card.Header>
                         <Card.Body>
                             <div className="input-group text-start">
@@ -49,10 +52,32 @@ export default function App() {
                             <div className="input-group text-start">
                                 <p>Rule Compiles: {yaraRule.compiles}</p>
                             </div>
-                            <div className="input-group text-start">
-                                <p>Mitre Information {yaraRule.tactics.map((tactic) => {
+                            <hr/>
+                            <h5>Mitre Information</h5>
+
+                            <div className="text-start">
+                                <h5>Tactics</h5>
+                                {yaraRule.tactics.map((tactic) => {
                                     return (
-                                        <p>{tactic.name}</p>
+                                        <p>
+                                            {tactic.id} | {tactic.name}
+                                        </p>
+                                    )
+                                })}
+                                
+                            </div>
+
+                            <div className="input-group text-start">
+                                <p>{yaraRule.techniques.map((technique) => {
+                                    return (
+                                        <p>Techniques: {technique.name}</p>
+                                    )
+                                })}</p>
+                            </div>
+                            <div className="input-group text-start">
+                                <p>{yaraRule.subtechniques.map((subtechnique) => {
+                                    return (
+                                        <p>Subtechniques: {subtechnique.name}</p>
                                     )
                                 })}</p>
                             </div>

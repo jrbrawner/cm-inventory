@@ -11,6 +11,7 @@ import HomePage from './Pages/Countermeasures/HomePage';
 import YaraHomePage from './Pages/Yara/YaraHomePage';
 import YaraSearchPage from './Pages/Yara/YaraSearchPage';
 import YaraRulePage from './Pages/Yara/YaraRulePage';
+import MitreHomePage from './Pages/Mitre/MitreHomePage';
 
 export default function App() {
   return (
@@ -19,6 +20,8 @@ export default function App() {
         <Header/>
           <Routes>
             <Route path="/countermeasures" element={<HomePage/>}/>
+
+            <Route path="/mitre" element={<MitreHomePage/>}/>
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>
