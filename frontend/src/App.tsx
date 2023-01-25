@@ -5,13 +5,17 @@ import Container from 'react-bootstrap/Container';
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import GetSnortPage from './Pages/Snort/GetSnort';
-import SigmaCreatePage from './Pages/Sigma/CreateSigma';
-import SigmaRebuildPage from './Pages/Sigma/RebuildRule';
 import HomePage from './Pages/Countermeasures/HomePage';
 import YaraHomePage from './Pages/Yara/YaraHomePage';
 import YaraSearchPage from './Pages/Yara/YaraSearchPage';
 import YaraRulePage from './Pages/Yara/YaraRulePage';
 import MitreHomePage from './Pages/Mitre/MitreHomePage';
+import TacticsHomePage from './Pages/Mitre/Tactics/TacticsHomePage';
+import TacticPage from './Pages/Mitre/Tactics/TacticPage';
+import TechniquesHomePage from './Pages/Mitre/Techniques/TechniqueHomePage';
+import TechniquePage from './Pages/Mitre/Techniques/TechniquePage';
+import SubtechniquePage from './Pages/Mitre/Subtechniques/SubtechniquePage';
+import SubtechniquesHomePage from './Pages/Mitre/Subtechniques/SubtechniquesHomePage';
 
 export default function App() {
   return (
@@ -22,6 +26,12 @@ export default function App() {
             <Route path="/countermeasures" element={<HomePage/>}/>
 
             <Route path="/mitre" element={<MitreHomePage/>}/>
+            <Route path="/mitre/tactics" element={<TacticsHomePage/>}/>
+            <Route path="/mitre/tactic/:id" element={<TacticPage/>}/>
+            <Route path="/mitre/techniques" element={<TechniquesHomePage/>}/>
+            <Route path="/mitre/technique/:id" element={<TechniquePage/>}/>
+            <Route path="/mitre/subtechniques" element={<SubtechniquesHomePage/>}/>
+            <Route path="/mitre/subtechnique/:id" element={<SubtechniquePage/>}/>
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>
@@ -29,8 +39,7 @@ export default function App() {
           
             <Route path="/snort/:field/:value" element={<GetSnortPage/>}/>
 
-            <Route path="/sigma/create" element={<SigmaCreatePage/>}/>
-            <Route path="/sigma/rebuild/:id" element={<SigmaRebuildPage/>}/>
+            
             
           </Routes>
         </BrowserRouter>

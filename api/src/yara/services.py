@@ -3,6 +3,7 @@ from src.yara.models import YaraRule
 from src.mitre.models import Tactic, Technique, Subtechnique
 from YaraParser import MultiParser, SingleParser
 from src.mitre.utils import convert_tactic
+import json
 import re
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
@@ -10,7 +11,7 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     parser = MultiParser(rules_text, strip_whitespace=True)
     rules = parser.get_rules_dict()
     yara_rule_list = []
-    # keyword_list = ['tactic', 'technique', 'subtechnique']
+    
     for name, rule in rules.items():
 
         if (
@@ -26,6 +27,8 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 raw_text=rule["raw_text"],
                 logic_hash=rule["rule_logic_hash"],
                 compiles=rule["compiles"],
+                imports=json.dumps(rule['imports']),
+                tags=json.dumps(rule['tags'])
             )
 
             if rule["rule_meta_kvp"] is None:

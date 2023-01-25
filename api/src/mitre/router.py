@@ -4,7 +4,10 @@ from src.mitre.schemas import (
     TechniqueBase,
     SubTechniqueBase,
     TacticTechnique,
-    TacticTechniqueExtended,
+    TacticTechnique,
+    TechniqueTactics,
+    TechniqueExtended,
+    SubTechniqueExtended
 )
 from src.mitre.models import Technique
 from src.mitre.constants import MitreLookup
@@ -19,6 +22,28 @@ from src.mitre.classes import TechniqueLayerList
 
 router = APIRouter()
 
+
+@router.get("/mitre/tactics", response_model=list[TacticBase], tags=["mitre"])
+def get_mitre_tactics(db: Session = Depends(get_db)):
+    mitre_tactics = services.get_mitre_tactics(db)
+    if mitre_tactics is None:
+        raise HTTPException(400, 'Error in retrieving tactics.')
+    return mitre_tactics
+
+
+@router.get("/mitre/tactics/{id}", response_model=TacticBase, tags=['mitre'])
+def get_mitre_tactic_id(id: str, db: Session = Depends(get_db)):
+    tactic = services.get_mitre_tactic_id(db, id)
+    if tactic is None:
+        raise HTTPException(400, 'Error in retrieving tactic.')
+    return tactic
+
+@router.get("/mitre/tactic/{id}/techniques", response_model=TacticTechnique, tags=['mitre'])
+def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
+    techniques = services.get_mitre_tactic_techniques(db, id)
+    if techniques is None:
+        raise HTTPException(400, 'Error in retrieving techniques associated with that tactic.')
+    return techniques
 
 @router.get("/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
 def get_mitre_tactic(
@@ -35,26 +60,33 @@ def get_mitre_tactic(
             raise HTTPException(404, "No tactic found with that name.")
         return tactic
 
+@router.get("/mitre/techniques", response_model=list[TechniqueTactics], tags=['mitre'])
+def get_mitre_techniques(db: Session = Depends(get_db)):
+    techniques = services.get_mitre_techniques(db)
+    if techniques is None:
+        raise HTTPException(400, 'Error in retrieving techniques.')
+    return techniques
 
-@router.get(
-    "/mitre/tactic/{type}/{term}/techniques",
-    response_model=TacticTechniqueExtended,
-    tags=["mitre"],
-)
-def get_mitre_tactic_techniques(
-    type: MitreLookup, term: str, db: Session = Depends(get_db)
-) -> TacticTechnique:
-    if type is MitreLookup.ID:
-        tactic = services.get_mitre_tactic_id(db, term)
-        if tactic is None:
-            raise HTTPException(404, "No tactic found with that id.")
-        return tactic
-    if type is MitreLookup.Name:
-        tactic = services.get_mitre_tactic_name(db, term)
-        if tactic is None:
-            raise HTTPException(404, "No tactic found with that name.")
-        return tactic
+@router.get("/mitre/technique/{id}", response_model=TechniqueExtended, tags=['mitre'])
+def get_mitre_technique(id: str, db: Session = Depends(get_db)):
+    technique = services.get_mitre_technique(db, id)
+    if technique is None:
+        raise HTTPException(400, 'Error in retrieving technique.')
+    return technique
 
+@router.get("/mitre/subtechniques", response_model=list[SubTechniqueBase], tags=['mitre'])
+def get_mitre_subtechniques(db: Session = Depends(get_db)):
+    subtechniques = services.get_mitre_subtechniques(db)
+    if subtechniques is None:
+        raise HTTPException(400, 'Error in retrieving subtechniques.')
+    return subtechniques
+
+@router.get("/mitre/subtechnique/{id}", response_model=SubTechniqueExtended, tags=['mitre'])
+def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
+    subtechnique = services.get_mitre_subtechnique(db, id)
+    if subtechnique is None:
+        raise HTTPException(400, 'Error in retrieving subtechnique.')
+    return subtechnique
 
 @router.get("/mitre/generate-heatmap", tags=["mitre"])
 def generate_heatmap(db: Session = Depends(get_db)):

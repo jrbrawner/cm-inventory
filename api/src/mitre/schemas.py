@@ -57,6 +57,21 @@ class TechniqueBase(BaseModel):
     class Config:
         orm_mode = True
 
+class TechniqueTactics(TechniqueBase):
+    tactics : list[TacticBase]
+
+    class Config:
+        orm_mode = True
+
+class SubTechniqueBase(BaseModel):
+    """Python (Pydantic) model representing a Mitre Attack Framework Technique."""
+
+    id: str
+    name: str
+    description: str
+
+    class Config:
+        orm_mode = True
 
 class TechniqueExtended(BaseModel):
     """Python (Pydantic) extended model representing a Mitre Attack Framework Technique."""
@@ -70,6 +85,7 @@ class TechniqueExtended(BaseModel):
     detection: str | None = None
     data_sources: list[TechniqueDataSource]
     defenses_bypassed: list[TechniqueDefenseBypassed]
+    subtechniques : list[SubTechniqueBase]
 
     class Config:
         orm_mode = True
@@ -107,15 +123,6 @@ class SubTechniquePlatform(BaseModel):
         orm_mode = True
 
 
-class SubTechniqueBase(BaseModel):
-    """Python (Pydantic) model representing a Mitre Attack Framework Technique."""
-
-    id: str
-    name: str
-    description: str
-
-    class Config:
-        orm_mode = True
 
 
 class SubTechniqueExtended(BaseModel):
@@ -134,5 +141,8 @@ class SubTechniqueExtended(BaseModel):
         orm_mode = True
 
 
-class TacticTechniqueExtended(TacticBase):
-    techniques: list[TechniqueExtended] | None = None
+class TacticTechnique(TacticBase):
+    techniques: list[TechniqueBase]
+
+    class Config:
+        orm_mode = True
