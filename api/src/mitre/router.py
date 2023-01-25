@@ -17,6 +17,7 @@ from src.mitre import services
 from src.yara.models import YaraRule
 from mitreattack.navlayers import Layer, ToSvg, SVGConfig
 import json
+from src.yara.schemas import YaraSchema
 from src.snort.models import SnortRule
 from src.mitre.classes import TechniqueLayerList
 
@@ -25,6 +26,7 @@ router = APIRouter()
 
 @router.get("/mitre/tactics", response_model=list[TacticBase], tags=["mitre"])
 def get_mitre_tactics(db: Session = Depends(get_db)):
+    """Get all mitre tactics."""
     mitre_tactics = services.get_mitre_tactics(db)
     if mitre_tactics is None:
         raise HTTPException(400, 'Error in retrieving tactics.')
@@ -33,6 +35,7 @@ def get_mitre_tactics(db: Session = Depends(get_db)):
 
 @router.get("/mitre/tactics/{id}", response_model=TacticBase, tags=['mitre'])
 def get_mitre_tactic_id(id: str, db: Session = Depends(get_db)):
+    """Get a specific mitre tactic."""
     tactic = services.get_mitre_tactic_id(db, id)
     if tactic is None:
         raise HTTPException(400, 'Error in retrieving tactic.')
@@ -40,15 +43,25 @@ def get_mitre_tactic_id(id: str, db: Session = Depends(get_db)):
 
 @router.get("/mitre/tactic/{id}/techniques", response_model=TacticTechnique, tags=['mitre'])
 def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
+    """Get a specific mitre tactic and all associated techniques."""
     techniques = services.get_mitre_tactic_techniques(db, id)
     if techniques is None:
         raise HTTPException(400, 'Error in retrieving techniques associated with that tactic.')
     return techniques
 
+@router.get("/mitre/tactic/{id}/yara", response_model=list[YaraSchema], tags=['mitre'])
+def get_tactic_yara(id: str, db: Session = Depends(get_db)):
+    """Get all Yara rules associated with a mitre tactic ID."""
+    yara_rules = services.get_mitre_tactic_yara(db, id)
+    if yara_rules is None:
+        raise HTTPException(400, 'Error in retrieving yara rules.')
+    return yara_rules
+
 @router.get("/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
 def get_mitre_tactic(
     type: MitreLookup, term: str, db: Session = Depends(get_db)
 ) -> TacticBase:
+    """Get mitre tactic based on search type and term."""
     if type is MitreLookup.ID:
         tactic = services.get_mitre_tactic_id(db, term)
         if tactic is None:
@@ -62,6 +75,7 @@ def get_mitre_tactic(
 
 @router.get("/mitre/techniques", response_model=list[TechniqueTactics], tags=['mitre'])
 def get_mitre_techniques(db: Session = Depends(get_db)):
+    """Get all mitre techniques."""
     techniques = services.get_mitre_techniques(db)
     if techniques is None:
         raise HTTPException(400, 'Error in retrieving techniques.')
@@ -69,6 +83,7 @@ def get_mitre_techniques(db: Session = Depends(get_db)):
 
 @router.get("/mitre/technique/{id}", response_model=TechniqueExtended, tags=['mitre'])
 def get_mitre_technique(id: str, db: Session = Depends(get_db)):
+    """Get a specific mitre technique and all associated objects."""
     technique = services.get_mitre_technique(db, id)
     if technique is None:
         raise HTTPException(400, 'Error in retrieving technique.')
@@ -76,6 +91,7 @@ def get_mitre_technique(id: str, db: Session = Depends(get_db)):
 
 @router.get("/mitre/subtechniques", response_model=list[SubTechniqueBase], tags=['mitre'])
 def get_mitre_subtechniques(db: Session = Depends(get_db)):
+    """Get all mitre subtechniques."""
     subtechniques = services.get_mitre_subtechniques(db)
     if subtechniques is None:
         raise HTTPException(400, 'Error in retrieving subtechniques.')
@@ -83,6 +99,7 @@ def get_mitre_subtechniques(db: Session = Depends(get_db)):
 
 @router.get("/mitre/subtechnique/{id}", response_model=SubTechniqueExtended, tags=['mitre'])
 def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
+    """Get a specific mitre subtechnique and all associated objects."""
     subtechnique = services.get_mitre_subtechnique(db, id)
     if subtechnique is None:
         raise HTTPException(400, 'Error in retrieving subtechnique.')
@@ -90,7 +107,7 @@ def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
 
 @router.get("/mitre/generate-heatmap", tags=["mitre"])
 def generate_heatmap(db: Session = Depends(get_db)):
-
+    """Generate a layer based on countermeasure mitre coverage."""
     yara_rules_to_viz = (
         db.query(YaraRule)
         .filter(YaraRule.techniques != None)
@@ -129,7 +146,7 @@ def generate_heatmap(db: Session = Depends(get_db)):
 
 @router.get("/mitre/create-layer", tags=["mitre"])
 def load_layer_to_svg():
-
+    """Create an svg based on a mitre layer."""
     lay = Layer()
     lay.from_file("src/mitre/layers/test_layer.json")
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
-import CardGroup from 'react-bootstrap/CardGroup';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -23,6 +22,17 @@ export default function App(){
                                     Search for stored Yara rules.
                                 </Card.Text>
                                 <Button variant="primary" onClick={() => navigate(`/yara/search`)}>View</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col>
+                        <Card className="mb-2" bg="light">
+                            <Card.Body>
+                                <Card.Title>Upload</Card.Title>
+                                <Card.Text>
+                                    Upload new Yara rules.
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => navigate(`/yara/create`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>

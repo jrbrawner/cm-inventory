@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import AutoSizeTextArea from '../../Custom/AutoSizeTextArea';
 import Button from 'react-bootstrap/Button';
+import ReactMarkdown from 'react-markdown';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -13,6 +15,7 @@ export default function App() {
     React.useEffect(() => {
         YaraDataService.get(params.id).then((response) => {
             setYaraRule(response.data);
+            console.log(yaraRule.raw_text);
         }).catch(function (error) {
             if (error.response)
                 {
@@ -21,7 +24,20 @@ export default function App() {
         })
     }, []);
 
-    if (!yaraRule) return <p>Loading...</p>
+    function formatMitre(list, type) {
+        var listString = [];
+        list.map((listObject) => {
+            listString.push(<a href={`/mitre/${type}/${listObject.id}`}>{listObject.name}</a>);
+            listString.push("   ")
+        })
+        return (<>{listString}</>);
+    }
+
+    if (!yaraRule) return (
+        <Spinner className="mt-5" animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+        </Spinner>
+    )
 
     return (
         <>
@@ -30,8 +46,7 @@ export default function App() {
                         <Button variant="outline-primary">Update</Button>
                         <Button variant="outline-danger">Delete</Button>
                     </div>
-                    <Card className="text-center mt-3">
-                        
+                    <Card className="text-center mt-3 bg-light">
                         <Card.Header>
                             Rule Name
                             <h5>{yaraRule.name}</h5>
@@ -45,10 +60,11 @@ export default function App() {
                             </div>
                             <div>
                                 <AutoSizeTextArea
-                                className="container"
+                                className="container text-dark"
                                 value={yaraRule.raw_text}/>
-                                    
+                            <hr/>
                             </div>
+                        
                             <div className="input-group text-start">
                                 <p>Rule Compiles: {yaraRule.compiles}</p>
                             </div>
@@ -56,30 +72,15 @@ export default function App() {
                             <h5>Mitre Information</h5>
 
                             <div className="text-start">
-                                <h5>Tactics</h5>
-                                {yaraRule.tactics.map((tactic) => {
-                                    return (
-                                        <p>
-                                            {tactic.id} | {tactic.name}
-                                        </p>
-                                    )
-                                })}
-                                
+                                Tactics - {formatMitre(yaraRule.tactics, "tactic")}
                             </div>
 
-                            <div className="input-group text-start">
-                                <p>{yaraRule.techniques.map((technique) => {
-                                    return (
-                                        <p>Techniques: {technique.name}</p>
-                                    )
-                                })}</p>
+                            <div className="text-start">
+                                Techniques - {formatMitre(yaraRule.techniques, "technique")}
                             </div>
-                            <div className="input-group text-start">
-                                <p>{yaraRule.subtechniques.map((subtechnique) => {
-                                    return (
-                                        <p>Subtechniques: {subtechnique.name}</p>
-                                    )
-                                })}</p>
+
+                            <div className="text-start">
+                                Subtechniques -  {formatMitre(yaraRule.subtechniques, "subtechnique")}
                             </div>
                             
                         </Card.Body>

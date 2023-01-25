@@ -17,7 +17,7 @@ export default function App(props) {
     )}px`;
   }, [value]);
 
-  if (props.value === null){
+  if (props.dynamic === true){
     return (
       <textarea
         className={props.className}

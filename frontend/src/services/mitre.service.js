@@ -29,6 +29,10 @@ class MitreDataService {
     getSubtechnique(id) {
         return axios.get(`/mitre/subtechnique/${id}`)
     }
+
+    getTacticYara(id) {
+        return axios.get(`/mitre/tactic/${id}/yara`)
+    }
     
 }
 

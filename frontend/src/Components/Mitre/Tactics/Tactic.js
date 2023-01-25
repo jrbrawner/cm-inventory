@@ -47,7 +47,7 @@ export default function App() {
                                 <Card.Text>
                                     View {tactic.name} associated Yara rules.
                                 </Card.Text>
-                                <Button variant="outline-primary" onClick={() => navigate(`/yara/home`)}>View</Button>
+                                <Button variant="outline-primary" onClick={() => navigate(`/mitre/countermeasure/yara/tactic/${tactic.id}`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
