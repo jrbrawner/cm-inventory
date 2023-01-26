@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from src.yara.models import YaraRule
 from src.mitre.models import Tactic, Technique, Subtechnique
 from YaraParser import MultiParser, SingleParser
-from src.mitre.utils import convert_tactic
 import json
 import re
 
@@ -13,12 +12,12 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     yara_rule_list = []
     
     for name, rule in rules.items():
-
+        
         if (
             db.query(YaraRule).filter(YaraRule.name == rule["rule_name"]).scalar()
             is None
         ):
-
+            
             yara_rule = YaraRule(
                 name=rule["rule_name"],
                 meta=rule["rule_meta"],
@@ -87,8 +86,9 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 yara_rule.description = description
 
             db.add(yara_rule)
-            yara_rule_list.append(yara_rule)
+            yara_rule_list.append({"msg": f"{yara_rule.name} added to database."})
         else:
+            
             yara_rule_list.append(
                 {
                     "msg": "Yara rule already exists with {} name.".format(

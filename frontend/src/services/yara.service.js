@@ -2,8 +2,12 @@ import axios from 'axios';
 
 class YaraDataService {
 
-    create(data) {
-        return axios.post(`/yara`, JSON.stringify(data))
+    createText(data) {
+        return axios.post(`/yara`, data, {"Content-Type": "multipart/form-data"})
+    }
+
+    createFile(data){
+        return axios.post(`/yara/file`, data, {"Content-Type": "multipart/form-data"})
     }
 
     get(id) {

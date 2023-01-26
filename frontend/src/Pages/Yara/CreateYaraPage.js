@@ -3,6 +3,8 @@ import Create from '../../Components/Yara/Create';
 
 export default function YaraCreatePage(){
     return (
-        <Create/>
+        <Body>
+            <Create/>
+        </Body>
     )
 }
