@@ -19,6 +19,7 @@ import SubtechniquesHomePage from './Pages/Mitre/Subtechniques/SubtechniquesHome
 import YaraTacticPage from './Pages/Mitre/Countermeasures/YaraTacticPage';
 import YaraCreatePage from './Pages/Yara/CreateYaraPage';
 
+
 export default function App() {
   return (
     <Container fluid className="App">
