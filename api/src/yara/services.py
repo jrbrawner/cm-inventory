@@ -100,9 +100,9 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     return yara_rule_list
 
 
-def get_yara_rules_name(db: Session, value: str) -> list[YaraRule]:
+def get_yara_rules_name(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the name field."""
-    rules = db.query(YaraRule).filter(YaraRule.name.like(f"%{value}%")).all()
+    rules = db.query(YaraRule).filter(YaraRule.name.like(f"%{value}%")).offset(skip).limit(limit).all()
     return rules
 
 

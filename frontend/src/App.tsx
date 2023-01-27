@@ -19,7 +19,7 @@ import SubtechniquesHomePage from './Pages/Mitre/Subtechniques/SubtechniquesHome
 import YaraTacticPage from './Pages/Mitre/Countermeasures/YaraTacticPage';
 import YaraCreatePage from './Pages/Yara/CreateYaraPage';
 import UpdateYaraPage from './Pages/Yara/UpdateYaraPage';
-import TestingPage from './Pages/Yara/TestingPage';
+import SearchResultPage from './Pages/Yara/SearchResultPage';
 
 export default function App() {
   return (
@@ -41,10 +41,11 @@ export default function App() {
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>
+            <Route path="/yara/search/:field/:value" element={<SearchResultPage/>}/>
             <Route path="/yara/create" element={<YaraCreatePage/>}/>
             <Route path="/yara/:id" element={<YaraRulePage/>}/>
             <Route path="/yara/update/:id" element={<UpdateYaraPage/>}/>
-            <Route path="/yara/testing" element={<TestingPage/>}/>
+            
           
             <Route path="/snort/:field/:value" element={<GetSnortPage/>}/>
 

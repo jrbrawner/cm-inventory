@@ -1,6 +1,6 @@
 import React from 'react';
 import  YaraDataService from '../../services/yara.service';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import Button from 'react-bootstrap/Button';
@@ -13,10 +13,10 @@ export default function App() {
     const params = useParams();
     const navigate = useNavigate();
 
+
     React.useEffect(() => {
         YaraDataService.get(params.id).then((response) => {
             setYaraRule(response.data);
-            console.log(yaraRule.raw_text);
         }).catch(function (error) {
             if (error.response)
                 {
