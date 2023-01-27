@@ -2,10 +2,11 @@ import React from 'react';
 import  YaraDataService from '../../services/yara.service';
 import { useParams, useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
-import AutoSizeTextArea from '../../Custom/AutoSizeTextArea';
+import TextareaAutosize from '@mui/base/TextareaAutosize';
 import Button from 'react-bootstrap/Button';
 import ReactMarkdown from 'react-markdown';
 import Spinner from 'react-bootstrap/Spinner';
+import Container from 'react-bootstrap/Container';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -26,6 +27,9 @@ export default function App() {
 
     function formatMitre(list, type) {
         var listString = [];
+        if (list.length === 0) {
+            listString.push("None");
+        }
         list.map((listObject) => {
             listString.push(<a href={`/mitre/${type}/${listObject.id}`}>{listObject.name}</a>);
             listString.push("   ")
@@ -40,10 +44,10 @@ export default function App() {
     )
 
     return (
-        <>
+        <Container>
                     <div className="text-end">
                         <Button variant="outline-success">Test</Button>
-                        <Button variant="outline-primary">Update</Button>
+                        <Button variant="outline-primary" onClick={() => navigate(`/yara/update/${yaraRule.id}`)}>Update</Button>
                         <Button variant="outline-danger">Delete</Button>
                     </div>
                     <Card className="text-center mt-3 bg-light">
@@ -59,7 +63,8 @@ export default function App() {
                                 <p>Rule Text:</p>
                             </div>
                             <div>
-                                <AutoSizeTextArea
+                                <TextareaAutosize
+                                disabled
                                 className="container text-dark"
                                 value={yaraRule.raw_text}/>
                             <hr/>
@@ -86,7 +91,7 @@ export default function App() {
                         </Card.Body>
                         <Card.Footer className="text-muted">Date Added {yaraRule.date_added}</Card.Footer>
                     </Card>
-        </>
+        </Container>
     )
 
 }

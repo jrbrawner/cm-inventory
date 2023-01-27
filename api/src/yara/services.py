@@ -91,7 +91,7 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
             
             yara_rule_list.append(
                 {
-                    "msg": "Yara rule already exists with {} name.".format(
+                    "msg": "Yara rule already exists with name {}.".format(
                         rule["rule_name"]
                     )
                 }

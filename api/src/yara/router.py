@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post("/yara", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
 def create_yara_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
+    
     yara_rule_list = services.create_yara_rules(db, rules_text)
     if yara_rule_list is None:
         raise HTTPException(400, "Error in rule creation.")
@@ -117,7 +118,7 @@ def get_yara_rule(id: int, db: Session = Depends(get_db)):
 
 @router.put("/yara/{id}", response_model=Union[YaraSchema, dict], tags=["yara"])
 def update_yara_rule(
-    id: int, rule_text: str, db: Session = Depends(get_db)
+    id: int, rule_text: str = Form(), db: Session = Depends(get_db)
 ) -> YaraSchema:
     updated_rule = services.update_yara_rule(db, id, rule_text)
     if updated_rule is None:

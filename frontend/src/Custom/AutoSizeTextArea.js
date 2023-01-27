@@ -4,7 +4,7 @@ const MIN_TEXTAREA_HEIGHT = 32;
 
 export default function App(props) {
   const textareaRef = React.useRef(null);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(props.initialValue);
   const onChange = (event) => setValue(event.target.value);
 
   React.useLayoutEffect(() => {
@@ -18,16 +18,19 @@ export default function App(props) {
   }, [value]);
 
   if (props.dynamic === true){
-    return (
-      <textarea
+      return (
+        <textarea
+        id={props.id}
         className={props.className}
-        onChange={onChange}
+        onKeyDown={props.onKeyDown}
+        onChange={props.onChange}
         ref={textareaRef}
         style={{
           minHeight: MIN_TEXTAREA_HEIGHT,
           resize: "none"
         }}
-        value={value}
+        required
+        value={props.value}
       />
     );
   }
