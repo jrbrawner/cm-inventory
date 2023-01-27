@@ -4,6 +4,7 @@ import Button from'react-bootstrap/Button';
 import YaraDataService from '../../services/yara.service';
 import Card from 'react-bootstrap/Card';
 import { useNavigate } from 'react-router-dom';
+import Paginator from '../../Custom/Paginator';
 
 export default function App(){
 
@@ -12,7 +13,7 @@ export default function App(){
     const [searched, setSearched] = React.useState(null);
     const [searchedField, setSearchedField] = React.useState();
     const [yaraRule, setYaraRule] = React.useState(null);
-    
+
     const navigate = useNavigate();
 
     const handleInput = event  => {
@@ -76,7 +77,6 @@ export default function App(){
         YaraDataService.search(field, value).then((response) => {
 
             setYaraRule(response.data);
-            
 
         }).catch(function (error) {
             if (error.response)
@@ -86,7 +86,28 @@ export default function App(){
         })
     }
 
-    
+    function DisplayYaraRules (currentItems) {
+           return (
+               currentItems.map((rule) => {
+                   return (
+                    <div key={rule.id}>
+                    <Card className="text-center mb-2">
+                        <Card.Header>Rule Name: {rule.name}</Card.Header>
+                        <Card.Body>
+                            <Card.Title>{highlight(rule)}</Card.Title>
+                            <Card.Text>
+                               
+                            </Card.Text>
+                            <Button variant="outline-primary" onClick={() => navigate(`/yara/${rule.id}`)}>Expand Rule</Button>
+                        </Card.Body>
+                        <Card.Footer className="text-muted">Date Added {rule.date_added}</Card.Footer>
+                    </Card>
+                </div>
+                )
+            })
+            )
+        }
+
     if (!yaraRule) return (
         <>
             <h4>Search Database Yara Rules</h4>
@@ -173,23 +194,7 @@ export default function App(){
             </div>
         </Form>
         <hr/>
-            {yaraRule.map((rule) => {
-                return(
-                <div key={rule.id}>
-                    <Card className="text-center mb-2">
-                        <Card.Header>Rule Name: {rule.name}</Card.Header>
-                        <Card.Body>
-                            <Card.Title>{highlight(rule)}</Card.Title>
-                            <Card.Text>
-                               
-                            </Card.Text>
-                            <Button variant="outline-primary" onClick={() => navigate(`/yara/${rule.id}`)}>Expand Rule</Button>
-                        </Card.Body>
-                        <Card.Footer className="text-muted">Date Added {rule.date_added}</Card.Footer>
-                    </Card>
-                </div>
-                )
-            })}
+        <Paginator itemsPerPage={10} items={yaraRule} Display={DisplayYaraRules} />
         </>
     )
 

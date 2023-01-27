@@ -18,6 +18,10 @@ class YaraDataService {
         return axios.put(`/yara/${id}`, data, {"Content-Type": "multipart/form-data"})
     }
 
+    delete(id) {
+        return axios.delete(`/yara/${id}`)
+    }
+
     search(field, value) {
         return axios.get(`/yara/${field}/${value}`)
     }

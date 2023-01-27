@@ -9,6 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
+import EditFormDialogModal from '../../Custom/EditFormDialogModal';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -71,11 +72,10 @@ export default function App() {
 
     return (
         <Container>
-                    <Form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit} id="updateRuleForm">
                         <Card className="text-center mt-3 bg-light">
                             <Card.Header>
-                                Rule Name
-                                <h5>{yaraRule.name}</h5>
+                                <h5>Change rule and submit to update.</h5>
                             </Card.Header>
                             <Card.Body>
                                     <div>
@@ -89,7 +89,11 @@ export default function App() {
                             </Card.Body>
                             <Card.Footer className="text-muted">Date Added {yaraRule.date_added}</Card.Footer>
                         </Card>
-                        <Button type="submit" className="outline-primary block">Submit</Button>
+                        <div className="mt-2 d-grid gap-2">
+                            <EditFormDialogModal buttonName={"Submit"} modalTitle={"Update Yara Rule"}
+                            modalBody={"Are you sure you want to make these changes to this Yara rule?"}
+                            form={"updateRuleForm"}/>
+                        </div>
                     </Form>
         </Container>
     )

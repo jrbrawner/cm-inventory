@@ -4,9 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import Button from 'react-bootstrap/Button';
-import ReactMarkdown from 'react-markdown';
 import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
+import DeleteDialogModal from '../../Custom/DeleteDialogModal';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -37,6 +37,14 @@ export default function App() {
         return (<>{listString}</>);
     }
 
+    const deleteRule = () => {
+        YaraDataService.delete(yaraRule.id).then( function (response) {
+            navigate(`/yara/search`);
+        }).catch(function (error) {
+            alert(error);
+        })
+    }
+
     if (!yaraRule) return (
         <Spinner className="mt-5" animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -48,7 +56,11 @@ export default function App() {
                     <div className="text-end">
                         <Button variant="outline-success">Test</Button>
                         <Button variant="outline-primary" onClick={() => navigate(`/yara/update/${yaraRule.id}`)}>Update</Button>
-                        <Button variant="outline-danger">Delete</Button>
+                        
+                        <DeleteDialogModal buttonName={"Delete"} modalTitle={"Delete Yara Rule"}
+                         modalBody={"Are you sure you want to delete this rule? All information regarding this rule will be lost. This action cannot be undone."}
+                        onSuccess={deleteRule}/>
+
                     </div>
                     <Card className="text-center mt-3 bg-light">
                         <Card.Header>

@@ -193,6 +193,65 @@ def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
     db_rule.author = parser.get_meta_field("author")
     db_rule.description = parser.get_meta_field("description")
     db_rule.compiles = rule["compiles"]
+
+    if rule["rule_meta_kvp"] is None:
+                tactic = None
+                technique = None
+                subtechnique = None
+                author = None
+                description = None
+    else:
+        tactic = parser.get_meta_field(
+            keyword="tactic"
+        )
+        technique = parser.get_meta_field(
+            keyword="technique"
+        )
+        subtechnique = parser.get_meta_field(
+            keyword="subtechnique"
+        )
+        author = parser.get_meta_field(
+            keyword="author"
+        )
+        description = parser.get_meta_field(
+            keyword="description"
+        )
+
+    if tactic is not None:
+        db_rule.tactics.clear()
+        tactics = tactic.split(",")
+        tactics = [x.strip() for x in tactics]
+        tactic_db_list = [
+            db.query(Tactic).filter(Tactic.id == x).first() for x in tactics
+        ]
+        [db_rule.tactics.append(x) for x in tactic_db_list]
+
+    if technique is not None:
+        db_rule.techniques.clear()
+        techniques = technique.split(",")
+        techniques = [x.strip() for x in techniques]
+        technique_db_list = [
+            db.query(Technique).filter(Technique.id == x).first()
+            for x in techniques
+        ]
+        [db_rule.techniques.append(x) for x in technique_db_list]
+
+    if subtechnique is not None:
+        db_rule.subtechniques.clear()
+        subtechniques = subtechnique.split(",")
+        subtechniques = [x.strip() for x in subtechniques]
+        subtechnique_db_list = [
+            db.query(Subtechnique).filter(Subtechnique.id == x).first()
+            for x in subtechniques
+        ]
+        [db_rule.subtechniques.append(x) for x in subtechnique_db_list]
+
+    if author is not None:
+        db_rule.author = author
+
+    if description is not None:
+        db_rule.description = description
+
     db.commit()
     return db_rule
 
