@@ -41,7 +41,7 @@ export default function App() {
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>
-            <Route path="/yara/search/:field/:value" element={<SearchResultPage/>}/>
+            <Route path="/yara/search/:field/:value/:page" element={<SearchResultPage/>}/>
             <Route path="/yara/create" element={<YaraCreatePage/>}/>
             <Route path="/yara/:id" element={<YaraRulePage/>}/>
             <Route path="/yara/update/:id" element={<UpdateYaraPage/>}/>

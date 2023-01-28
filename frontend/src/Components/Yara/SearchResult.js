@@ -4,22 +4,30 @@ import Button from'react-bootstrap/Button';
 import YaraDataService from '../../services/yara.service';
 import Card from 'react-bootstrap/Card';
 import { useNavigate, useParams } from 'react-router-dom';
-import Paginator from '../../Custom/Paginator';
-import Select from 'react-select';
+import DynamicPaginator from '../../Custom/DynamicPaginator';
+import Spinner from 'react-bootstrap/Spinner';
+import Container from 'react-bootstrap/Container';
 
 export default function App(){
 
     const [field, setField] = React.useState();
-    const [value, setValue] = React.useState(null);
+    const [value, setValue] = React.useState();
     const [yaraRule, setYaraRule] = React.useState(null);
     const [searchedField, setSearchedField] = React.useState();
+
+    const [totalItems, setTotalItems] = React.useState();
+    
     const params = useParams();
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        YaraDataService.search(params.field, params.value, 0, 10).then((response) => {
-            setYaraRule(response.data);
+        YaraDataService.search(params.field, params.value, params.page, 10).then((response) => {
+            setYaraRule(response.data['items']);
+            setTotalItems(response.data['total']);
+            
             setSearchedField(params.field);
+            setField(params.field);
+            setValue(params.value);
         }).catch(function (error) {
             if (error.response)
                 {
@@ -82,10 +90,24 @@ export default function App(){
     }
 
     const handleSubmit = event => {
-        navigate(`/yara/search/${field}/${value}`);
-        console.log(field);
-        console.log(value);
-    
+        navigate(`/yara/search/${field}/${value}/1`);
+    }
+
+    function getNextPage(pageNum) {
+        YaraDataService.search(params.field, params.value, pageNum, 10).then((response) => {
+            navigate(`/yara/search/${field}/${value}/${pageNum}`);
+            setYaraRule(response.data['items']);
+            setTotalItems(response.data['total']);
+
+            setSearchedField(params.field);
+            setField(params.field);
+            setValue(params.value);
+        }).catch(function (error) {
+            if (error.response)
+                {
+                    console.log(error.response);
+                }
+        })
     }
 
     function DisplayYaraRules (currentItems) {
@@ -110,50 +132,22 @@ export default function App(){
             )
         }
 
-        const options = [
-            { value: 'name', label: 'Name' },
-            { value: 'meta', label: 'Meta' },
-            { value: 'strings', label: 'Strings' }
-          ]
-
-    if (!yaraRule) return (
-        <>
-            <h4>Search Database Yara Rules</h4>
-            <Form onSubmit={handleSubmit}>
-                <div className="d-flex justify-content-center mt-3">
-                    <div className="input-group w-50">
-                        <input required className="form-control" type="text" onChange={handleInput}></input>
-                        <select className="form-select" name="field" onChange={handleSelect}>
-                            <option value="">Select Search Term</option>
-                            <option value="name">Name</option>
-                            <option value="meta">Meta</option>
-                            <option value="strings">Strings</option>
-                            <option value="conditions">Conditions</option>
-                            <option value="logic hash">Logic Hash</option>
-                            <option value="author">Author</option>
-                            <option value="date added">Date Added</option>
-                            <option value="compiles">Compiles</option>
-                            <option value="tactics">Tactics</option>
-                            <option value="techniques">Techniques</option>
-                            <option value="subtechniques">Subtechniques</option>
-                        </select>
-                        <Button type="submit">Search</Button>
-                    </div>
-                </div>
-            </Form>
-        </>
-    )
+        if (!yaraRule) return (
+            <Spinner className="mt-5" animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        )
     
     if (yaraRule.length === 0){
         return (
-            <>
+            <Container>
                 <h4>Search Database Yara Rules</h4>
                 <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="input-group w-50">
                         <input required className="form-control" type="text" defaultValue={params.value} onChange={handleInput}></input>
-                        <select className="form-select" name="field" defaultChecked={params.field} onChange={handleSelect}>
-                            <option value="">Select Search Term</option>
+                        <select className="form-select" name="field" defaultValue={searchedField} onChange={handleSelect}>
+                            <option>Select Search Term</option>
                             <option value="name">Name</option>
                             <option value="meta">Meta</option>
                             <option value="strings">Strings</option>
@@ -172,27 +166,40 @@ export default function App(){
             </Form>
             <hr/>
             <h4>No rules found with that search term for that field.</h4>
-            </>
+            </Container>
         )
     }
     
     return (
-        <>
+        <Container>
         <h4>Search Database Yara Rules</h4>
         <Form onSubmit={handleSubmit}>
             <div className="d-flex justify-content-center mt-3">
                 <div className="input-group w-50">
                     <input required className="form-control" type="text" defaultValue={params.value} onChange={handleInput}></input>
-                    <Select
-                    onChange={handleSelect}
-                    options={options}/>
+                    <select className="form-select" name="field" defaultValue={searchedField} onChange={handleSelect}>
+                        <option value="">Select Search Term</option>
+                        <option value="name">Name</option>
+                        <option value="meta">Meta</option>
+                        <option value="strings">Strings</option>
+                        <option value="conditions">Conditions</option>
+                        <option value="logic hash">Logic Hash</option>
+                        <option value="author">Author</option>
+                        <option value="date added">Date Added</option>
+                        <option value="compiles">Compiles</option>
+                        <option value="tactics">Tactics</option>
+                        <option value="techniques">Techniques</option>
+                        <option value="subtechniques">Subtechniques</option>
+                    </select>
                     <Button type="submit">Search</Button>
                 </div>
             </div>
         </Form>
         <hr/>
-        <Paginator itemsPerPage={10} items={yaraRule} Display={DisplayYaraRules} />
-        </>
+        
+        <DynamicPaginator items={yaraRule} Display={DisplayYaraRules} totalItems={totalItems} getNextPage={getNextPage} itemsPerPage={10} pageNum={params.page}/>
+        
+        </Container>
     )
 
 }

@@ -7,6 +7,7 @@ from src.yara.router import router as yara_router
 from src.snort.router import router as snort_router
 from src.sigma.router import router as sigma_router
 import time
+from fastapi_pagination import add_pagination
 
 tags_metadata = [
     {
@@ -31,14 +32,14 @@ tags_metadata = [
     },
 ]
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 app.include_router(user_router)
 app.include_router(mitre_router)
 app.include_router(yara_router)
 app.include_router(snort_router)
 app.include_router(sigma_router)
-
+add_pagination(app)
 
 @app.on_event("startup")
 def startup():

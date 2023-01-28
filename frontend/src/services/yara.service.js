@@ -22,8 +22,8 @@ class YaraDataService {
         return axios.delete(`/yara/${id}`)
     }
 
-    search(field, value, skip, limit) {
-        return axios.get(`/yara/${field}/${value}`, {params: {skip: skip, limit: limit}})
+    search(field, value, page, size) {
+        return axios.get(`/yara/${field}/${value}`, {params: {page: page, size: size}})
     }
 
 }

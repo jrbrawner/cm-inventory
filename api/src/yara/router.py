@@ -5,7 +5,8 @@ from src.dependencies import get_db, get_current_user
 from src.yara import services
 from src.yara.constants import YaraRuleFieldSearch
 from typing import Union
-import time
+from fastapi_pagination import Page, add_pagination, paginate, Params
+import timeit 
 
 router = APIRouter()
 
@@ -17,7 +18,6 @@ def create_yara_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list
 
-
 @router.post("/yara/file", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
 def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
     rules_text = file.file.read().decode()
@@ -27,82 +27,82 @@ def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
     return yara_rule_list
 
 
-@router.get("/yara/{field}/{value}", response_model=list[YaraSchema], tags=["yara"])
+@router.get("/yara/{field}/{value}", response_model=Page[YaraSchema], tags=["yara"])
 def get_yara_rule(
-    field: YaraRuleFieldSearch, value: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)
+    field: YaraRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
     if field is YaraRuleFieldSearch.Name:
-        yara_rules = services.get_yara_rules_name(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_name(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Meta:
-        yara_rules = services.get_yara_rules_meta(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_meta(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Strings:
-        yara_rules = services.get_yara_rules_strings(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_strings(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Conditions:
-        yara_rules = services.get_yara_rules_conditions(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_conditions(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Logic_Hash:
-        yara_rules = services.get_yara_rules_logic_hash(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_logic_hash(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Author:
-        yara_rules = services.get_yara_rules_author(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_author(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Date_Added:
-        yara_rules = services.get_yara_rules_date_added(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_date_added(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Compiles:
-        yara_rules = services.get_yara_rules_compiles(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_compiles(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Tactics:
-        yara_rules = services.get_yara_rules_tactics(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_tactics(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Techniques:
-        yara_rules = services.get_yara_rules_techniques(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_techniques(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
             )
         return yara_rules
     if field is YaraRuleFieldSearch.Subtechniques:
-        yara_rules = services.get_yara_rules_subtechniques(db, value, skip, limit)
+        yara_rules = services.get_yara_rules_subtechniques(db, value)
         if yara_rules is None:
             raise HTTPException(
                 404, "No rules found searching for that field with that value."
@@ -124,7 +124,6 @@ def update_yara_rule(
     if updated_rule is None:
         raise HTTPException(400, updated_rule)
     return updated_rule
-
 
 @router.delete("/yara/{id}", response_model=dict, tags=["yara"])
 def delete_yara_rule(id: int, db: Session = Depends(get_db)) -> dict:

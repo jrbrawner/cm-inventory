@@ -23,7 +23,7 @@ export default function App(){
 
     const handleSubmit = event => {
         event.preventDefault();
-        navigate(`/yara/search/${field}/${value}`);
+        navigate(`/yara/search/${field}/${value}/1`);
     
     }
 

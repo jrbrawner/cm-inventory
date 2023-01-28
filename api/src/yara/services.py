@@ -4,6 +4,7 @@ from src.mitre.models import Tactic, Technique, Subtechnique
 from YaraParser import MultiParser, SingleParser
 import json
 import re
+from fastapi_pagination.ext.sqlalchemy import paginate 
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
@@ -100,82 +101,67 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     return yara_rule_list
 
 
-def get_yara_rules_name(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
+def get_yara_rules_name(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the name field."""
-    rules = db.query(YaraRule).filter(YaraRule.name.like(f"%{value}%")).offset(skip).limit(limit).all()
-    return rules
+    return paginate(db.query(YaraRule).filter(YaraRule.name.like(f"%{value}%")))
+    
 
-
-def get_yara_rules_meta(db: Session, value: str) -> list[YaraRule]:
+def get_yara_rules_meta(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the meta field."""
-    rules = db.query(YaraRule).filter(YaraRule.meta.like(f"%{value}%")).all()
-    return rules
+    return paginate(db.query(YaraRule).filter(YaraRule.meta.like(f"%{value}%")))
 
-
-def get_yara_rules_strings(db: Session, value: str) -> list[YaraRule]:
+def get_yara_rules_strings(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the strings field."""
-    rules = db.query(YaraRule).filter(YaraRule.strings.like(f"%{value}%")).all()
-    return rules
-
-
-def get_yara_rules_conditions(db: Session, value: str) -> list[YaraRule]:
+    return paginate(db.query(YaraRule).filter(YaraRule.strings.like(f"%{value}%")))
+    
+def get_yara_rules_conditions(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the conditions field."""
-    rules = db.query(YaraRule).filter(YaraRule.conditions.like(f"%{value}%")).all()
-    return rules
-
-
-def get_yara_rules_logic_hash(db: Session, value: str) -> list[YaraRule]:
+    return paginate(db.query(YaraRule).filter(YaraRule.conditions.like(f"%{value}%")))
+    
+def get_yara_rules_logic_hash(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the logic_hash field."""
-    rules = db.query(YaraRule).filter(YaraRule.logic_hash.like(f"%{value}%")).all()
-    return rules
+    return paginate(db.query(YaraRule).filter(YaraRule.logic_hash.like(f"%{value}%")))
 
 
-def get_yara_rules_author(db: Session, value: str) -> list[YaraRule]:
+def get_yara_rules_author(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the date added field."""
-    rules = db.query(YaraRule).filter(YaraRule.date_added.like(f"%{value}%")).all()
-    return rules
-
-
-def get_yara_rules_compiles(db: Session, value: str) -> list[YaraRule]:
+    return paginate(db.query(YaraRule).filter(YaraRule.date_added.like(f"%{value}%")))
+    
+def get_yara_rules_compiles(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the compiles field."""
-    rules = db.query(YaraRule).filter(YaraRule.compiles.like(f"%{value}%")).all()
-    return rules
-
-
-def get_yara_rules_tactics(db: Session, value: str) -> list[YaraRule]:
+    return paginate(db.query(YaraRule).filter(YaraRule.compiles.like(f"%{value}%")))
+    
+def get_yara_rules_tactics(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using tactics information."""
     pattern_tactic = "[T][A][0-9][0-9][0-9][0-9]"
     if re.match(pattern_tactic, value.upper()):
-        rules = db.query(YaraRule).filter(YaraRule.tactics.any(id=value.upper())).all()
-        return rules
+        return paginate(db.query(YaraRule).filter(YaraRule.tactics.any(id=value.upper())))
+        
     tactic_id = db.query(Tactic).filter(Tactic.name.like(f"%{value}%")).first().id
     if tactic_id is not None:
-        rules = db.query(YaraRule).filter(YaraRule.tactics.any(id=tactic_id)).all()
-        return rules
+        return paginate(db.query(YaraRule).filter(YaraRule.tactics.any(id=tactic_id)))
+        
 
-def get_yara_rules_techniques(db: Session, value: str) -> list[YaraRule]:
+def get_yara_rules_techniques(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the techniques ID field."""
     pattern_technique = "[T][0-9][0-9][0-9][0-9]"
     if re.match(pattern_technique, value.upper()):
-        rules = db.query(YaraRule).filter(YaraRule.techniques.any(id=value.upper())).all()
-        return rules
+        return paginate(db.query(YaraRule).filter(YaraRule.techniques.any(id=value.upper())))
+        
     technique_id = db.query(Technique).filter(Technique.name.like(f"%{value}%")).first().id
     if technique_id is not None:
-        rules = db.query(YaraRule).filter(YaraRule.techniques.any(id=technique_id)).all()
-        return rules
-
-def get_yara_rules_subtechniques(db: Session, value: str) -> list[YaraRule]:
+        return paginate(db.query(YaraRule).filter(YaraRule.techniques.any(id=technique_id)))
+       
+def get_yara_rules_subtechniques(db: Session, value: str, skip: int, limit: int) -> list[YaraRule]:
     """Search for yara rules using the subtechniques ID field."""
     pattern_subtechnique = "[T][0-9][0-9][0-9][0-9][.][0-9][0-9][0-9]"
     if re.match(pattern_subtechnique, value.upper()):
-        rules = db.query(YaraRule).filter(YaraRule.subtechniques.any(id=value.upper())).all()
-        return rules
+        return paginate(db.query(YaraRule).filter(YaraRule.subtechniques.any(id=value.upper())))
+        
     subtechnique_id = db.query(Subtechnique).filter(Subtechnique.name.like(f"%{value}%")).first().id
     if subtechnique_id is not None:
-        rules = db.query(YaraRule).filter(YaraRule.subtechniques.any(id=subtechnique_id)).all()
-        return rules
-
-
+        return paginate(db.query(YaraRule).filter(YaraRule.subtechniques.any(id=subtechnique_id)))
+        
 def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
     """Update yara rule."""
     db_rule: YaraRule
