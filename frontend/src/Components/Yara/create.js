@@ -58,7 +58,7 @@ export default function App(){
       var resultList = []
       var index = 0;
       list.map((item) => {
-        resultList.push({id: index, result: item.msg, variant: 'success'}) 
+        resultList.push({id: index, result: item.msg, variant: item.variant}) 
         index += 1;
       })
       setResults(resultList);
@@ -131,10 +131,16 @@ export default function App(){
                     />
 
                   </Form.Group>
-
-                  <Button type="submit">Submit</Button>
+                  <div className="d-flex justify-content-center mt-3">
+                    <div className="w-50">
+                        <div className="d-grid gap-2">
+                            <Button className="" variant="primary" type="submit">Submit</Button>
+                        </div>
+                    </div>
+                </div>
                 </Form>
                 </div>
+                <hr/>
                 <div>
                 {results &&
                   <ListGroup className="mt-2">

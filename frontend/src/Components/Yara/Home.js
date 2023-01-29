@@ -36,6 +36,17 @@ export default function App(){
                             </Card.Body>
                         </Card>
                     </Col>
+                    <Col>
+                        <Card className="mb-2" bg="light">
+                            <Card.Body>
+                                <Card.Title>IoC Detection</Card.Title>
+                                <Card.Text>
+                                    Search stored Yara rules for IoC detection.
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => navigate(`/yara/create`)}>View</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
             </Container>
         </>

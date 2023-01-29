@@ -20,7 +20,8 @@ import YaraTacticPage from './Pages/Mitre/Countermeasures/YaraTacticPage';
 import YaraCreatePage from './Pages/Yara/CreateYaraPage';
 import UpdateYaraPage from './Pages/Yara/UpdateYaraPage';
 import SearchResultPage from './Pages/Yara/SearchResultPage';
-import YaraTestPage from './Pages/Yara/YaraTestPage';
+import YaraIoCPage from './Pages/Yara/YaraIoCPage';
+import YaraIoCSearchPage from './Pages/Yara/YaraIoCSearchPage';
 
 export default function App() {
   return (
@@ -46,9 +47,9 @@ export default function App() {
             <Route path="/yara/create" element={<YaraCreatePage/>}/>
             <Route path="/yara/:id" element={<YaraRulePage/>}/>
             <Route path="/yara/update/:id" element={<UpdateYaraPage/>}/>
-            <Route path="/yara/test/:id" element={<YaraTestPage/>}/>
+            <Route path="/yara/test/:id" element={<YaraIoCPage/>}/>
+            <Route path="/yara/ioc/search" element={<YaraIoCSearchPage/>}/>
             
-          
             <Route path="/snort/:field/:value" element={<GetSnortPage/>}/>
 
             

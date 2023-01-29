@@ -69,12 +69,12 @@ export default function App(){
     function formatResults(list) {
     var result = []
     if (list['msg'].length === 0){
-        result.push({id: 0, result: 'IOC not detected.', variant: 'danger'}) 
+        result.push({id: 0, result: 'IoC not detected.', variant: 'danger'}) 
         setResults(result);
     }
     else{
         var index = 0;
-        result.push({id: index, result: 'IOC detected.', variant: 'success'})
+        result.push({id: index, result: 'IoC detected.', variant: 'success'})
         list['msg'].map((item) => {
             index += 1;
             var string = `Data ${item.data} matched at offset ${item.offset} using string: ${item.identifier}.`
@@ -95,7 +95,7 @@ export default function App(){
                     <Form onSubmit={handleSubmit} id="updateRuleForm">
                         <Card className="mt-3 bg-light">
                             <Card.Header>
-                                <h5>Insert IOC under the rule or upload a file to test detection.</h5>
+                                <h5>Insert IoC's under the rule or upload a file to test detection.</h5>
                             </Card.Header>
                             <div className="ms-3 mt-3 text-start">
                                 <h6>Does Rule Compile? {yaraRule.compiles}</h6>
@@ -117,7 +117,7 @@ export default function App(){
                                         required={validated}
                                     />
                                 </div>
-                                <h5 className="mt-3">IOC File</h5>
+                                <h5 className="mt-3">IoC File</h5>
                                 <div className="d-flex justify-content-center">
                                     <Form.Control onChange={handleFile} className="w-50" type="file" required={validated}/>
                                 </div>
