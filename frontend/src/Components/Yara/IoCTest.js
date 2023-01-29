@@ -77,7 +77,7 @@ export default function App(){
         result.push({id: index, result: 'IoC detected.', variant: 'success'})
         list['msg'].map((item) => {
             index += 1;
-            var string = `Data ${item.data} matched at offset ${item.offset} using string: ${item.identifier}.`
+            var string = `Data "${item.data}" matched at offset ${item.offset} using string: ${item.identifier}.`
             result.push({id : index, result: string}); 
         })
         setResults(result);

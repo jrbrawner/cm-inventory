@@ -233,9 +233,8 @@ def test_all_yara_rule_ioc(db: Session, ioc_text: str) -> dict:
                         rule_match.append(matched_string)
                 if result.get('rule') is not None:
                     rule_name = result.get('rule')
-            results.append({'rule_name': rule_name, 'results': rule_match})
+            results.append({'rule_name': rule_name, 'results': rule_match.copy()})
             rule_match.clear()
-    print(results)
     return {'msg': results, 'rules_tested': len(rules)}
 
 def get_yara_rules_name(db: Session, value: str) -> list[YaraRule]:

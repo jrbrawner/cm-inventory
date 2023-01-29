@@ -50,21 +50,26 @@ export default function App(){
     }
 
     function formatResults(list) {
-      console.log(list);
       var resultList = []
       var index = 0;
       resultList.push({id: index, result: list['rules_tested'] + ' Yara rules tested.', variant: "warning"})
+      index += 1;
       list['msg'].map((item) => {
-        index += 1;
         if (item['rule_name'] !== undefined){
+            console.log(item['rule_name']);
+            index += 1;
             resultList.push({id: index, result: item['rule_name'], variant: "success"})
-            console.log(item['results']);
             item['results'].map((match) => {
-              resultList.push({id:index, result: match, variant: "success"})
+              index += 1;
+              var string = `Data "${match.data}" matched at offset ${match.offset} using string: ${match.identifier}.`
+              resultList.push({id:index, result: string, variant: "secondary"})
             })
         }
-        
       })
+      if (resultList.length === 1){
+        index += 1;
+        resultList.push({id: index, result: 'No stored yara rules detected the submitted IoCs.', variant: "danger"})
+      }
       setResults(resultList);
     }
 
