@@ -30,6 +30,10 @@ class YaraDataService {
         return axios.post(`/yara/test/${id}`, ioc_text)
     }
 
+    testAllIOC(ioc_text) {
+        return axios.post(`/yara/ioc`, ioc_text)
+    }
+
 }
 
 export default new YaraDataService();

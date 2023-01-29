@@ -140,3 +140,12 @@ def test_yara_rule_ioc(id: int, ioc_text: str | None = Form(default=None), file:
     if result is None:
         raise HTTPException(400, 'Error in testing rule.')
     return result
+
+@router.post("/yara/ioc", response_model=dict, tags=['yara'])
+def test_all_yara_rule_ioc(ioc_text: str | None = Form(default=None), file: UploadFile | None = None, db: Session = Depends(get_db)):
+    if file is not None:
+        ioc_text = file.file.read().decode()
+    result = services.test_all_yara_rule_ioc(db, ioc_text)
+    if result is None:
+        raise HTTPException(400, 'Error in testing all rules.')
+    return result

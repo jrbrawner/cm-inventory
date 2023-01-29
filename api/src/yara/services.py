@@ -216,6 +216,28 @@ def test_yara_rule_ioc(db: Session, id: int, ioc_text: str) -> dict:
                     
     return {'msg' : results}
 
+def test_all_yara_rule_ioc(db: Session, ioc_text: str) -> dict:
+    rules = db.query(YaraRule).filter(YaraRule.compiles == "True").all()
+    rule_match = []
+    results = []
+    rule_name = ""
+    rule_match_list = []
+    for rule in rules:
+        yara_rule = yara.compile(source=rule.raw_text)
+        result = yara_rule.match_data(ioc_text)
+        matched_results = result.get('main')
+        if matched_results is not None:
+            for result in matched_results:
+                if result.get('strings') is not None:
+                    for matched_string in result.get('strings'):
+                        rule_match.append(matched_string)
+                if result.get('rule') is not None:
+                    rule_name = result.get('rule')
+            results.append({'rule_name': rule_name, 'results': rule_match})
+            rule_match.clear()
+    print(results)
+    return {'msg': results, 'rules_tested': len(rules)}
+
 def get_yara_rules_name(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the name field."""
     return paginate(db.query(YaraRule).filter(YaraRule.name.like(f"%{value}%")))

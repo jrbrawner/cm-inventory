@@ -43,7 +43,7 @@ export default function App(){
                                 <Card.Text>
                                     Search stored Yara rules for IoC detection.
                                 </Card.Text>
-                                <Button variant="primary" onClick={() => navigate(`/yara/create`)}>View</Button>
+                                <Button variant="primary" onClick={() => navigate(`/yara/ioc/search`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
