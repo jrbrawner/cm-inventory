@@ -36,7 +36,7 @@ export default function App(){
         const formData = new FormData();
         formData.append("file", file);
         YaraDataService.createFile(formData).then(function (response) {
-            formatResults(response.data);
+          formatResults(response.data);
         }).catch(function (error) {
           formatResults(error.data);
         })
@@ -46,20 +46,22 @@ export default function App(){
         const formData = new FormData();
         formData.append("rules_text", ruleText);
         YaraDataService.createText(formData).then(function (response) {
-          setResults(response.data);
+          formatResults(response.data);
         }).catch(function (error) {
-          setResults(error.data);
+          alert(error);
         })
       }
     }
 
     function formatResults(list) {
-      var resultString = ""
+      console.log(list);
+      var resultList = []
+      var index = 0;
       list.map((item) => {
-        resultString += item.msg;
-        resultString += "\n"; 
+        resultList.push({id: index, result: item.msg, variant: 'success'}) 
+        index += 1;
       })
-      setResults(resultString);
+      setResults(resultList);
     }
 
     function handleTab(e) {
@@ -71,7 +73,7 @@ export default function App(){
     }
 
     return (
-            <Container>
+            <Container className="mb-5">
               <div className="input-group d-flex justify-content-center">
                 <h5 className="mt-3">Upload a file of Yara rules or enter Yara rules in the text box below.</h5>
                 <OverlayTrigger
@@ -138,7 +140,7 @@ export default function App(){
                   <ListGroup className="mt-2">
                     {results.map((result) => {
                       return (
-                        <ListGroup.Item>{result.msg}</ListGroup.Item>
+                        <ListGroup.Item key={result.id} variant={result.variant}>{result.result}</ListGroup.Item>
                       )
                     })}
                   </ListGroup>

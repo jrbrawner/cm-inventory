@@ -26,6 +26,10 @@ class YaraDataService {
         return axios.get(`/yara/${field}/${value}`, {params: {page: page, size: size}})
     }
 
+    test(id, ioc_text) {
+        return axios.post(`/yara/test/${id}`, ioc_text)
+    }
+
 }
 
 export default new YaraDataService();

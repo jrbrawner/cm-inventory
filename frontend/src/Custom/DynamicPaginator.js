@@ -5,7 +5,7 @@ import React, {
   } from 'react';
 
 
-export default function TestingPaginator({ items, Display, totalItems, getNextPage, itemsPerPage, pageNum}) {
+export default function DynamicPaginator({ items, Display, totalItems, getNextPage, itemsPerPage, pageNum}) {
     // We start with an empty list of items.
     const [currentItems, setCurrentItems] = useState(items);
     const [pageCount, setPageCount] = useState();

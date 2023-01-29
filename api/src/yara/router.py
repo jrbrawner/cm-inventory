@@ -6,7 +6,7 @@ from src.yara import services
 from src.yara.constants import YaraRuleFieldSearch
 from typing import Union
 from fastapi_pagination import Page, add_pagination, paginate, Params
-import timeit 
+from typing import Optional
 
 router = APIRouter()
 
@@ -131,3 +131,12 @@ def delete_yara_rule(id: int, db: Session = Depends(get_db)) -> dict:
     if msg is None:
         raise HTTPException(400, "Error")
     return msg
+
+@router.post("/yara/test/{id}", response_model=dict, tags=["yara"])
+def test_yara_rule(id: int, ioc_text: str | None = Form(default=None), file: UploadFile | None = None, db: Session = Depends(get_db)):
+    if file is not None:
+        ioc_text = file.file.read().decode()
+    result = services.test_yara_rule(db, id, ioc_text)
+    if result is None:
+        raise HTTPException(400, 'Error in testing rule.')
+    return result

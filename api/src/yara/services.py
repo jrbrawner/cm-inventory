@@ -4,7 +4,9 @@ from src.mitre.models import Tactic, Technique, Subtechnique
 from YaraParser import MultiParser, SingleParser
 import json
 import re
-from fastapi_pagination.ext.sqlalchemy import paginate 
+import yara
+from fastapi_pagination.ext.sqlalchemy import paginate
+
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
@@ -55,13 +57,14 @@ def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
                 )
 
             if tactic is not None:
+                
                 tactics = tactic.split(",")
                 tactics = [x.strip() for x in tactics]
                 tactic_db_list = [
                     db.query(Tactic).filter(Tactic.id == x).first() for x in tactics
                 ]
                 [yara_rule.tactics.append(x) for x in tactic_db_list]
-
+                
             if technique is not None:
                 techniques = technique.split(",")
                 techniques = [x.strip() for x in techniques]
@@ -258,3 +261,20 @@ def get_yara_rule(db: Session, id: int) -> YaraRule:
     if rule is None:
         return None
     return rule
+
+def test_yara_rule(db: Session, id: int, ioc_text: str) -> dict:
+    """Test yara rule on detecting an IOC, return results if IOC is detected."""
+    rule = db.query(YaraRule).get(id)
+    results = []
+    if rule is None:
+        return None
+    yara_rule = yara.compile(source=rule.raw_text)
+    result = yara_rule.match_data(ioc_text)
+    matched_results = result.get('main')
+    if matched_results is not None:
+        for result in matched_results:
+            if result.get('strings') is not None:
+                for matched_string in result.get('strings'):
+                    results.append(matched_string)
+                    
+    return {'msg' : results}
