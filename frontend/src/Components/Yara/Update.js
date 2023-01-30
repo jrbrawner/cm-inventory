@@ -10,6 +10,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import EditFormDialogModal from '../../Custom/EditFormDialogModal';
+import CommonUtils from '../../lib/utils';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -87,7 +88,7 @@ export default function App() {
                                        defaultValue={ruleText}/>
                                     </div>
                             </Card.Body>
-                            <Card.Footer className="text-muted">Date Added {yaraRule.date_added}</Card.Footer>
+                            <Card.Footer className="text-muted">Date Added {CommonUtils.formatTime(yaraRule.date_added)}</Card.Footer>
                         </Card>
                         <div className="mt-2 d-grid gap-2">
                             <EditFormDialogModal buttonName={"Submit"} modalTitle={"Update Yara Rule"}

@@ -6,7 +6,9 @@ import json
 import re
 import yara
 from fastapi_pagination.ext.sqlalchemy import paginate
-
+from datetime import datetime
+from yara_scanner import YaraScanner
+import tempfile
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules."""
@@ -130,6 +132,7 @@ def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
     db_rule.author = parser.get_meta_field("author")
     db_rule.description = parser.get_meta_field("description")
     db_rule.compiles = rule["compiles"]
+    db_rule.date_last_modified = datetime.utcnow
 
     if rule["rule_meta_kvp"] is None:
                 tactic = None
@@ -217,11 +220,11 @@ def test_yara_rule_ioc(db: Session, id: int, ioc_text: str) -> dict:
     return {'msg' : results}
 
 def test_all_yara_rule_ioc(db: Session, ioc_text: str) -> dict:
+    """Check every Yara rule that compiles successfully to see if it matches submitted ioc_text."""
     rules = db.query(YaraRule).filter(YaraRule.compiles == "True").all()
     rule_match = []
     results = []
     rule_name = ""
-    rule_match_list = []
     for rule in rules:
         yara_rule = yara.compile(source=rule.raw_text)
         result = yara_rule.match_data(ioc_text)
@@ -298,5 +301,3 @@ def get_yara_rules_subtechniques(db: Session, value: str) -> list[YaraRule]:
     if subtechnique_id is not None:
         return paginate(db.query(YaraRule).filter(YaraRule.subtechniques.any(id=subtechnique_id)))
         
-
-

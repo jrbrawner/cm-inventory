@@ -14,6 +14,7 @@ class YaraSchema(BaseModel):
     author: str | None = None
     description: str | None = None
     date_added: datetime
+    date_last_modified : datetime
     compiles: str
     tactics: list[TacticBase] | None = None
     techniques: list[TechniqueBase] | None = None

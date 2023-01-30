@@ -39,6 +39,7 @@ class YaraRule(Base):
     author: Mapped[str] = Column(String)
     description: Mapped[str] = Column(String)
     date_added = Column(DateTime, default=datetime.utcnow)
+    date_last_modified = Column(DateTime, default=datetime.utcnow)
     compiles: Mapped[bool] = Column(String)
     tactics = relationship("Tactic", secondary=tactic_yara, back_populates="yara_rules")
     techniques = relationship(

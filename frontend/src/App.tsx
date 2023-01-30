@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from './Components/Header';
-import logo from './logo.svg';
 import Container from 'react-bootstrap/Container';
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';

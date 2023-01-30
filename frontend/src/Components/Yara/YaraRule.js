@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 import DeleteDialogModal from '../../Custom/DeleteDialogModal';
+import CommonUtils from '../../lib/utils';
 
 export default function App() {
     const [yaraRule, setYaraRule] = React.useState();
@@ -101,7 +102,7 @@ export default function App() {
                             </div>
                             
                         </Card.Body>
-                        <Card.Footer className="text-muted">Date Added {yaraRule.date_added}</Card.Footer>
+                        <Card.Footer className="text-muted">Date Added {CommonUtils.formatTime(yaraRule.date_added)}</Card.Footer>
                     </Card>
         </Container>
     )

@@ -26,7 +26,6 @@ def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list
 
-
 @router.get("/yara/{field}/{value}", response_model=Page[YaraSchema], tags=["yara"])
 def get_yara_rule(
     field: YaraRuleFieldSearch, value: str, db: Session = Depends(get_db)

@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DynamicPaginator from '../../Custom/DynamicPaginator';
 import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
+import CommonUtils from '../../lib/utils';
 
 export default function App(){
 
@@ -47,28 +48,28 @@ export default function App(){
 
     function highlight(singleRule){
         if (searchedField === "name"){
-            return singleRule.name;
+            return CommonUtils.getHighlightedText(singleRule.name, value);
         }
         else if (searchedField === "meta"){
-            return singleRule.meta;
+            return CommonUtils.getHighlightedText(singleRule.meta, value);
         }
         else if (searchedField === "strings"){
-            return singleRule.strings;
+            return CommonUtils.getHighlightedText(singleRule.strings, value);
         }
         else if (searchedField === "conditions"){
-            return singleRule.conditions;
+            return CommonUtils.getHighlightedText(singleRule.conditions, value);
         }
         else if (searchedField === "logic hash"){
-            return singleRule.logic_hash;
+            return CommonUtils.getHighlightedText(singleRule.logic_hash, value);
         }
         else if (searchedField === "author"){
-            return singleRule.author;
+            return CommonUtils.getHighlightedText(singleRule.author, value);
         }
         else if (searchedField === "date added"){
-            return singleRule.date_added;
+            return CommonUtils.getHighlightedText(singleRule.date_added, value);
         }
         else if (searchedField === "compiles"){
-            return singleRule.compiles;
+            return CommonUtils.getHighlightedText(singleRule.compiles, value);
         }
         else if (searchedField === "tactics"){
             return singleRule.tactics.map((tactic) => {
@@ -124,7 +125,7 @@ export default function App(){
                             </Card.Text>
                             <Button variant="outline-primary" onClick={() => navigate(`/yara/${rule.id}`)}>Expand Rule</Button>
                         </Card.Body>
-                        <Card.Footer className="text-muted">Date Added {rule.date_added}</Card.Footer>
+                        <Card.Footer className="text-muted">Date Added {CommonUtils.formatTime(rule.date_added)}</Card.Footer>
                     </Card>
                 </div>
                 )
@@ -198,7 +199,6 @@ export default function App(){
         <hr/>
         
         <DynamicPaginator items={yaraRule} Display={DisplayYaraRules} totalItems={totalItems} getNextPage={getNextPage} itemsPerPage={10} pageNum={params.page}/>
-        
         </Container>
     )
 

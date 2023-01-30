@@ -56,9 +56,8 @@ export default function App(){
       index += 1;
       list['msg'].map((item) => {
         if (item['rule_name'] !== undefined){
-            console.log(item['rule_name']);
             index += 1;
-            resultList.push({id: index, result: item['rule_name'], variant: "success"})
+            resultList.push({id: index, result: `Match found with Yara rule ${item['rule_name']}.`, variant: "success"})
             item['results'].map((match) => {
               index += 1;
               var string = `Data "${match.data}" matched at offset ${match.offset} using string: ${match.identifier}.`
