@@ -56,11 +56,13 @@ export default function App(){
       index += 1;
       list['msg'].map((item) => {
         if (item['rule_name'] !== undefined){
+            console.log(item);
             index += 1;
             resultList.push({id: index, result: `Match found with Yara rule ${item['rule_name']}.`, variant: "success"})
             item['results'].map((match) => {
               index += 1;
-              var string = `Data "${match.data}" matched at offset ${match.offset} using string: ${match.identifier}.`
+              console.log(match);
+              var string = `Data "${match[2]}" matched at offset ${match[0]} using string: ${match[1]}.`
               resultList.push({id:index, result: string, variant: "secondary"})
             })
         }

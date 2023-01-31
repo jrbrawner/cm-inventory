@@ -7,8 +7,6 @@ import re
 import yara
 from fastapi_pagination.ext.sqlalchemy import paginate
 from datetime import datetime
-from yara_scanner import YaraScanner
-import tempfile
 
 def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
     """Method for parsing and creating yara rules.
@@ -214,13 +212,11 @@ def test_yara_rule_ioc(db: Session, id: int, ioc_text: str) -> dict:
     if rule is None:
         return None
     yara_rule = yara.compile(source=rule.raw_text)
-    result = yara_rule.match_data(ioc_text)
-    matched_results = result.get('main')
-    if matched_results is not None:
-        for result in matched_results:
-            if result.get('strings') is not None:
-                for matched_string in result.get('strings'):
-                    results.append(matched_string)
+    result = yara_rule.match(data=ioc_text)
+    if result is not None:
+        for i in result:
+            for string in i.strings:
+                results.append(string)
                     
     return {'msg' : results}
 
@@ -232,16 +228,12 @@ def test_all_yara_rule_ioc(db: Session, ioc_text: str) -> dict:
     rule_name = ""
     for rule in rules:
         yara_rule = yara.compile(source=rule.raw_text)
-        result = yara_rule.match_data(ioc_text)
-        matched_results = result.get('main')
-        if matched_results is not None:
-            for result in matched_results:
-                if result.get('strings') is not None:
-                    for matched_string in result.get('strings'):
-                        rule_match.append(matched_string)
-                if result.get('rule') is not None:
-                    rule_name = result.get('rule')
-            results.append({'rule_name': rule_name, 'results': rule_match.copy()})
+        result = yara_rule.match(data=ioc_text)
+        if len(result) is not 0:
+            for i in result:
+                for string in i.strings:
+                    rule_match.append(string)
+            results.append({'rule_name': [x.rule for x in result], 'results': rule_match.copy()})
             rule_match.clear()
     return {'msg': results, 'rules_tested': len(rules)}
 
