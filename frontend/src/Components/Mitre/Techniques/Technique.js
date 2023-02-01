@@ -8,21 +8,23 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import gfm from 'remark-gfm';
+
 
 export default function App() {
     const [technique, setTechnique] = React.useState();
+    const [markdown, SetMarkdown] = React.useState();
+    
 
     const params = useParams();
     const navigate = useNavigate();
     const citationList = []
 
-    var idk = "Here is a simple footnote[^1]. With some additional text after it.\n [^1]: My reference."
-
     React.useEffect(() => {
         MitreDataService.getTechnique(params.id).then( function (response) {
             setTechnique(response.data);
-
+            formatStringMarkdown(response.data['description'], response.data['references']);
+        
         }).catch(function (error) {
             if (error.response)
                 {
@@ -31,8 +33,7 @@ export default function App() {
         })
     }, []);
 
-    function formatStringMarkdown(string) {
-        
+    const formatStringMarkdown = (string, references) => {
         let index = 1;
         string = string.replaceAll("<code>", "```");
         string = string.replaceAll("</code>", "```");
@@ -50,10 +51,19 @@ export default function App() {
             }
             temp = "";
         }
+        //Getting rid of citations, may change later
         citationList.forEach(element => {
-            string = string.replaceAll(element.citation, `[^${element.id}]`);
+            string = string.replaceAll(element.citation, "");
         });
-    
+        index = 1;
+        for (let i = 0; i < references.length; i++){
+            //references[i].url = `<a href="${references[i].url}">${references[i].url}</a>`
+            references[i].id = index;
+            index += 1;
+        }
+        
+
+        SetMarkdown(string);
         return string;
     }
 
@@ -63,66 +73,56 @@ export default function App() {
         </Spinner>
     )
     
+    
     return (
         <Container>
-            <Card className="text-center mt-3">
-                <Card.Header>
-                    Technique Name
-                    <h5>{technique.id} {technique.name}</h5>
-                </Card.Header>
-                <Card.Body>
-                    <div className="input-group text-start">
-                        <ReactMarkdown children={formatStringMarkdown(technique.description)} remarkPlugins={[remarkGfm]}/>
-                    </div>
-                    <hr/>
-                    <h5>Associated Subtechniques</h5>
-                    <h6>{technique.subtechniques.length} Subtechniques</h6>
-                    <Row md={3}>
-                        {technique.subtechniques.map((subtechnique) => {
-                            return (
-                                <Col key={subtechnique.id}>
-                                    <Card className="mb-2" bg="light">
-                                        <Card.Header>{subtechnique.id}</Card.Header>
-                                        <Card.Body>
-                                            <Card.Title>{subtechnique.name}</Card.Title>
-                                            <Card.Text>
-                                            </Card.Text>
-                                            <Button variant="primary" onClick={() => navigate(`/mitre/subtechnique/${subtechnique.id}`)}>View</Button>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-                            )
-                        })}
-                    </Row>
-                </Card.Body>
-                <Card.Footer className="text-muted">{technique.reference}</Card.Footer>
-            </Card>
-            <ReactMarkdown children={idk} remarkPlugins={[remarkGfm]}/>
-            
-            {citationList.map((element) => {
-                return (
-                    <>
-                        <div>
-                            <ReactMarkdown children={`[^${element.id}]:` My reference} remarkPlugins={[remarkGfm]} />
+        <Card className="text-center mt-3">
+            <Card.Header>
+                Technique Name
+                <h5>{technique.id} {technique.name}</h5>
+            </Card.Header>
+            <Card.Body>
+                
+                <div className="input-group text-start">
+                    <ReactMarkdown children={markdown} remarkPlugins={[gfm]} className="markdown" disallowedElements={["h2"]}/>
+                </div>
+                
+                <hr/>
+                <h5>Associated Subtechniques</h5>
+                <h6>{technique.subtechniques.length} Subtechniques</h6>
+                <Row md={3}>
+                    {technique.subtechniques.map((subtechnique) => {
+                        return (
+                            <Col key={subtechnique.id}>
+                                <Card className="mb-2" bg="light">
+                                    <Card.Header>{subtechnique.id}</Card.Header>
+                                    <Card.Body>
+                                        <Card.Title>{subtechnique.name}</Card.Title>
+                                        <Card.Text>
+                                        </Card.Text>
+                                        <Button variant="primary" onClick={() => navigate(`/mitre/subtechnique/${subtechnique.id}`)}>View</Button>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        )
+                    })}
+                </Row>
+            </Card.Body>
+            <Card.Footer className="text-muted">
+                <h5>References</h5>
+                {technique.references.map((reference) => {
+                    return (
                         
+                        <div className="text-start">
+                            <p key={reference.id}>{reference.id}: <a href={reference.url}>{reference.url}</a></p>
                         </div>
-                    </>
-                )
-            })}
-
-            {/*}
-            {technique.references.map((reference) =>
-            {
-                return (
-                    <>
-                    <div>
-                        {reference.url}
-                    </div>
-                    </>
-                )
-            })}
-        {*/}
-        </Container>
-    )
-
+                    )
+                    
+                })}
+            </Card.Footer>
+        </Card>
+        
+    </Container>
+)
+    
 }
