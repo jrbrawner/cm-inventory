@@ -8,16 +8,21 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function App() {
     const [technique, setTechnique] = React.useState();
 
     const params = useParams();
     const navigate = useNavigate();
+    const citationList = []
+
+    var idk = "Here is a simple footnote[^1]. With some additional text after it.\n [^1]: My reference."
 
     React.useEffect(() => {
         MitreDataService.getTechnique(params.id).then( function (response) {
             setTechnique(response.data);
+
         }).catch(function (error) {
             if (error.response)
                 {
@@ -25,6 +30,32 @@ export default function App() {
                 }
         })
     }, []);
+
+    function formatStringMarkdown(string) {
+        
+        let index = 1;
+        string = string.replaceAll("<code>", "```");
+        string = string.replaceAll("</code>", "```");
+
+        var temp = ""
+        for (let i = 0; i < string.length; i++) {
+            if (string[i] === '('){
+                while (string[i] !== ')'){
+                    temp += string[i];
+                    i++;
+                }
+                temp += ")";
+                citationList.push({id: index, citation:temp});
+                index += 1;
+            }
+            temp = "";
+        }
+        citationList.forEach(element => {
+            string = string.replaceAll(element.citation, `[^${element.id}]`);
+        });
+    
+        return string;
+    }
 
     if (!technique) return (
         <Spinner className="mt-5" animation="border" role="status">
@@ -41,7 +72,7 @@ export default function App() {
                 </Card.Header>
                 <Card.Body>
                     <div className="input-group text-start">
-                        <ReactMarkdown>{technique.description}</ReactMarkdown>
+                        <ReactMarkdown children={formatStringMarkdown(technique.description)} remarkPlugins={[remarkGfm]}/>
                     </div>
                     <hr/>
                     <h5>Associated Subtechniques</h5>
@@ -66,14 +97,31 @@ export default function App() {
                 </Card.Body>
                 <Card.Footer className="text-muted">{technique.reference}</Card.Footer>
             </Card>
+            <ReactMarkdown children={idk} remarkPlugins={[remarkGfm]}/>
+            
+            {citationList.map((element) => {
+                return (
+                    <>
+                        <div>
+                            <ReactMarkdown children={`[^${element.id}]:` My reference} remarkPlugins={[remarkGfm]} />
+                        
+                        </div>
+                    </>
+                )
+            })}
+
+            {/*}
             {technique.references.map((reference) =>
             {
                 return (
                     <>
-                    {reference.url}
+                    <div>
+                        {reference.url}
+                    </div>
                     </>
                 )
             })}
+        {*/}
         </Container>
     )
 
