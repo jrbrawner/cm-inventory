@@ -14,10 +14,12 @@ export default function App() {
     const params = useParams();
     const navigate = useNavigate();
 
+    const [ruleString, setRuleString] = React.useState();
 
     React.useEffect(() => {
         SnortDataService.get(params.id).then((response) => {
             setSnortRule(response.data);
+            formatRule(response.data);
         }).catch(function (error) {
             if (error.response)
                 {
@@ -44,6 +46,18 @@ export default function App() {
         }).catch(function (error) {
             alert(error);
         })
+    }
+
+    const formatRule = (rule) => {
+        let ruleString = "";
+        ruleString += rule.action + " ";
+        ruleString += rule.protocol + " ";
+        ruleString += rule.src_ip + " ";
+        ruleString += rule.src_port + " ";
+        ruleString += rule.direction + " ";
+        ruleString += rule.dst_ip + " ";
+        ruleString += rule.dest_port + " ";
+        setRuleString(ruleString);
     }
 
     if (!snortRule) return (
@@ -75,10 +89,10 @@ export default function App() {
                                 <p>Rule Text:</p>
                             </div>
                             <div>
-                                <TextareaAutosize
-                                disabled
-                                className="container text-dark"
-                                value="work in progress"/>
+                            <TextareaAutosize
+                            disabled
+                            className="container text-dark"
+                            value={ruleString}/>
                             <hr/>
                             </div>
                         
