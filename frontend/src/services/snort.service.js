@@ -2,18 +2,17 @@ import axios from 'axios';
 
 class SnortDataService {
 
-    create(data) {
-        return axios.post(`/snort`, JSON.stringify(data))
+    search(field, value, page, size) {
+        return axios.get(`/snort/${field}/${value}`, {params: {page: page, size: size}})
     }
 
-    get(field, value) {
-        return axios.get(`/snort/${field}/${value}`)
+    get(id) {
+        return axios.get(`/snort/${id}`)
     }
 
-    test(id) {
-        return axios.get(`/snort/test/${id}/rebuild`)
+    delete(id) {
+        return axios.delete(`/snort/${id}`)
     }
-
 }
 
 export default new SnortDataService();

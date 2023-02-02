@@ -3,7 +3,8 @@ from src.snort.models import SnortRule
 from SRParser import SnortParser
 from src.mitre.models import Tactic, Technique, Subtechnique
 import json
-
+from fastapi_pagination import paginate
+import re
 
 def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
@@ -60,57 +61,66 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     return snort_rule_list
 
 
-def get_snort_rule_id(db: Session, value: int) -> SnortRule:
-    rules = []
-    rule = db.query(SnortRule).get(value)
-    rules.append(rule)
-    return rules
-
+def get_snort_rule_id(db: Session, id: int) -> SnortRule:
+    return db.query(SnortRule).get(id)
 
 def get_snort_rule_action(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.action.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.action.like(f"%{value}%")).all())
+    
 def get_snort_rule_protocol(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.protocol.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.protocol.like(f"%{value}%")).all())
+    
 def get_snort_rule_src_ip(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.src_ip.like(f"%{value}%")).all()
-    return rules
-
+    return paginate(db.query(SnortRule).filter(SnortRule.src_ip.like(f"%{value}%")).all())
+    
 
 def get_snort_rule_src_port(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.src_port.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.src_port.like(f"%{value}%")).all())
+    
 def get_snort_rule_direction(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.direction.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.direction.like(f"%{value}%")).all())
+    
 def get_snort_rule_dst_ip(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.dst_ip.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.dst_ip.like(f"%{value}%")).all())
+    
 def get_snort_rule_dst_port(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.dst_port.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.dst_port.like(f"%{value}%")).all())
+    
 def get_snort_rule_date_added(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.date_added.like(f"%{value}%")).all()
-    return rules
-
-
+    return paginate(db.query(SnortRule).filter(SnortRule.date_added.like(f"%{value}%")).all())
+    
 def get_snort_rule_body_options(db: Session, value: str) -> list[SnortRule]:
-    rules = db.query(SnortRule).filter(SnortRule.body_options.like(f"%{value}%")).all()
-    return rules
+    return paginate(db.query(SnortRule).filter(SnortRule.body_options.like(f"%{value}%")).all())
 
+def get_snort_rules_tactics(db: Session, value: str) -> list[SnortRule]:
+    """Search for yara rules using tactics information."""
+    pattern_tactic = "[T][A][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_tactic, value.upper()):
+        return paginate(db.query(SnortRule).filter(SnortRule.tactics.any(id=value.upper())))
+        
+    tactic_id = db.query(Tactic).filter(Tactic.name.like(f"%{value}%")).first().id
+    if tactic_id is not None:
+        return paginate(db.query(SnortRule).filter(SnortRule.tactics.any(id=tactic_id)))
+    
+def get_snort_rules_techniques(db: Session, value: str) -> list[SnortRule]:
+    """Search for yara rules using the techniques ID field."""
+    pattern_technique = "[T][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_technique, value.upper()):
+        return paginate(db.query(SnortRule).filter(SnortRule.techniques.any(id=value.upper())))
+        
+    technique_id = db.query(Technique).filter(Technique.name.like(f"%{value}%")).first().id
+    if technique_id is not None:
+        return paginate(db.query(SnortRule).filter(SnortRule.techniques.any(id=technique_id)))
+    
+def get_snort_rules_subtechniques(db: Session, value: str) -> list[SnortRule]:
+    """Search for yara rules using the subtechniques ID field."""
+    pattern_subtechnique = "[T][0-9][0-9][0-9][0-9][.][0-9][0-9][0-9]"
+    if re.match(pattern_subtechnique, value.upper()):
+        return paginate(db.query(SnortRule).filter(SnortRule.subtechniques.any(id=value.upper())))
+        
+    subtechnique_id = db.query(Subtechnique).filter(Subtechnique.name.like(f"%{value}%")).first().id
+    if subtechnique_id is not None:
+        return paginate(db.query(SnortRule).filter(SnortRule.subtechniques.any(id=subtechnique_id)))
 
 def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db_rule = db.query(SnortRule).get(id)
@@ -126,8 +136,8 @@ def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db.commit()
     return db_rule
 
-
 def delete_snort_rule(db: Session, id: int) -> dict:
+    """Delete a single snort rule."""
     rule = db.query(SnortRule).get(id)
     if rule is None:
         return {"msg": "No rule found with that id."}
@@ -136,8 +146,8 @@ def delete_snort_rule(db: Session, id: int) -> dict:
     db.commit()
     return {"msg": f"Snort rule with id {rule_id} deleted."}
 
-
 def get_rule_str(db: Session, id: int) -> str:
+    """Rebuild a snort rules raw text form."""
     rule = db.query(SnortRule).get(id)
     parser = SnortParser()
     rebuilt_options = json.loads(rule.body_options)

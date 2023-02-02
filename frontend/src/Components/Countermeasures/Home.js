@@ -33,7 +33,7 @@ export default function App() {
                                 <Card.Text>
                                     Create and manage Snort rules.
                                 </Card.Text>
-                                <Button variant="primary">View</Button>
+                                <Button variant="primary" onClick={() => navigate(`/snort/home`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -55,7 +55,7 @@ export default function App() {
                                 <Card.Text>
                                     Explore Mitre data.
                                 </Card.Text>
-                                <Button variant="primary">View</Button>
+                                <Button variant="primary" onClick={() => navigate(`/mitre`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>

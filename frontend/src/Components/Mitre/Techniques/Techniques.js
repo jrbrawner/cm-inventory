@@ -27,7 +27,7 @@ export default function App() {
     function formatTactics(tactics) {
         var tacticString = [];
         tactics.map((tactic) => {
-            tacticString.push(<a href={`/mitre/tactic/${tactic.id}`}>{tactic.name}</a>);
+            tacticString.push(<a key={tactic.id} href={`/mitre/tactic/${tactic.id}`}>{tactic.name}</a>);
             tacticString.push(" ")
         })
         return (<>{tacticString}</>);
@@ -40,32 +40,32 @@ export default function App() {
     )
 
     return (
-        <>
-            <Container className="mt-2">
-                <h5>MITRE ATT&CK Enterprise Techniques</h5>
-                <h6>{techniques.length} Techniques</h6>
-                <hr/>
-                <Row md={3}>
-                    {techniques.map((technique) => {
-                        return (
-                            <Col key={technique.id}>
-                                <Card className="mb-2" bg="light">
-                                    <Card.Header>{technique.id}</Card.Header>
-                                    <Card.Body>
-                                        <Card.Title>{technique.name}</Card.Title>
-                                        <Card.Text>
-                                        </Card.Text>
-                                        <Button variant="primary" onClick={() => navigate(`/mitre/technique/${technique.id}`)}>View</Button>
-                                    </Card.Body>
-                                    <Card.Footer className="text-muted">
-                                        {formatTactics(technique.tactics)}
-                                    </Card.Footer>
-                                </Card>
-                            </Col>
-                        )
-                    })}
-                </Row>
-            </Container>
-        </>
+        
+        <Container className="mt-2">
+            <h5>MITRE ATT&CK Enterprise Techniques</h5>
+            <h6>{techniques.length} Techniques</h6>
+            <hr/>
+            <Row md={3}>
+                {techniques.map((technique) => {
+                    return (
+                        <Col key={technique.id}>
+                            <Card className="mb-2" bg="light">
+                                <Card.Header>{technique.id}</Card.Header>
+                                <Card.Body>
+                                    <Card.Title>{technique.name}</Card.Title>
+                                    <Card.Text>
+                                    </Card.Text>
+                                    <Button variant="primary" onClick={() => navigate(`/mitre/technique/${technique.id}`)}>View</Button>
+                                </Card.Body>
+                                <Card.Footer className="text-muted">
+                                    {formatTactics(technique.tactics)}
+                                </Card.Footer>
+                            </Card>
+                        </Col>
+                    )
+                })}
+            </Row>
+        </Container>
+        
     )
 }

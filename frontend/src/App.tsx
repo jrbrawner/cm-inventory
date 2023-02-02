@@ -3,7 +3,6 @@ import Header from './Components/Header';
 import Container from 'react-bootstrap/Container';
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import GetSnortPage from './Pages/Snort/GetSnort';
 import HomePage from './Pages/Countermeasures/HomePage';
 import YaraHomePage from './Pages/Yara/YaraHomePage';
 import YaraSearchPage from './Pages/Yara/YaraSearchPage';
@@ -21,6 +20,10 @@ import UpdateYaraPage from './Pages/Yara/UpdateYaraPage';
 import SearchResultPage from './Pages/Yara/SearchResultPage';
 import YaraIoCPage from './Pages/Yara/YaraIoCPage';
 import YaraIoCSearchPage from './Pages/Yara/YaraIoCSearchPage';
+import SnortHomePage from './Pages/Snort/SnortHomePage';
+import SnortSearchPage from './Pages/Snort/SnortSearchPage';
+import SnortSearchResultPage from './Pages/Snort/SnortSearchResultPage';
+import SnortRulePage from './Pages/Snort/SnortRulePage';
 
 export default function App() {
   return (
@@ -49,8 +52,10 @@ export default function App() {
             <Route path="/yara/test/:id" element={<YaraIoCPage/>}/>
             <Route path="/yara/ioc/search" element={<YaraIoCSearchPage/>}/>
             
-            <Route path="/snort/:field/:value" element={<GetSnortPage/>}/>
-
+            <Route path="/snort/home" element={<SnortHomePage/>}/>
+            <Route path="/snort/search" element={<SnortSearchPage/>}/>
+            <Route path="/snort/search/:field/:value/:page" element={<SnortSearchResultPage/>}/>
+            <Route path="/snort/:id" element={<SnortRulePage/>}/>
             
             
           </Routes>

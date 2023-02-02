@@ -5,9 +5,9 @@ from src.dependencies import get_db
 from src.snort import services
 from src.snort.constants import SnortRuleFieldSearch
 from typing import Union
+from fastapi_pagination import Page
 
 router = APIRouter()
-
 
 @router.post("/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"])
 def create_snort_rules(rules_text: str, db: Session = Depends(get_db)):
@@ -15,7 +15,6 @@ def create_snort_rules(rules_text: str, db: Session = Depends(get_db)):
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
-
 
 @router.post(
     "/snort/file", response_model=list[Union[SnortSchema, dict]], tags=["snort"]
@@ -29,6 +28,12 @@ def create_snort_rules_file(file: UploadFile, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
 
+@router.get("/snort/{id}", response_model=SnortSchema, tags=['snort'])
+def get_snort_rule(id: int, db: Session = Depends(get_db)):
+    rule = services.get_snort_rule_id(db, id)
+    if rule is None:
+        raise HTTPException(400, 'Error in retrieving rule.')
+    return rule
 
 @router.get("/snort/rebuild/{id}", response_model=str, tags=["snort"])
 def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
@@ -37,8 +42,7 @@ def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
         raise HTTPException(400, "Error in retrieving string of that rule.")
     return str_rule
 
-
-@router.get("/snort/{field}/{value}", response_model=list[SnortSchema], tags=["snort"])
+@router.get("/snort/{field}/{value}", response_model=Page[SnortSchema], tags=["snort"])
 def get_snort_rules(
     field: SnortRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
@@ -98,14 +102,35 @@ def get_snort_rules(
                 404, "No snort rules found for that field with that value."
             )
         return snort_rules_list
-    if field is SnortRuleFieldSearch.ID:
-        snort_rules_list = services.get_snort_rule_id(db, value)
+    if field is SnortRuleFieldSearch.Tactics:
+        snort_rules_list = services.get_snort_rules_tactics(db, value)
         if snort_rules_list is None:
             raise HTTPException(
                 404, "No snort rules found for that field with that value."
             )
         return snort_rules_list
-
+    if field is SnortRuleFieldSearch.Tactics:
+        snort_rules_list = services.get_snort_rules_tactics(db, value)
+        if snort_rules_list is None:
+            raise HTTPException(
+                404, "No snort rules found for that field with that value."
+            )
+        return snort_rules_list
+    if field is SnortRuleFieldSearch.Techniques:
+        snort_rules_list = services.get_snort_rules_techniques(db, value)
+        if snort_rules_list is None:
+            raise HTTPException(
+                404, "No snort rules found for that field with that value."
+            )
+        return snort_rules_list
+    if field is SnortRuleFieldSearch.Subtechniques:
+        snort_rules_list = services.get_snort_rules_subtechniques(db, value)
+        if snort_rules_list is None:
+            raise HTTPException(
+                404, "No snort rules found for that field with that value."
+            )
+        return snort_rules_list
+    
 
 @router.put("/snort/{id}", response_model=SnortSchema, tags=["snort"])
 def update_snort_rule(
@@ -115,7 +140,6 @@ def update_snort_rule(
     if updated_rule is None:
         raise HTTPException(404, "Error in updating rule.")
     return updated_rule
-
 
 @router.delete("/snort/{id}", response_model=dict, tags=["snort"])
 def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:

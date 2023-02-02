@@ -18,7 +18,7 @@ export default function App() {
 
     const params = useParams();
     const navigate = useNavigate();
-    const citationList = []
+    const citationList = [];
 
     React.useEffect(() => {
         MitreDataService.getTechnique(params.id).then( function (response) {
@@ -52,8 +52,12 @@ export default function App() {
             temp = "";
         }
         //Getting rid of citations, may change later
+        //this also effects [links] to other mitre resources
+       
         citationList.forEach(element => {
-            string = string.replaceAll(element.citation, "");
+            if (element.citation.includes('Citation:')){
+                string = string.replaceAll(element.citation, "");
+            }
         });
         index = 1;
         for (let i = 0; i < references.length; i++){
@@ -61,8 +65,7 @@ export default function App() {
             references[i].id = index;
             index += 1;
         }
-        
-
+    
         SetMarkdown(string);
         return string;
     }
@@ -84,8 +87,44 @@ export default function App() {
             <Card.Body>
                 
                 <div className="input-group text-start">
-                    <ReactMarkdown children={markdown} remarkPlugins={[gfm]} className="markdown" disallowedElements={["h2"]}/>
+                    <ReactMarkdown children={markdown} remarkPlugins={[gfm]} className="markdown"/>
                 </div>
+                <h5>Associated Countermeasures</h5>
+                <Row md={3}>     
+                    <Col>
+                        <Card className="mb-2" bg="light">
+                            <Card.Body>
+                                <Card.Title>Yara</Card.Title>
+                                <Card.Text>
+                                    View {technique.name} associated Yara rules.
+                                </Card.Text>
+                                <Button variant="outline-warning" onClick={() => navigate(`/mitre/countermeasure/yara/technique/${technique.id}`)}>View</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col sm>
+                        <Card className="mb-2" bg="light">
+                            <Card.Body>
+                                <Card.Title>Snort</Card.Title>
+                                <Card.Text>
+                                    View {technique.name} associated Snort rules.
+                                </Card.Text>
+                                <Button variant="outline-dark">View</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col sm>
+                        <Card className="mb-2" bg="light">
+                            <Card.Body>
+                                <Card.Title>Sigma</Card.Title>
+                                <Card.Text>
+                                    View {technique.name} associated Sigma rules.
+                                </Card.Text>
+                                <Button variant="outline-danger">View</Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
                 
                 <hr/>
                 <h5>Associated Subtechniques</h5>
@@ -113,8 +152,8 @@ export default function App() {
                 {technique.references.map((reference) => {
                     return (
                         
-                        <div className="text-start">
-                            <p key={reference.id}>{reference.id}: <a href={reference.url}>{reference.url}</a></p>
+                        <div className="text-start" key={reference.id}>
+                            <p>{reference.id}: <a href={reference.url}>{reference.url}</a></p>
                         </div>
                     )
                     
