@@ -25,7 +25,7 @@ export default function App(){
         SnortDataService.search(params.field, params.value, params.page, 10).then((response) => {
             setSnortRule(response.data['items']);
             setTotalItems(response.data['total']);
-            
+
             setSearchedField(params.field);
             setField(params.field);
             setValue(params.value);
@@ -93,7 +93,22 @@ export default function App(){
         }
     }
 
-    const handleSubmit = event => {
+    //could put getting rule name on backend
+    const getRuleMsg = (rule) => {
+        let data = JSON.parse(rule.body_options);
+        let name = "";
+        data.forEach((element) => {
+            if (element['msg'] !== undefined){
+                name = element['msg'];
+            }
+        })
+        if (name === ""){
+            name = "No msg option in rule."
+        }
+        return name;
+    }
+
+    const handleSubmit = () => {
         navigate(`/snort/search/${field}/${value}/1`);
     }
 
@@ -120,7 +135,7 @@ export default function App(){
                    return (
                     <div key={rule.id}>
                     <Card className="text-center mb-2">
-                        <Card.Header>Rule Name: snort rules dont have names lol</Card.Header>
+                        <Card.Header>{getRuleMsg(rule)}</Card.Header>
                         <Card.Body>
                             <Card.Title>{highlight(rule)}</Card.Title>
                             <Card.Text>

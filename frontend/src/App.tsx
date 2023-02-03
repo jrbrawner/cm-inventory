@@ -24,6 +24,7 @@ import SnortHomePage from './Pages/Snort/SnortHomePage';
 import SnortSearchPage from './Pages/Snort/SnortSearchPage';
 import SnortSearchResultPage from './Pages/Snort/SnortSearchResultPage';
 import SnortRulePage from './Pages/Snort/SnortRulePage';
+import SnortUpdatePage from './Pages/Snort/SnortUpdatePage';
 
 export default function App() {
   return (
@@ -56,7 +57,7 @@ export default function App() {
             <Route path="/snort/search" element={<SnortSearchPage/>}/>
             <Route path="/snort/search/:field/:value/:page" element={<SnortSearchResultPage/>}/>
             <Route path="/snort/:id" element={<SnortRulePage/>}/>
-            
+            <Route path="/snort/update/:id" element={<SnortUpdatePage/>}/>
             
           </Routes>
         </BrowserRouter>

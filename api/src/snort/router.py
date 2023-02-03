@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, APIRouter, File, UploadFile
+from fastapi import Depends, HTTPException, APIRouter, File, UploadFile, Form
 from src.snort.schemas import SnortSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
@@ -27,12 +27,6 @@ def create_snort_rules_file(file: UploadFile, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
 
-@router.get("/snort/{id}", response_model=SnortSchema, tags=['snort'])
-def get_snort_rule(id: int, db: Session = Depends(get_db)):
-    rule = services.get_snort_rule_id(db, id)
-    if rule is None:
-        raise HTTPException(400, 'Error in retrieving rule.')
-    return rule
 
 @router.get("/snort/rebuild/{id}", response_model=str, tags=["snort"])
 def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
@@ -131,14 +125,22 @@ def get_snort_rules(
         return snort_rules_list
     
 
+@router.get("/snort/{id}", response_model=SnortSchema, tags=['snort'])
+def get_snort_rule(id: int, db: Session = Depends(get_db)):
+    rule = services.get_snort_rule_id(db, id)
+    if rule is None:
+        raise HTTPException(400, 'Error in retrieving rule.')
+    return rule
+
 @router.put("/snort/{id}", response_model=SnortSchema, tags=["snort"])
 def update_snort_rule(
-    id: int, rule_text: str, db: Session = Depends(get_db)
+    id: int, rule_text: str = Form(), db: Session = Depends(get_db)
 ) -> SnortSchema:
     updated_rule = services.update_snort_rule(db, id, rule_text)
     if updated_rule is None:
         raise HTTPException(404, "Error in updating rule.")
     return updated_rule
+
 
 @router.delete("/snort/{id}", response_model=dict, tags=["snort"])
 def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:

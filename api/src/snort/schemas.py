@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import datetime
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
-
+import json
 
 class SnortSchema(BaseModel):
     id: int

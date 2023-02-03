@@ -11,15 +11,20 @@ import CommonUtils from '../../lib/utils';
 
 export default function App() {
     const [snortRule, setSnortRule] = React.useState();
+
     const params = useParams();
     const navigate = useNavigate();
 
     const [ruleString, setRuleString] = React.useState();
-
+    
     React.useEffect(() => {
         SnortDataService.get(params.id).then((response) => {
             setSnortRule(response.data);
-            formatRule(response.data);
+            
+            SnortDataService.rebuildRule(params.id).then((response) => {
+                setRuleString(response.data);
+            })
+            
         }).catch(function (error) {
             if (error.response)
                 {
@@ -40,6 +45,21 @@ export default function App() {
         return (<>{listString}</>);
     }
 
+    //could put getting rule name on backend
+    const getRuleMsg = (rule) => {
+        let data = JSON.parse(rule.body_options);
+        let name = "";
+        data.forEach((element) => {
+            if (element['msg'] !== undefined){
+                name = element['msg'];
+            }
+        })
+        if (name === ""){
+            name = "No msg option in rule."
+        }
+        return name;
+    }
+
     const deleteRule = () => {
         SnortDataService.delete(snortRule.id).then( function (response) {
             navigate(`/snort/search`);
@@ -48,23 +68,13 @@ export default function App() {
         })
     }
 
-    const formatRule = (rule) => {
-        let ruleString = "";
-        ruleString += rule.action + " ";
-        ruleString += rule.protocol + " ";
-        ruleString += rule.src_ip + " ";
-        ruleString += rule.src_port + " ";
-        ruleString += rule.direction + " ";
-        ruleString += rule.dst_ip + " ";
-        ruleString += rule.dest_port + " ";
-        setRuleString(ruleString);
-    }
-
     if (!snortRule) return (
         <Spinner className="mt-5" animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
         </Spinner>
     )
+
+    
 
     return (
         <Container>
@@ -79,7 +89,7 @@ export default function App() {
                     <Card className="text-center mt-3 bg-light">
                         <Card.Header>
                             Rule Name
-                            <h5>Snort rules dont have rule names lol</h5>
+                            <h5>{getRuleMsg(snortRule)}</h5>
                         </Card.Header>
                         <Card.Body>
                             <div className="input-group text-start">
@@ -95,11 +105,7 @@ export default function App() {
                             value={ruleString}/>
                             <hr/>
                             </div>
-                        
-                            <div className="input-group text-start">
-                                <p>Rule Compiles:</p>
-                            </div>
-                            <hr/>
+                            
                             <h5>Mitre Information</h5>
 
                             <div className="text-start">
