@@ -10,7 +10,7 @@ from fastapi_pagination import Page
 router = APIRouter()
 
 @router.post("/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"])
-def create_snort_rules(rules_text: str, db: Session = Depends(get_db)):
+def create_snort_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     snort_rules_list = services.create_snort_rules(db, rules_text)
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")

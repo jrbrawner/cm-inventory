@@ -8,6 +8,7 @@ import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import CommonUtils from '../../lib/utils';
 
 export default function App(){
 
@@ -54,7 +55,7 @@ export default function App(){
     }
 
     function formatResults(list) {
-      console.log(list);
+
       var resultList = []
       var index = 0;
       list.map((item) => {
@@ -62,14 +63,6 @@ export default function App(){
         index += 1;
       })
       setResults(resultList);
-    }
-
-    function handleTab(e) {
-      if (e.key == 'Tab') {
-        e.preventDefault();
-        var textarea = document.getElementById('rules-text');
-        textarea.value += "\t";
-      }
     }
 
     return (
@@ -127,7 +120,7 @@ export default function App(){
                       placeholder="Enter rules here..."
                       style={{ width: 200 }}
                       onChange={handleInput}
-                      onKeyDown={handleTab}
+                      onKeyDown={CommonUtils.handleTab}
                     />
 
                   </Form.Group>

@@ -1,20 +1,24 @@
 import React from 'react';
-import  YaraDataService from '../../services/yara.service';
+import  SnortDataService from '../../services/snort.service';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Popover from 'react-bootstrap/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import CommonUtils from '../../lib/utils';
 
 export default function App(){
 
-    const [iocText, setIOCText] = React.useState();
+    const [ruleText, setRuleText] = React.useState();
     const [file, setFile] = React.useState();
     const [validated, setValidated] = React.useState(true);
     const [results, setResults] = React.useState();
 
     const handleInput = event  => {
-      setIOCText(event.target.value);
+      setRuleText(event.target.value);
       setValidated(false);
       if (event.target.value === ""){
         setValidated(true);
@@ -32,17 +36,17 @@ export default function App(){
       if (file !== undefined) {
         const formData = new FormData();
         formData.append("file", file);
-        YaraDataService.testAllIOC(formData).then(function (response) {
+        SnortDataService.createFile(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
-          alert(error);
+          formatResults(error.data);
         })
         
       }
       else{
         const formData = new FormData();
-        formData.append("ioc_text", iocText);
-        YaraDataService.testAllIOC(formData).then(function (response) {
+        formData.append("rules_text", ruleText);
+        SnortDataService.createText(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
           alert(error);
@@ -51,35 +55,44 @@ export default function App(){
     }
 
     function formatResults(list) {
+
       var resultList = []
       var index = 0;
-      resultList.push({id: index, result: list['rules_tested'] + ' Yara rules tested.', variant: "warning"})
-      index += 1;
-      list['msg'].map((item) => {
-        if (item['rule_name'] !== undefined){
-            console.log(item);
-            index += 1;
-            resultList.push({id: index, result: `Match found with Yara rule ${item['rule_name']}.`, variant: "success"})
-            item['results'].map((match) => {
-              index += 1;
-              console.log(match);
-              var string = `Data "${match[2]}" matched at offset ${match[0]} using string: ${match[1]}.`
-              resultList.push({id:index, result: string, variant: "secondary"})
-            })
-        }
-      })
-      if (resultList.length === 1){
+      list.map((item) => {
+        resultList.push({id: index, result: item.msg, variant: item.variant}) 
         index += 1;
-        resultList.push({id: index, result: 'No stored yara rules detected the submitted IoCs.', variant: "danger"})
-      }
+      })
       setResults(resultList);
     }
 
     return (
             <Container className="mb-5">
               <div className="input-group d-flex justify-content-center">
-                <h5 className="mt-3">Insert IoC's under the rule or upload a file to test detection using every stored Yara rule.</h5>
-                <h6>Note: Rules that do not have a successful compilation status will not be utilized.</h6>
+                <h5 className="mt-3">Upload a file of Snort rules or enter Snort rules in the text box below.</h5>
+                <OverlayTrigger
+                          trigger="click"
+                          key={"bottom"}
+                          placement={"bottom"}
+                          overlay={
+                            <Popover>
+                              <Popover.Header as="h3">Snort Rule Example</Popover.Header>
+                              <Popover.Body>
+                                <p>To ensure mitre information and other meta fields are correctly parsed from each rule,
+                                     the 'rem' option should be used to specify appropriate designations, like below:</p>
+                                <div>
+                                    rem:"tactic:TA0006, technique:T1592, subtechnique:T1592.002";
+                                </div>
+                                <p></p>
+                                <p>To ensure each rule can be easily identified, a name or descriptor should be included in the 'msg' option of each rule, like below:</p>
+                                <div>
+                                    msg:"Backdoor.HTTP.BEACON.[CSBundle USAToday Server]";
+                                </div>
+                              </Popover.Body>
+                            </Popover>
+                          }
+                        >
+                      <Button className="shadow-none mt-2" variant=""><span><FontAwesomeIcon icon={faCircleInfo} /></span></Button>
+                    </OverlayTrigger>
               </div>
               <div className="mt-3">
                 <Form onSubmit={handleSubmit}>

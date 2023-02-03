@@ -31,14 +31,6 @@ export default function App() {
         })
     }, []);
 
-    function handleTab(e) {
-        if (e.key == 'Tab') {
-          e.preventDefault();
-          var textarea = document.getElementById('textarea');
-          textarea.value += "\t";
-        }
-      }
-
     const handleChange = (event) => {
         event.preventDefault();
         setRuleText(event.target.value);
@@ -81,9 +73,9 @@ export default function App() {
                             <Card.Body>
                                     <div>
                                        <TextareaAutosize
-                                       id="textarea"
+                                       id="rules-text"
                                        className="container"
-                                       onKeyDown={handleTab}
+                                       onKeyDown={CommonUtils.handleTab}
                                        onChange={handleChange}
                                        defaultValue={ruleText}/>
                                     </div>

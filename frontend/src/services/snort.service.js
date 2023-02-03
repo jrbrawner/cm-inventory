@@ -2,6 +2,13 @@ import axios from 'axios';
 
 class SnortDataService {
 
+    createText(data) {
+        return axios.post(`/snort`, data, {"Content-Type": "multipart/form-data"})
+    }
+
+    createFile(data){
+        return axios.post(`/snort/file`, data, {"Content-Type": "multipart/form-data"})
+    }
     
     get(id) {
         return axios.get(`/snort/${id}`)
