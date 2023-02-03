@@ -53,7 +53,7 @@ def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
                             tactic = db.query(Tactic).filter(Tactic.name == tactic_name).first()
                             rule_db.tactics.append(tactic)
         db.add(rule_db)
-        sigma_rule_list.append(rule_db)
+        sigma_rule_list.append({'msg': 'Rule added', "variant": "success"})
     db.commit()
 
     return sigma_rule_list
@@ -114,3 +114,6 @@ def delete_sigma_rule(db: Session, id: int) -> dict:
     db.delete(db_rule)
     db.commit()
     return {'msg': f'Sigma rule with id {id} deleted.'}
+
+def get_sigma_rule_id(db: Session, id: int) -> SigmaRule:
+    return db.query(SigmaRule).get(id)

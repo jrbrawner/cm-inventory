@@ -6,7 +6,7 @@ from src.sigma import services
 import tempfile
 import re
 import yaml
-from typing import Generator
+from typing import Union
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ def create_sigma_rules(rules_text: str, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
-@router.post("/sigma/file", response_model=list[SigmaBase], tags=["sigma"])
+@router.post("/sigma/file", response_model=list[Union[SigmaBase, dict]], tags=["sigma"])
 def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_db)):
     rules_text = []
     for file in files:
@@ -28,6 +28,13 @@ def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_d
     if sigma_rule_list is None:
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
+
+@router.get("/sigma/{id}", response_model=SigmaBase, tags=['sigma'])
+def get_rule_id(id: int, db: Session = Depends(get_db)):
+    rule = services.get_sigma_rule_id(db, id)
+    if rule is None:
+        raise HTTPException(400, 'Error in retrieving sigma rule.')
+    return rule
 
 @router.get("/sigma/rebuild/{id}", response_model=str, tags=['sigma'])
 def rebuild_rule(id: int, db: Session = Depends(get_db)):

@@ -24,14 +24,15 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
             dst_port=rule.dest_port,
             body_options=rule_options,
         )
-        rule_name = ""
+        
         # checking for mitre att&ck designations in rem option
-        # need to put these in a class at some point?
+        # checking for name in msg
+        # put these in a class at some point?
         if "rem" or "msg" in str(rule.body_options):
             for option in rule.body_options:
                 for key, value in option.items():
                     if key == "msg":
-                        rule_name = value
+                        db_rule.msg = value
                     if key == "rem":
                         value = value.replace('"', "")
                         mitre = value.split(",")
@@ -48,8 +49,10 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
                                 db_rule.subtechniques.append(subtechnique_db)
 
         db.add(db_rule)
-        print(rule_name)
-        snort_rule_list.append({"msg": f"{rule_name} added to database." , "variant": "success"})
+        if db_rule.msg is None:
+            snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
+        else:
+            snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
     db.commit()
 
     for i in parser.error_log:

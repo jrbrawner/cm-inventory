@@ -93,16 +93,10 @@ export default function App(){
         }
     }
 
-    //could put getting rule name on backend
     const getRuleMsg = (rule) => {
-        let data = JSON.parse(rule.body_options);
-        let name = "";
-        data.forEach((element) => {
-            if (element['msg'] !== undefined){
-                name = element['msg'];
-            }
-        })
-        if (name === ""){
+        let name = rule.msg;
+
+        if (name === null){
             name = "No msg option in rule."
         }
         return name;

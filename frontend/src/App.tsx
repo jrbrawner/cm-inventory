@@ -26,6 +26,9 @@ import SnortSearchResultPage from './Pages/Snort/SnortSearchResultPage';
 import SnortRulePage from './Pages/Snort/SnortRulePage';
 import SnortUpdatePage from './Pages/Snort/SnortUpdatePage';
 import SnortCreatePage from './Pages/Snort/SnortCreatePage';
+import SigmaHomePage from './Pages/Sigma/SigmaHome';
+import SigmaCreatePage from './Pages/Sigma/SigmaCreatePage';
+import SigmaRulePage from './Pages/Sigma/SigmaRule';
 
 export default function App() {
   return (
@@ -60,6 +63,10 @@ export default function App() {
             <Route path="/snort/create" element={<SnortCreatePage/>}/>
             <Route path="/snort/:id" element={<SnortRulePage/>}/>
             <Route path="/snort/update/:id" element={<SnortUpdatePage/>}/>
+
+            <Route path="/sigma/home" element={<SigmaHomePage/>}/>
+            <Route path="/sigma/:id" element={<SigmaRulePage/>}/>
+            <Route path="/sigma/create" element={<SigmaCreatePage/>}/>
             
           </Routes>
         </BrowserRouter>

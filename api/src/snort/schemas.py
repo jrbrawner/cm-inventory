@@ -14,6 +14,7 @@ class SnortSchema(BaseModel):
     dst_port: str | None = None
     body_options: str
     date_added: datetime
+    msg : str | None = None #used for rule name
     tactics: list[TacticBase] | None = None
     techniques: list[TechniqueBase] | None = None
     subtechniques: list[SubTechniqueBase] | None = None

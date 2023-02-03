@@ -44,7 +44,7 @@ export default function App() {
                                 <Card.Text>
                                     Create and manage Sigma rules.
                                 </Card.Text>
-                                <Button variant="primary">View</Button>
+                                <Button variant="primary" onClick={() => navigate(`/sigma/home`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
