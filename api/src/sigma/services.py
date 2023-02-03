@@ -19,9 +19,10 @@ def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
     
     for rule in rules:
         rule = rule.to_dict()
-        
         rule_db = SigmaRule(
             author = rule.get('author'),
+            title = rule.get('title'),
+            description = rule.get('description'),
             logsource = json.dumps(rule.get('logsource')),
             detection = json.dumps(rule.get('detection')),
             condition = json.dumps(rule.get('detection').get('condition')),
@@ -53,7 +54,10 @@ def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
                             tactic = db.query(Tactic).filter(Tactic.name == tactic_name).first()
                             rule_db.tactics.append(tactic)
         db.add(rule_db)
-        sigma_rule_list.append({'msg': 'Rule added', "variant": "success"})
+        if rule_db.title is not None:
+            sigma_rule_list.append({'msg': f'{rule_db.title} added.', "variant": "success"})
+        else: 
+            sigma_rule_list.append({'msg': 'Rule with no title added.', "variant": "success"})
     db.commit()
 
     return sigma_rule_list
@@ -74,6 +78,8 @@ def update_sigma_rule(db: Session, rule_text: str, id: int) -> SigmaRule:
     sigma_rule = sigma_rule.to_dict()
 
     rule_db.author = sigma_rule.get('author')
+    rule_db.title = sigma_rule.get('title')
+    rule_db.description = sigma_rule.get('description')
     rule_db.logsource = json.dumps(sigma_rule.get('logsource'))
     rule_db.detection = json.dumps(sigma_rule.get('detection'))
     rule_db.condition = json.dumps(sigma_rule.get('detection').get('condition'))

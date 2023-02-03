@@ -77,15 +77,13 @@ export default function App(){
                             <Popover>
                               <Popover.Header as="h3">Sigma Rule Example</Popover.Header>
                               <Popover.Body>
-                                <p>To ensure mitre information and other meta fields are correctly parsed from each rule,
-                                     the 'rem' option should be used to specify appropriate designations, like below:</p>
+                                <p>Mitre information should be included in the 'tags' section of the sigma rule, like below:</p>
                                 <div>
-                                    rem:"tactic:TA0006, technique:T1592, subtechnique:T1592.002";
-                                </div>
-                                <p></p>
-                                <p>To ensure each rule can be easily identified, a name or descriptor should be included in the 'msg' option of each rule, like below:</p>
-                                <div>
-                                    msg:"Backdoor.HTTP.BEACON.[CSBundle USAToday Server]";
+                                tags:<br/>
+                                - attack.initial_access<br/>
+                                - attack.t1190<br/>
+                                - attack.t1505.003<br/>
+                                - cve.2014.6287<br/>
                                 </div>
                               </Popover.Body>
                             </Popover>

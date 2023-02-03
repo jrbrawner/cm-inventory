@@ -32,6 +32,8 @@ class SigmaRule(Base):
     detection : Mapped[str] = Column(String())
     condition : Mapped[str] = Column(String())
     raw_text : Mapped[str] = Column(String())
+    title : Mapped[str] = Column(String())
+    description : Mapped[str] = Column(String())
     tactics = relationship("Tactic", secondary=tactic_sigma, back_populates="sigma_rules")
     techniques = relationship(
         "Technique", secondary=technique_sigma, back_populates="sigma_rules"

@@ -73,11 +73,15 @@ export default function App() {
                     <Card className="text-center mt-3 bg-light">
                         <Card.Header>
                             Rule Name
-                            <h5></h5>
+                            <h5>{sigmaRule.title}</h5>
                         </Card.Header>
                         <Card.Body>
                             <div className="input-group text-start">
                                 
+                            </div>
+                            <div className="text-start">
+
+                                <p>Rule Description: {sigmaRule.description}</p>
                             </div>
                             <div className="text-start">
                                 <p>Rule Text:</p>

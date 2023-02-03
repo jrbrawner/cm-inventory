@@ -3,10 +3,8 @@ from src.sigma.schemas import SigmaBase
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.sigma import services
-import tempfile
-import re
-import yaml
 from typing import Union
+from fastapi_pagination import Page
 
 router = APIRouter()
 
