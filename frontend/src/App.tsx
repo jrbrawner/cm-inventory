@@ -31,6 +31,7 @@ import SigmaCreatePage from './Pages/Sigma/SigmaCreatePage';
 import SigmaRulePage from './Pages/Sigma/SigmaRule';
 import SigmaSearchPage from './Pages/Sigma/SigmaSearchPage';
 import SigmaSearchResultPage from './Pages/Sigma/SigmaSearchResultPage';
+import SigmaUpdatePage from './Pages/Sigma/SigmaUpdatePage';
 
 export default function App() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/sigma/create" element={<SigmaCreatePage/>}/>
             <Route path="/sigma/search" element={<SigmaSearchPage/>}/>
             <Route path="/sigma/search/:field/:value/:page" element={<SigmaSearchResultPage/>}/>
+            <Route path="/sigma/update/:id" element={<SigmaUpdatePage/>}/>
             
           </Routes>
         </BrowserRouter>

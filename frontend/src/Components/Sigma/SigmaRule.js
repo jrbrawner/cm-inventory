@@ -20,9 +20,9 @@ export default function App() {
     React.useEffect(() => {
         SigmaDataService.get(params.id).then((response) => {
             setSigmaRule(response.data);
-            SigmaDataService.rebuildRule(params.id).then((response) => {
-                setRuleString(response.data);
-            })
+            //SigmaDataService.rebuildRule(params.id).then((response) => {
+            //    setRuleString(response.data);
+            //})
             
         }).catch(function (error) {
             if (error.response)
@@ -46,7 +46,7 @@ export default function App() {
     
     const deleteRule = () => {
         SigmaDataService.delete(sigmaRule.id).then( function (response) {
-            navigate(`/snort/search`);
+            navigate(`/sigma/search`);
         }).catch(function (error) {
             alert(error);
         })
@@ -90,7 +90,7 @@ export default function App() {
                             <TextareaAutosize
                             disabled
                             className="container text-dark"
-                            value={ruleString}/>
+                            value={sigmaRule.raw_text}/>
                             <hr/>
                             </div>
                             

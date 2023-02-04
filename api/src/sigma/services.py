@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from src.mitre.utils import convert_tactic
 import yaml
+from fastapi_pagination import paginate, Page
 
 def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
     """Takes a list of sigma yaml strings read from files, and adds them to the database."""
@@ -123,3 +124,57 @@ def delete_sigma_rule(db: Session, id: int) -> dict:
 
 def get_sigma_rule_id(db: Session, id: int) -> SigmaRule:
     return db.query(SigmaRule).get(id)
+
+def get_sigma_rule_author(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.author.like(f"%{value}%")).all())
+
+def get_sigma_rule_condition(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.condition.like(f"%{value}%")).all())
+
+def get_sigma_rule_description(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.description.like(f"%{value}%")).all())
+
+def get_sigma_rule_detection(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.detection.like(f"%{value}%")).all())
+
+def get_sigma_rule_logsource(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.logsource.like(f"%{value}%")).all())
+
+def get_sigma_rule_raw_text(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.raw_text.like(f"%{value}%")).all())
+
+def get_sigma_rule_title(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.title.like(f"%{value}%")).all())
+
+def get_sigma_rule_date_added(db: Session, value: str) -> Page[SigmaRule]:
+    return paginate(db.query(SigmaRule).filter(SigmaRule.date_added.like(f"%{value}%")).all())
+
+def get_sigma_rules_tactics(db: Session, value: str) -> Page[SigmaRule]:
+    """Search for sigma rules using tactics information."""
+    pattern_tactic = "[T][A][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_tactic, value.upper()):
+        return paginate(db.query(SigmaRule).filter(SigmaRule.tactics.any(id=value.upper())))
+        
+    tactic_id = db.query(Tactic).filter(Tactic.name.like(f"%{value}%")).first().id
+    if tactic_id is not None:
+        return paginate(db.query(SigmaRule).filter(SigmaRule.tactics.any(id=tactic_id)))
+    
+def get_sigma_rules_techniques(db: Session, value: str) -> Page[SigmaRule]:
+    """Search for sigma rules using the techniques ID field."""
+    pattern_technique = "[T][0-9][0-9][0-9][0-9]"
+    if re.match(pattern_technique, value.upper()):
+        return paginate(db.query(SigmaRule).filter(SigmaRule.techniques.any(id=value.upper())))
+        
+    technique_id = db.query(Technique).filter(Technique.name.like(f"%{value}%")).first().id
+    if technique_id is not None:
+        return paginate(db.query(SigmaRule).filter(SigmaRule.techniques.any(id=technique_id)))
+    
+def get_sigma_rules_subtechniques(db: Session, value: str) -> Page[SigmaRule]:
+    """Search for sigma rules using the subtechniques ID field."""
+    pattern_subtechnique = "[T][0-9][0-9][0-9][0-9][.][0-9][0-9][0-9]"
+    if re.match(pattern_subtechnique, value.upper()):
+        return paginate(db.query(SigmaRule).filter(SigmaRule.subtechniques.any(id=value.upper())))
+        
+    subtechnique_id = db.query(Subtechnique).filter(Subtechnique.name.like(f"%{value}%")).first().id
+    if subtechnique_id is not None:
+        return paginate(db.query(SigmaRule).filter(SigmaRule.subtechniques.any(id=subtechnique_id)))
