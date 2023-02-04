@@ -26,7 +26,7 @@ export default function App(){
     }
 
     const handleFile = event => {
-      setFile(event.target.files[0]);
+      setFile(event.target.files);
       setValidated(false);
     }
     
@@ -34,7 +34,9 @@ export default function App(){
       event.preventDefault();
       if (file !== undefined) {
           const formData = new FormData();
-          formData.append("files", file);
+          for (let i = 0; i < file.length; i++){
+            formData.append("files", file[i]);
+          }
           SigmaDataService.createFile(formData).then(function (response) {
               formatResults(response.data);
             }).catch(function (error) {
@@ -68,7 +70,7 @@ export default function App(){
     return (
             <Container className="mb-5">
               <div className="input-group d-flex justify-content-center">
-                <h5 className="mt-3">Upload a file of Sigma rules or enter Sigma rules in the text box below.</h5>
+                <h5 className="mt-3">Upload files of Sigma rules or enter Sigma rules in the text box below.</h5>
                 <OverlayTrigger
                           trigger="click"
                           key={"bottom"}
@@ -95,7 +97,7 @@ export default function App(){
               <div className="mt-3">
                 <Form onSubmit={handleSubmit}>
                   <div className="d-flex justify-content-center">
-                    <Form.Control onChange={handleFile} className="w-50" type="file" required={validated}/>
+                    <Form.Control onChange={handleFile} className="w-50" type="file" multiple required={validated}/>
                   </div>
                   <Form.Group className="mt-3 mb-1">
 

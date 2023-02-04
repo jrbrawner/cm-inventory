@@ -67,7 +67,7 @@ export default function App() {
      }
 
     function getNextPage(pageNum) {
-        MitreDataService.getTechniqueSnort(params.id, pageNum, 10).then((response) => {
+        MitreDataService.getSubtechniqueSnort(params.id, pageNum, 10).then((response) => {
             navigate(`/mitre/countermeasure/snort/subtechnique/${params.id}/${pageNum}`);
             setRules(response.data['items']);
             setTotalItems(response.data['total']);

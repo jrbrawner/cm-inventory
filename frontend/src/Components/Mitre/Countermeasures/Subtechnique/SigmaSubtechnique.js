@@ -65,7 +65,7 @@ export default function App() {
      }
 
     function getNextPage(pageNum) {
-        MitreDataService.getTechniqueSigma(params.id, pageNum, 10).then((response) => {
+        MitreDataService.getSubtechniqueSigma(params.id, pageNum, 10).then((response) => {
             navigate(`/mitre/countermeasure/sigma/subtechnique/${params.id}/${pageNum}`);
             setRules(response.data['items']);
             setTotalItems(response.data['total']);

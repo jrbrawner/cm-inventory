@@ -56,7 +56,7 @@ export default function App() {
      }
 
     function getNextPage(pageNum) {
-        MitreDataService.getTacticSnort(params.id, pageNum, 10).then((response) => {
+        MitreDataService.getSubtechniqueYara(params.id, pageNum, 10).then((response) => {
             navigate(`/mitre/countermeasure/yara/subtechnique/${params.id}/${pageNum}`);
             setRules(response.data['items']);
             setTotalItems(response.data['total']);
