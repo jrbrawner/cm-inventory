@@ -14,7 +14,7 @@ import TechniquesHomePage from './Pages/Mitre/Techniques/TechniqueHomePage';
 import TechniquePage from './Pages/Mitre/Techniques/TechniquePage';
 import SubtechniquePage from './Pages/Mitre/Subtechniques/SubtechniquePage';
 import SubtechniquesHomePage from './Pages/Mitre/Subtechniques/SubtechniquesHomePage';
-import YaraTacticPage from './Pages/Mitre/Countermeasures/YaraTacticPage';
+import YaraTacticPage from './Pages/Mitre/Countermeasures/Tactic/YaraTacticPage';
 import YaraCreatePage from './Pages/Yara/CreateYaraPage';
 import UpdateYaraPage from './Pages/Yara/UpdateYaraPage';
 import SearchResultPage from './Pages/Yara/SearchResultPage';
@@ -32,6 +32,14 @@ import SigmaRulePage from './Pages/Sigma/SigmaRule';
 import SigmaSearchPage from './Pages/Sigma/SigmaSearchPage';
 import SigmaSearchResultPage from './Pages/Sigma/SigmaSearchResultPage';
 import SigmaUpdatePage from './Pages/Sigma/SigmaUpdatePage';
+import SnortTacticPage from './Pages/Mitre/Countermeasures/Tactic/SnortTacticPage';
+import SigmaTacticPage from './Pages/Mitre/Countermeasures/Tactic/SigmaTacticPage';
+import YaraTechniquePage from './Pages/Mitre/Countermeasures/Technique/YaraTechniquePage';
+import SnortTechniquePage from './Pages/Mitre/Countermeasures/Technique/SnortTechniquePage';
+import SigmaTechniquePage from './Pages/Mitre/Countermeasures/Technique/SigmaTechniquePage';
+import YaraSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/YaraSubtechniquePage';
+import SnortSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/SnortSubtechniquePage';
+import SigmaSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/SigmaSubtechniquePage';
 
 export default function App() {
   return (
@@ -49,7 +57,15 @@ export default function App() {
             <Route path="/mitre/subtechniques" element={<SubtechniquesHomePage/>}/>
             <Route path="/mitre/subtechnique/:id" element={<SubtechniquePage/>}/>
 
-            <Route path="/mitre/countermeasure/yara/tactic/:id" element={<YaraTacticPage/>}/>
+            <Route path="/mitre/countermeasure/yara/tactic/:id/:page" element={<YaraTacticPage/>}/>
+            <Route path="/mitre/countermeasure/snort/tactic/:id/:page" element={<SnortTacticPage/>}/>
+            <Route path="/mitre/countermeasure/sigma/tactic/:id/:page" element={<SigmaTacticPage/>}/>
+            <Route path="/mitre/countermeasure/yara/technique/:id/:page" element={<YaraTechniquePage/>}/>
+            <Route path="/mitre/countermeasure/snort/technique/:id/:page" element={<SnortTechniquePage/>}/>
+            <Route path="/mitre/countermeasure/sigma/technique/:id/:page" element={<SigmaTechniquePage/>}/>
+            <Route path="/mitre/countermeasure/yara/subtechnique/:id/:page" element={<YaraSubtechniquePage/>}/>
+            <Route path="/mitre/countermeasure/snort/subtechnique/:id/:page" element={<SnortSubtechniquePage/>}/>
+            <Route path="/mitre/countermeasure/sigma/subtechnique/:id/:page" element={<SigmaSubtechniquePage/>}/>
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>

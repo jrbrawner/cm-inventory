@@ -47,7 +47,7 @@ export default function App() {
                                 <Card.Text>
                                     View {tactic.name} associated Yara rules.
                                 </Card.Text>
-                                <Button variant="outline-warning" onClick={() => navigate(`/mitre/countermeasure/yara/tactic/${tactic.id}`)}>View</Button>
+                                <Button variant="outline-warning" onClick={() => navigate(`/mitre/countermeasure/yara/tactic/${tactic.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -58,7 +58,7 @@ export default function App() {
                                 <Card.Text>
                                     View {tactic.name} associated Snort rules.
                                 </Card.Text>
-                                <Button variant="outline-dark">View</Button>
+                                <Button variant="outline-dark" onClick={() => navigate(`/mitre/countermeasure/snort/tactic/${tactic.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -69,7 +69,7 @@ export default function App() {
                                 <Card.Text>
                                     View {tactic.name} associated Sigma rules.
                                 </Card.Text>
-                                <Button variant="outline-danger">View</Button>
+                                <Button variant="outline-danger" onClick={() => navigate(`/mitre/countermeasure/sigma/tactic/${tactic.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>

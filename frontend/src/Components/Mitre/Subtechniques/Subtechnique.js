@@ -94,7 +94,7 @@ export default function App() {
                                 <Card.Text>
                                     View {subtechnique.name} associated Yara rules.
                                 </Card.Text>
-                                <Button variant="outline-warning" onClick={() => navigate(`/mitre/countermeasure/yara/subtechnique/${subtechnique.id}`)}>View</Button>
+                                <Button variant="outline-warning" onClick={() => navigate(`/mitre/countermeasure/yara/subtechnique/${subtechnique.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -105,7 +105,7 @@ export default function App() {
                                 <Card.Text>
                                     View {subtechnique.name} associated Snort rules.
                                 </Card.Text>
-                                <Button variant="outline-dark">View</Button>
+                                <Button variant="outline-dark" onClick={() => navigate(`/mitre/countermeasure/snort/subtechnique/${subtechnique.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -116,7 +116,7 @@ export default function App() {
                                 <Card.Text>
                                     View {subtechnique.name} associated Sigma rules.
                                 </Card.Text>
-                                <Button variant="outline-danger">View</Button>
+                                <Button variant="outline-danger" onClick={() => navigate(`/mitre/countermeasure/sigma/subtechnique/${subtechnique.id}/1`)}>View</Button>
                             </Card.Body>
                         </Card>
                     </Col>

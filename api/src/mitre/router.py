@@ -52,7 +52,7 @@ def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving techniques associated with that tactic.')
     return techniques
 
-@router.get("/mitre/tactic/{id}/yara", response_model=list[YaraSchema], tags=['mitre'])
+@router.get("/mitre/tactic/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
 def get_tactic_yara_rules(id: str, db: Session = Depends(get_db)):
     """Get all Yara rules associated with a mitre tactic ID."""
     yara_rules = services.get_mitre_tactic_yara(db, id)
@@ -67,6 +67,62 @@ def get_tactic_snort_rules(id: str, db: Session = Depends(get_db)):
     if snort_rules is None:
         raise HTTPException(400, 'Error in retrieving snort rules.')
     return snort_rules
+
+@router.get("/mitre/tactic/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+def get_tactic_sigma_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Sigma rules associated with a mitre tactic ID."""
+    sigma_rules = services.get_mitre_tactic_sigma(db, id)
+    if sigma_rules is None:
+        raise HTTPException(400, 'Error in retrieving sigma rules.')
+    return sigma_rules
+
+@router.get("/mitre/technique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
+def get_technique_yara_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Yara rules associated with a mitre technique ID."""
+    yara_rules = services.get_mitre_technique_yara(db, id)
+    if yara_rules is None:
+        raise HTTPException(400, 'Error in retrieving yara rules.')
+    return yara_rules
+
+@router.get("/mitre/technique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+def get_technique_snort_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Snort rules associated with a mitre technique ID."""
+    snort_rules = services.get_mitre_technique_snort(db, id)
+    if snort_rules is None:
+        raise HTTPException(400, 'Error in retrieving snort rules.')
+    return snort_rules
+
+@router.get("/mitre/technique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+def get_technique_sigma_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Sigma rules associated with a mitre technique ID."""
+    sigma_rules = services.get_mitre_technique_sigma(db, id)
+    if sigma_rules is None:
+        raise HTTPException(400, 'Error in retrieving sigma rules.')
+    return sigma_rules
+
+@router.get("/mitre/subtechnique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
+def get_subtechnique_yara_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Yara rules associated with a mitre technique ID."""
+    yara_rules = services.get_mitre_subtechnique_yara(db, id)
+    if yara_rules is None:
+        raise HTTPException(400, 'Error in retrieving yara rules.')
+    return yara_rules
+
+@router.get("/mitre/subtechnique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+def get_subtechnique_snort_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Snort rules associated with a mitre technique ID."""
+    snort_rules = services.get_mitre_subtechnique_snort(db, id)
+    if snort_rules is None:
+        raise HTTPException(400, 'Error in retrieving snort rules.')
+    return snort_rules
+
+@router.get("/mitre/subtechnique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+def get_subtechnique_sigma_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Sigma rules associated with a mitre technique ID."""
+    sigma_rules = services.get_mitre_subtechnique_sigma(db, id)
+    if sigma_rules is None:
+        raise HTTPException(400, 'Error in retrieving sigma rules.')
+    return sigma_rules
 
 @router.get("/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
 def get_mitre_tactic(
