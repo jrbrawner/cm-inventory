@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from src.mitre.models import Tactic, Technique, Subtechnique
 from src.yara.models import YaraRule
+from src.snort.models import SnortRule
+from fastapi_pagination import paginate, Page
 
 def get_mitre_tactic_id(db: Session, tactic_id: str) -> Tactic:
     return db.query(Tactic).filter(Tactic.id.like(tactic_id)).first()
@@ -28,6 +30,8 @@ def get_mitre_subtechnique(db: Session, id: str) -> Subtechnique:
 
 def get_mitre_tactic_yara(db: Session, id: str) -> list[YaraRule]:
     """Return all yara rules associated with a mitre tactic."""
-    tactic = db.query(Tactic).get(id)
-    rules = tactic.yara_rules
-    return rules
+    return paginate(db.query(Tactic).get(id).yara_rules)
+
+def get_mitre_tactic_snort(db: Session, id: str) -> Page[SnortRule]:
+    """Return all Snort rules associated with a mitre tactic."""
+    return paginate(db.query(Tactic).get(id).snort_rules)

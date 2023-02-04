@@ -129,7 +129,7 @@ export default function App(){
                   <ListGroup className="mt-2">
                     {results.map((result) => {
                       return (
-                        <ListGroup.Item key={result.id} variant={result.variant}>{result.result}</ListGroup.Item>
+                        <ListGroup.Item key={result.id} variant={result.variant}>{result.result} added to database.</ListGroup.Item>
                       )
                     })}
                   </ListGroup>

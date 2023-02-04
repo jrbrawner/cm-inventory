@@ -3,7 +3,7 @@ from datetime import datetime
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
 
 
-class SigmaBase(BaseModel):
+class SigmaSchema(BaseModel):
     id: int
     author : str | None = None
     title : str | None = None

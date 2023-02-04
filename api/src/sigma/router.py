@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
-from src.sigma.schemas import SigmaBase
+from src.sigma.schemas import SigmaSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.sigma import services
@@ -17,7 +17,7 @@ def create_sigma_rules(rules_text: str, db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
-@router.post("/sigma/file", response_model=list[Union[SigmaBase, dict]], tags=["sigma"])
+@router.post("/sigma/file", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
 def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_db)):
     rules_text = []
     for file in files:
@@ -28,7 +28,7 @@ def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_d
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
-@router.get("/sigma/{field}/{value}", response_model=Page[SigmaBase], tags=["sigma"])
+@router.get("/sigma/{field}/{value}", response_model=Page[SigmaSchema], tags=["sigma"])
 def sigma_rules_search(
     field: SigmaRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
@@ -110,7 +110,7 @@ def sigma_rules_search(
             )
         return sigma_rule_list
     
-@router.get("/sigma/{id}", response_model=SigmaBase, tags=['sigma'])
+@router.get("/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
 def get_rule_id(id: int, db: Session = Depends(get_db)):
     rule = services.get_sigma_rule_id(db, id)
     if rule is None:
@@ -124,7 +124,7 @@ def rebuild_rule(id: int, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in rebuilding sigma rule.')
     return rule_string
 
-@router.put("/sigma/{id}", response_model=SigmaBase, tags=['sigma'])
+@router.put("/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
 def update_rule(id: int, file: UploadFile, db: Session = Depends(get_db)):
     rule_text = file.file.read().decode()
     updated_rule = services.update_sigma_rule(db, rule_text, id)

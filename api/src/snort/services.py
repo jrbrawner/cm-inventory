@@ -3,14 +3,16 @@ from src.snort.models import SnortRule
 from SRParser import SnortParser
 from src.mitre.models import Tactic, Technique, Subtechnique
 import json
-from fastapi_pagination import paginate
+from fastapi_pagination.ext.sqlalchemy import paginate
 import re
+from sqlalchemy.orm.exc import FlushError 
 
 def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
     parser = SnortParser()
     snort_rule_list = []
     rules = parser.parse_rules(rules_text)
+    
     for rule in rules:
 
         rule_options = json.dumps(rule.body_options)
@@ -40,19 +42,23 @@ def create_snort_rules(db: Session, rules_text: str) -> list[SnortRule]:
                             opts = i.split(":")
                             if opts[0].strip() == "tactic":
                                 tactic_db = db.query(Tactic).get(opts[1])
-                                db_rule.tactics.append(tactic_db)
+                                if tactic_db is not None:
+                                    db_rule.tactics.append(tactic_db)
                             if opts[0].strip() == "technique":
                                 technique_db = db.query(Technique).get(opts[1])
-                                db_rule.techniques.append(technique_db)
+                                if technique_db is not None:
+                                    db_rule.techniques.append(technique_db)
                             if opts[0].strip() == "subtechnique":
                                 subtechnique_db = db.query(Subtechnique).get(opts[1])
-                                db_rule.subtechniques.append(subtechnique_db)
+                                if subtechnique_db is not None:
+                                    db_rule.subtechniques.append(subtechnique_db)
 
         db.add(db_rule)
         if db_rule.msg is None:
             snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
         else:
             snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
+    
     db.commit()
 
     for i in parser.error_log:

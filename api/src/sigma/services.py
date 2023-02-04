@@ -7,7 +7,8 @@ import json
 from datetime import datetime
 from src.mitre.utils import convert_tactic
 import yaml
-from fastapi_pagination import paginate, Page
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
     """Takes a list of sigma yaml strings read from files, and adds them to the database."""

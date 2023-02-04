@@ -20,6 +20,9 @@ import json
 from src.yara.schemas import YaraSchema
 from src.snort.models import SnortRule
 from src.mitre.classes import TechniqueLayerList
+from src.sigma.schemas import SigmaSchema
+from src.snort.schemas import SnortSchema
+from fastapi_pagination import Page
 
 router = APIRouter()
 
@@ -50,12 +53,20 @@ def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
     return techniques
 
 @router.get("/mitre/tactic/{id}/yara", response_model=list[YaraSchema], tags=['mitre'])
-def get_tactic_yara(id: str, db: Session = Depends(get_db)):
+def get_tactic_yara_rules(id: str, db: Session = Depends(get_db)):
     """Get all Yara rules associated with a mitre tactic ID."""
     yara_rules = services.get_mitre_tactic_yara(db, id)
     if yara_rules is None:
         raise HTTPException(400, 'Error in retrieving yara rules.')
     return yara_rules
+
+@router.get("/mitre/tactic/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+def get_tactic_snort_rules(id: str, db: Session = Depends(get_db)):
+    """Get all Snort rules associated with a mitre tactic ID."""
+    snort_rules = services.get_mitre_tactic_snort(db, id)
+    if snort_rules is None:
+        raise HTTPException(400, 'Error in retrieving snort rules.')
+    return snort_rules
 
 @router.get("/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
 def get_mitre_tactic(
