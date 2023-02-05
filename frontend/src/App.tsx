@@ -40,6 +40,8 @@ import SigmaTechniquePage from './Pages/Mitre/Countermeasures/Technique/SigmaTec
 import YaraSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/YaraSubtechniquePage';
 import SnortSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/SnortSubtechniquePage';
 import SigmaSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/SigmaSubtechniquePage';
+import LayersHomePage from './Pages/Mitre/Layers/LayersHomePage';
+import CreateLayerPage from './Pages/Mitre/Layers/CreateLayerPage';
 
 export default function App() {
   return (
@@ -66,6 +68,9 @@ export default function App() {
             <Route path="/mitre/countermeasure/yara/subtechnique/:id/:page" element={<YaraSubtechniquePage/>}/>
             <Route path="/mitre/countermeasure/snort/subtechnique/:id/:page" element={<SnortSubtechniquePage/>}/>
             <Route path="/mitre/countermeasure/sigma/subtechnique/:id/:page" element={<SigmaSubtechniquePage/>}/>
+
+            <Route path="/mitre/visualizations/home" element={<LayersHomePage/>}/>
+            <Route path="/mitre/layer/create" element={<CreateLayerPage/>}/>
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>

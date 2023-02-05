@@ -65,6 +65,10 @@ class MitreDataService {
     getSubtechniqueSigma(id, page, size) {
         return axios.get(`/mitre/subtechnique/${id}/sigma`, {params: {page: page, size: size}})
     }
+
+    getLayerOptions() {
+        return axios.get(`/mitre/layer/options`)
+    }
     
 }
 
