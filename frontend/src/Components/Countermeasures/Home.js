@@ -53,7 +53,7 @@ export default function App() {
                             <Card.Body>
                                 <Card.Title>Mitre</Card.Title>
                                 <Card.Text>
-                                    Explore Mitre data.
+                                    Explore Mitre data and mappings.
                                 </Card.Text>
                                 <Button variant="primary" onClick={() => navigate(`/mitre`)}>View</Button>
                             </Card.Body>

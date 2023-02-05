@@ -8,12 +8,16 @@ import yara
 from fastapi_pagination.ext.sqlalchemy import paginate
 from datetime import datetime
 
-def create_yara_rules(db: Session, rules_text: str) -> list[YaraRule]:
+def create_yara_rules(db: Session, rules_text: str = None, file_text: str = None) -> list[YaraRule]:
     """Method for parsing and creating yara rules.
        Note: rules using the 'magic' module are not supported on windows.
        Modules on windows are included with windows binaries, on linux there may 
        be additional software required for rules to compile successfully.
     """
+    if file_text is not None:
+        rules_text = ""
+        for file in file_text:
+            rules_text += file
 
     parser = MultiParser(rules_text, strip_whitespace=True)
     rules = parser.get_rules_dict()

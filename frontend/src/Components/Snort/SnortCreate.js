@@ -16,6 +16,8 @@ export default function App(){
     const [file, setFile] = React.useState();
     const [validated, setValidated] = React.useState(true);
     const [results, setResults] = React.useState();
+    const [successNumber, setSuccessNumber] = React.useState();
+    const [errorNumber, setErrorNumber] = React.useState();
 
     const handleInput = event  => {
       setRuleText(event.target.value);
@@ -41,7 +43,7 @@ export default function App(){
         SnortDataService.createFile(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
-          formatResults(error.data);
+          alert(error);
         })
         
       }
@@ -60,11 +62,22 @@ export default function App(){
 
       var resultList = []
       var index = 0;
+      var success = 0;
+      var error = 0;
       list.map((item) => {
+        if (item.variant === "success"){
+          success += 1;
+        }
+        else{
+          error += 1;
+        }
         resultList.push({id: index, result: item.msg, variant: item.variant}) 
         index += 1;
       })
+      
       setResults(resultList);
+      setSuccessNumber(success);
+      setErrorNumber(error);
     }
 
     return (
@@ -126,8 +139,10 @@ export default function App(){
                 </Form>
                 </div>
                 <hr/>
-                <div>
                 {results &&
+                <div>
+                <h5>{successNumber} Snort rules parsed and added to database.</h5>
+                <h5>{errorNumber} rules with errors in parsing.</h5>
                   <ListGroup className="mt-2">
                     {results.map((result) => {
                       return (
@@ -135,8 +150,9 @@ export default function App(){
                       )
                     })}
                   </ListGroup>
+                  </div>
                 }
-                </div>
+                
             </Container>
             
     )

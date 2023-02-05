@@ -51,6 +51,7 @@ export default function App(){
         SigmaDataService.createText(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
+          console.log(error);
           alert(error);
         })
       }

@@ -5,7 +5,7 @@ from src.dependencies import get_db, get_current_user
 from src.yara import services
 from src.yara.constants import YaraRuleFieldSearch
 from typing import Union
-from fastapi_pagination import Page, add_pagination, paginate, Params
+from fastapi_pagination import Page
 from typing import Optional
 
 router = APIRouter()
@@ -19,9 +19,11 @@ def create_yara_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     return yara_rule_list
 
 @router.post("/yara/file", response_model=list[Union[YaraSchema, dict]], tags=["yara"])
-def create_yara_rules_file(file: UploadFile, db: Session = Depends(get_db)):
-    rules_text = file.file.read().decode()
-    yara_rule_list = services.create_yara_rules(db, rules_text)
+def create_yara_rules_file(files: list[UploadFile], db: Session = Depends(get_db)):
+    rules_text = []
+    for file in files:
+        rules_text.append(file.file.read().decode())
+    yara_rule_list = services.create_yara_rules(db, file_text=rules_text)
     if yara_rule_list is None:
         raise HTTPException(400, "Error in rule creation.")
     return yara_rule_list

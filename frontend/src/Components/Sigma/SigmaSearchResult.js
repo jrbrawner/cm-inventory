@@ -30,10 +30,8 @@ export default function App(){
             setField(params.field);
             setValue(params.value);
         }).catch(function (error) {
-            if (error.response)
-                {
-                    console.log(error.response);
-                }
+            alert(error.response['status'] + ": " + error.response['statusText']);
+                
         })
     }, []);
 
@@ -113,10 +111,7 @@ export default function App(){
             setField(params.field);
             setValue(params.value);
         }).catch(function (error) {
-            if (error.response)
-                {
-                    console.log(error.response);
-                }
+            alert(error.response['status'] + ": " + error.response['statusText']);
         })
     }
 
@@ -155,8 +150,8 @@ export default function App(){
             <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="input-group w-50">
-                        <input required className="form-control" type="text" onChange={handleInput}></input>
-                        <select className="form-select" name="field" onChange={handleSelect}>
+                    <input required className="form-control" type="text" defaultValue={params.value} onChange={handleInput}></input>
+                    <select className="form-select" name="field" defaultValue={searchedField} onChange={handleSelect}>
                             <option value="">Select Search Term</option>
                             <option value="author">Author</option>
                             <option value="condition">Condition</option>
@@ -186,8 +181,8 @@ export default function App(){
             <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="input-group w-50">
-                        <input required className="form-control" type="text" onChange={handleInput}></input>
-                        <select className="form-select" name="field" onChange={handleSelect}>
+                    <input required className="form-control" type="text" defaultValue={params.value} onChange={handleInput}></input>
+                    <select className="form-select" name="field" defaultValue={searchedField} onChange={handleSelect}>
                             <option value="">Select Search Term</option>
                             <option value="author">Author</option>
                             <option value="condition">Condition</option>

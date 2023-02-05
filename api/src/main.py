@@ -32,7 +32,7 @@ tags_metadata = [
     },
 ]
 
-app = FastAPI(debug=True)
+app = FastAPI(debug=False)
 
 app.include_router(user_router)
 app.include_router(mitre_router)

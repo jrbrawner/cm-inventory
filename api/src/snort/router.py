@@ -24,7 +24,7 @@ def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_d
     for file in files:
         rules_text.append(file.file.read().decode())
     
-    snort_rules_list = services.create_snort_rules(db, rules_text)
+    snort_rules_list = services.create_snort_rules(db, file_text=rules_text)
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list

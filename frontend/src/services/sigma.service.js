@@ -2,7 +2,7 @@ import axios from 'axios';
 
 class SigmaDataService {
 
-    create(data) {
+    createText(data) {
         return axios.post(`/sigma`, data)
     }
     

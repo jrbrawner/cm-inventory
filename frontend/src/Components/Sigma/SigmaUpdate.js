@@ -24,10 +24,7 @@ export default function App() {
             setSigmaRule(response.data);
             setRuleText(response.data['raw_text']);
         }).catch(function (error) {
-            if (error.response)
-                {
-                    console.log(error.response);
-                }
+            alert(error.response['status'] + ": " + error.response['statusText']);
         })
     }, []);
 
@@ -55,11 +52,11 @@ export default function App() {
         else{
         //rule text wip
         const formData = new FormData();
-        formData.append("rules_text", ruleText);
-        SigmaDataService.createText(formData).then(function (response) {
+        formData.append("rule_text", ruleText);
+        SigmaDataService.update(sigmaRule.id, formData).then(function (response) {
         navigate(`/sigma/${sigmaRule.id}`);
         }).catch(function (error) {
-        alert(error);
+            alert(error.response['status'] + ": " + error.response['statusText']);
         })
         }
     }
@@ -81,19 +78,15 @@ export default function App() {
                     <Form onSubmit={handleSubmit} id="updateRuleForm">
                         <Card className="text-center mt-3 bg-light">
                             <Card.Header>
-                                <h5>Upload file of modified rule to update it.</h5>
+                                <h5>Change Sigma rule text to update the rule.</h5>
                             </Card.Header>
-
-                            <div className="d-flex justify-content-center mt-3">
-                                <Form.Control onChange={handleFile} className="w-50" type="file" required/>
-                            </div>
 
                             <Card.Body>
                                     <div>
                                        <TextareaAutosize
                                        id="rules-text"
                                        className="container"
-                                       disabled
+                                       required
                                        onKeyDown={CommonUtils.handleTab}
                                        onChange={handleChange}
                                        defaultValue={ruleText}/>

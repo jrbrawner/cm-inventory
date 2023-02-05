@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from src.sigma.schemas import SigmaSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
@@ -9,10 +9,10 @@ from src.sigma.constants import SigmaRuleFieldSearch
 
 router = APIRouter()
 
-@router.post("/sigma/wip", tags=["sigma"])
-def create_sigma_rules(rules_text: str, db: Session = Depends(get_db)):
+@router.post("/sigma", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
+def create_sigma_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     
-    sigma_rule_list = services.create_sigma_rules(db, rules_text)
+    sigma_rule_list = services.create_sigma_rules_text(db, rules_text)
     if sigma_rule_list is None:
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
@@ -36,77 +36,77 @@ def sigma_rules_search(
         sigma_rule_list = services.get_sigma_rule_author(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Condition:
         sigma_rule_list = services.get_sigma_rule_condition(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Description:
         sigma_rule_list = services.get_sigma_rule_description(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Detection:
         sigma_rule_list = services.get_sigma_rule_detection(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Logsource:
         sigma_rule_list = services.get_sigma_rule_logsource(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Raw_Text:
         sigma_rule_list = services.get_sigma_rule_raw_text(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Title:
         sigma_rule_list = services.get_sigma_rule_title(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Date_Added:
         sigma_rule_list = services.get_sigma_rule_date_added(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Tactics:
         sigma_rule_list = services.get_sigma_rules_tactics(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Techniques:
         sigma_rule_list = services.get_sigma_rules_techniques(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     if field is SigmaRuleFieldSearch.Subtechniques:
         sigma_rule_list = services.get_sigma_rules_techniques(db, value)
         if sigma_rule_list is None:
             raise HTTPException(
-                404, "No snort rules found for that field with that value."
+                404, "No sigma rules found for that field with that value."
             )
         return sigma_rule_list
     
@@ -125,8 +125,7 @@ def rebuild_rule(id: int, db: Session = Depends(get_db)):
     return rule_string
 
 @router.put("/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
-def update_rule(id: int, file: UploadFile, db: Session = Depends(get_db)):
-    rule_text = file.file.read().decode()
+def update_rule(id: int, rule_text: str = Form(), db: Session = Depends(get_db)):
     updated_rule = services.update_sigma_rule(db, rule_text, id)
     if updated_rule is None:
         raise HTTPException(400, 'Error in updating sigma rule.')
