@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, Form
 from src.mitre.schemas import (
     TacticBase,
     TechniqueBase,
@@ -172,20 +172,18 @@ def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving subtechnique.')
     return subtechnique
 
-@router.get("/mitre/layer/options", response_model=dict, tags=['mitre'])
-def get_mitre_layer_options(db: Session = Depends(get_db)):
-    """Return all options that can be customized for layer generation."""
-    rule_options = ['Yara', 'Snort', 'Sigma']
-    layer_parameters = ['Name', 'Description']
 
-    response = {'rule_options': rule_options,
-                'layer_parameters': layer_parameters}
 
-    return response
-    
+@router.post("/mitre/layer", tags=['mitre'])
+def create_mitre_layer(layer_name: str = Form(), layer_description: str = Form(), db: Session = Depends(get_db)):
+    print(layer_name)
+    print(layer_description)
+
+
 @router.get("/mitre/generate-heatmap", tags=["mitre"])
 def generate_heatmap(db: Session = Depends(get_db)):
     """Generate a layer based on countermeasure mitre coverage."""
+    
     yara_rules_to_viz = (
         db.query(YaraRule)
         .filter(YaraRule.techniques != None)

@@ -43,7 +43,7 @@ export default function App(){
         YaraDataService.createFile(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
-          alert(error);
+          alert(error.response['status'] + ": " + error.response['statusText']);
         })
         
       }
@@ -53,7 +53,7 @@ export default function App(){
         YaraDataService.createText(formData).then(function (response) {
           formatResults(response.data);
         }).catch(function (error) {
-          alert(error);
+          alert(error.response['status'] + ": " + error.response['statusText']);
         })
       }
     }

@@ -65,11 +65,10 @@ class MitreDataService {
     getSubtechniqueSigma(id, page, size) {
         return axios.get(`/mitre/subtechnique/${id}/sigma`, {params: {page: page, size: size}})
     }
-
-    getLayerOptions() {
-        return axios.get(`/mitre/layer/options`)
-    }
     
+    createLayer(data) {
+        return axios.post(`/mitre/layer`, data, {"Content-Type": "multipart/form-data"})
+    }
 }
 
 export default new MitreDataService();
