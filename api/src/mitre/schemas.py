@@ -1,6 +1,7 @@
 from pydantic import BaseModel, HttpUrl, ValidationError, validator
 from pydantic.schema import Optional
 from typing import Optional
+from fastapi import Form
 
 class TacticName(BaseModel):
     name : str
@@ -146,3 +147,25 @@ class TacticTechnique(TacticBase):
 
     class Config:
         orm_mode = True
+
+class LayerRequest(BaseModel):
+
+    layer_name : str
+    layer_description : str 
+    yara_check : str | None = None
+    snort_check : str | None = None
+    sigma_check : str | None = None
+
+    @classmethod
+    def as_form(
+        cls,
+        layer_name : str = Form(),
+        layer_description : str = Form(),
+        yara_check : str = Form(None),
+        snort_check : str = Form(None),
+        sigma_check : str = Form(None)
+
+    ):
+        return cls(layer_name=layer_name, layer_description=layer_description,
+                    yara_check=yara_check, snort_check = snort_check, sigma_check=sigma_check)
+

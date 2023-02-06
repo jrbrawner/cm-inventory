@@ -7,7 +7,8 @@ from src.mitre.schemas import (
     TacticTechnique,
     TechniqueTactics,
     TechniqueExtended,
-    SubTechniqueExtended
+    SubTechniqueExtended,
+    LayerRequest
 )
 from src.mitre.models import Technique
 from src.mitre.constants import MitreLookup
@@ -19,10 +20,12 @@ from mitreattack.navlayers import Layer, ToSvg, SVGConfig
 import json
 from src.yara.schemas import YaraSchema
 from src.snort.models import SnortRule
-from src.mitre.classes import TechniqueLayerList
+from src.sigma.models import SigmaRule
+from src.mitre.classes import LayerGenerator
 from src.sigma.schemas import SigmaSchema
 from src.snort.schemas import SnortSchema
 from fastapi_pagination import Page
+from typing import Optional
 
 router = APIRouter()
 
@@ -175,44 +178,45 @@ def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/mitre/layer", tags=['mitre'])
-def create_mitre_layer(layer_name: str = Form(), layer_description: str = Form(), db: Session = Depends(get_db)):
-    print(layer_name)
-    print(layer_description)
+def create_mitre_layer(form_data : LayerRequest = Depends(LayerRequest.as_form), db: Session = Depends(get_db)):
 
+    yara_rules = None
+    snort_rules = None
+    sigma_rules = None
+    
+    if form_data.yara_check == "on":
+        yara_rules = (
+            db.query(YaraRule)
+            .filter(YaraRule.techniques != None)
+            .filter(YaraRule.subtechniques != None)
+            .all()
+        )
+    if form_data.snort_check == "on":
+        snort_rules = (
+            db.query(SnortRule)
+            .filter(SnortRule.techniques != None)
+            .filter(SnortRule.subtechniques != None)
+            .all()
+        )
+    if form_data.sigma_check == "on":
+        sigma_rules = (
+            db.query(SigmaRule)
+            .filter(SigmaRule.techniques != None)
+            .filter(SigmaRule.subtechniques != None)
+            .all()
+        )
+    
+    layer_generator = LayerGenerator()
+    layer = layer_generator.generate_mitre_layer(layer_name=form_data.layer_name, description=form_data.layer_description,
+                                                 yara_rules=yara_rules, snort_rules=snort_rules, sigma_rules=sigma_rules)
+    
+    
+    return json.dumps(layer)
 
 @router.get("/mitre/generate-heatmap", tags=["mitre"])
 def generate_heatmap(db: Session = Depends(get_db)):
     """Generate a layer based on countermeasure mitre coverage."""
     
-    yara_rules_to_viz = (
-        db.query(YaraRule)
-        .filter(YaraRule.techniques != None)
-        .filter(YaraRule.subtechniques != None)
-        .all()
-    )
-    snort_rules_to_viz = (
-        db.query(SnortRule)
-        .filter(SnortRule.techniques != None)
-        .filter(YaraRule.subtechniques != None)
-        .all()
-    )
-
-    rule_list = TechniqueLayerList()
-
-    for rule in yara_rules_to_viz:
-        for technique in rule.techniques:
-            rule_list.add_technique_yara(technique.id)
-        for subtechnique in rule.subtechniques:
-            rule_list.add_technique_yara(subtechnique.id)
-
-    for rule in snort_rules_to_viz:
-        for technique in rule.techniques:
-            rule_list.add_technique_snort(technique.id)
-        for subtechnique in rule.subtechniques:
-            rule_list.add_technique_snort(subtechnique.id)
-
-    layer = rule_list.generate_mitre_layer(layer_name="my_layer", description="idk")
-
     with open("src/mitre/layers/test_layer.json", "w", encoding="utf-8") as file:
         json.dump(layer, file, ensure_ascii=False, indent=4)
     file.close()

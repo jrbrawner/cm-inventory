@@ -4,9 +4,11 @@ import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { TextareaAutosize }  from '@mui/base';
 
 export default function App(){
 
+    const [layer, setLayer] = React.useState();
     
     React.useEffect(() => {
         
@@ -16,7 +18,8 @@ export default function App(){
         event.preventDefault();
         const formData = new FormData(event.target);
         MitreDataService.createLayer(formData).then(function (response) {
-            alert(response.data);
+            console.log(layer);
+            setLayer(response.data);
         }).catch(function (error) {
             alert(error.response['status'] + ": " + error.response['statusText']);
         })
@@ -32,12 +35,12 @@ export default function App(){
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3 text-start" controlId="formLayerName">
                                 <Form.Label>Layer Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter layer name" name="layer_name" />
+                            <Form.Control type="text" required placeholder="Enter layer name" name="layer_name" />
                         </Form.Group>
 
                         <Form.Group className="mb-3 text-start" controlId="formLayerDescription">
                                 <Form.Label>Layer Description</Form.Label>
-                            <Form.Control type="text" placeholder="Enter layer description" name="layer_description" />
+                            <Form.Control type="text" required placeholder="Enter layer description" name="layer_description" />
                         </Form.Group>
                         <hr/>
                         <h5>Choose which countermeasures to include in layer generation.</h5>
@@ -45,18 +48,21 @@ export default function App(){
                         <Form.Check 
                             type="checkbox"
                             id="yaraCheck"
+                            name="yara_check"
                             label="Include Yara Rules"
                             defaultChecked="true"
                         />
                         <Form.Check 
                             type="checkbox"
                             id="snortCheck"
+                            name="snort_check"
                             label="Include Snort Rules"
                             defaultChecked="true"
                         />
                         <Form.Check 
                             type="checkbox"
                             id="sigmaCheck"
+                            name="sigma_check"
                             label="Include Sigma Rules"
                             defaultChecked="true"
                         />
@@ -67,6 +73,12 @@ export default function App(){
                     </Form>
                 </div>
             </div>
+            <hr/>
+            {layer && 
+                <TextareaAutosize
+                disabled
+                className="container text-dark"
+                defaultValue={layer}/>}
         </Container>
     )
 }
