@@ -42,6 +42,7 @@ import SnortSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/Sn
 import SigmaSubtechniquePage from './Pages/Mitre/Countermeasures/Subtechnique/SigmaSubtechniquePage';
 import LayersHomePage from './Pages/Mitre/Layers/LayersHomePage';
 import CreateLayerPage from './Pages/Mitre/Layers/CreateLayerPage';
+import LayerToHeatmapPage from './Pages/Mitre/Layers/LayerToHeatmapPage';
 
 export default function App() {
   return (
@@ -71,6 +72,7 @@ export default function App() {
 
             <Route path="/mitre/visualizations/home" element={<LayersHomePage/>}/>
             <Route path="/mitre/layer/create" element={<CreateLayerPage/>}/>
+            <Route path="/mitre/layer/heatmap" element={<LayerToHeatmapPage/>}/>
             
             <Route path="/yara/home" element={<YaraHomePage/>}/>
             <Route path="/yara/search" element={<YaraSearchPage/>}/>

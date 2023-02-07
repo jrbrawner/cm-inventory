@@ -29,11 +29,13 @@ export default function App() {
                 <Col>
                     <Card className="mb-2" bg="light">
                         <Card.Body>
-                            <Card.Title>Test</Card.Title>
+                            <Card.Title>Layer to Heatmap</Card.Title>
                             <Card.Text>
-                                Test
+                                Generate a heatmap using a MITRE layer.
+                                <br/>
+                                <br/>
                             </Card.Text>
-                            <Button variant="primary" onClick={() => navigate(`/mitre/techniques`)}>View</Button>
+                            <Button variant="primary" onClick={() => navigate(`/mitre/layer/heatmap`)}>View</Button>
                         </Card.Body>
                     </Card>
                 </Col>

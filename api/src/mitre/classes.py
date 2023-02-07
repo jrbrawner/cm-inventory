@@ -28,7 +28,7 @@ class LayerGenerator:
         
         self.final_list = []
 
-    def add_technique_yara(self, technique_id: str) -> None:
+    def __add_technique_yara(self, technique_id: str) -> None:
         """Method to add yara rules that will be used in generating a mitre layer."""
         if technique_id not in self.yara_technique_list:
             technique_layer = TechniqueLayerObject("Yara", technique_id, 1)
@@ -40,7 +40,7 @@ class LayerGenerator:
                     technique_layer.count += 1
                     break
 
-    def add_technique_snort(self, technique_id: str) -> None:
+    def __add_technique_snort(self, technique_id: str) -> None:
         """Method to add snort rules that will be used in generating a mitre layer."""
         if technique_id not in self.snort_technique_list:
             technique_layer = TechniqueLayerObject("Snort", technique_id, 1)
@@ -52,7 +52,7 @@ class LayerGenerator:
                     technique_layer.count += 1
                     break
 
-    def add_technique_sigma(self, technique_id: str) -> None:
+    def __add_technique_sigma(self, technique_id: str) -> None:
         """Method to add sigma rules that will be used in generating a mitre layer."""
         if technique_id not in self.sigma_technique_list:
             technique_layer = TechniqueLayerObject("Sigma", technique_id, 1)
@@ -85,6 +85,10 @@ class LayerGenerator:
 
     def __compile_techniques(self):
         """Build final lists to be used in generating a mitre layer."""
+
+        print(self.yara_technique_list)
+        print(self.snort_technique_list)
+        print(self.sigma_technique_list)
 
         for technique in self.yara_technique_list:
             if technique in self.snort_technique_list and technique in self.sigma_technique_list:
@@ -138,7 +142,7 @@ class LayerGenerator:
                 self.final_list.append(technique_layer)
     
         for technique in self.snort_technique_list:
-            if technique in self.sigma_technique_list:
+            if technique in self.sigma_technique_list and technique not in self.yara_technique_list:
 
                 technique_layer_index = self.__find_technique_layer("Snort", technique)
                 technique_layer = self.snort_layer_list[technique_layer_index]
@@ -153,7 +157,7 @@ class LayerGenerator:
                 technique_layer = TechniqueLayerObject("Snort, Sigma", technique, count)
                 self.final_list.append(technique_layer)
 
-    def __generate_techniques(self) -> list:
+    def __generate_techniques(self) -> list[str]:
         """Method to generate techniques description used for generating a mitre layer."""
         self.__compile_techniques()
         technique_list = []
@@ -202,21 +206,21 @@ class LayerGenerator:
         if yara_rules is not None:
             for rule in yara_rules:
                 for technique in rule.techniques:
-                    self.add_technique_yara(technique.id)
+                    self.__add_technique_yara(technique.id)
                 for subtechnique in rule.subtechniques:
-                    self.add_technique_yara(subtechnique.id)
+                    self.__add_technique_yara(subtechnique.id)
         if snort_rules is not None:
             for rule in snort_rules:
                 for technique in rule.techniques:
-                    self.add_technique_snort(technique.id)
+                    self.__add_technique_snort(technique.id)
                 for subtechnique in rule.subtechniques:
-                    self.add_technique_snort(subtechnique.id)
+                    self.__add_technique_snort(subtechnique.id)
         if sigma_rules is not None:
             for rule in sigma_rules:
                 for technique in rule.techniques:
-                    self.add_technique_sigma(technique.id)
+                    self.__add_technique_sigma(technique.id)
                 for subtechnique in rule.subtechniques:
-                    self.add_technique_sigma(subtechnique.id)
+                    self.__add_technique_sigma(subtechnique.id)
         
         #breaking here
         techniques = self.__generate_techniques()
