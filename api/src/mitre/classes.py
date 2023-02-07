@@ -168,6 +168,7 @@ class LayerGenerator:
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
                     "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
+                    "showSubtechniques": True
                 }
             )
 
@@ -177,6 +178,7 @@ class LayerGenerator:
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
                     "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
+                    "showSubtechniques": True
                 }
             )
 
@@ -186,6 +188,7 @@ class LayerGenerator:
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
                     "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
+                    "showSubtechniques": True
                 }
             )
         
@@ -195,6 +198,7 @@ class LayerGenerator:
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
                     "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
+                    "showSubtechniques": True
                 }
             )
 
@@ -227,7 +231,7 @@ class LayerGenerator:
         
         layer = {
             "name": f"{layer_name}",
-            "versions": {"layer": "4.4", "navigator": "4.8.0"},
+            "versions": {"layer": "4.3", "navigator": "4.6.5"},
             "sorting": 3,  # descending order of score
             "description": f"{description}",
             "domain": "enterprise-attack",

@@ -69,6 +69,10 @@ class MitreDataService {
     createLayer(data) {
         return axios.post(`/mitre/layer`, data, {"Content-Type": "multipart/form-data"})
     }
+
+    createHeatmap(data) {
+        return axios.post(`/mitre/heatmap`, data, {"Content-Type": "multipart/form-data"})
+    }
 }
 
 export default new MitreDataService();

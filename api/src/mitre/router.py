@@ -26,6 +26,7 @@ from src.sigma.schemas import SigmaSchema
 from src.snort.schemas import SnortSchema
 from fastapi_pagination import Page
 from typing import Optional
+import tempfile
 
 router = APIRouter()
 
@@ -213,23 +214,15 @@ def create_mitre_layer(form_data : LayerRequest = Depends(LayerRequest.as_form),
     
     return json.dumps(layer)
 
-@router.get("/mitre/generate-heatmap", tags=["mitre"])
-def generate_heatmap(db: Session = Depends(get_db)):
+@router.post("/mitre/heatmap", tags=["mitre"])
+def generate_heatmap(file: UploadFile | None = None, layer_text: str = Form(None), db: Session = Depends(get_db)):
     """Generate a layer based on countermeasure mitre coverage."""
-    
-    with open("src/mitre/layers/test_layer.json", "w", encoding="utf-8") as file:
-        json.dump(layer, file, ensure_ascii=False, indent=4)
-    file.close()
 
-    return "Layer created with countermeasure data."
+    if file is not None:
+        layer_text = file.file.read().decode()
 
-
-@router.get("/mitre/create-layer", tags=["mitre"])
-def load_layer_to_svg():
-    """Create an svg based on a mitre layer."""
-    lay = Layer()
-    lay.from_file("src/mitre/layers/test_layer.json")
-
+    layer = Layer()
+    layer.from_dict(json.loads(layer_text))
     # Using taxii server for template
     config = SVGConfig(
         width=12,
@@ -258,6 +251,11 @@ def load_layer_to_svg():
         resource="src/mitre/data/mitre-enterprise-attack.json",
         config=config,
     )
+    file_text = ""
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        file_name = tmp_dir + '/test.svg'
+        viz.to_svg(layerInit=layer, filepath=file_name)
+        file_text = open(file_name).read()
+    
 
-    viz.to_svg(layerInit=lay, filepath="src/mitre/viz/test.svg")
-    return "Test SVG created."
+    return {"results": "Layer created with countermeasure data.", "visualization": file_text}
