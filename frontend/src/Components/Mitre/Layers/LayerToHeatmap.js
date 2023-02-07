@@ -1,106 +1,126 @@
 import React from 'react';
 import MitreDataService from '../../../services/mitre.service';
-import Spinner from 'react-bootstrap/Spinner';
-import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { TextareaAutosize }  from '@mui/base';
+import Container from 'react-bootstrap/Container';
+import ListGroup from 'react-bootstrap/ListGroup';
+import CommonUtils from '../../../lib/utils';
 
 export default function App(){
 
-    const [layer, setLayer] = React.useState();
+    const [layerText, setLayerText] = React.useState();
+    const [file, setFile] = React.useState();
+    const [visualization, setVisualization] = React.useState();
+    const [validated, setValidated] = React.useState(true);
+    const [results, setResults] = React.useState();
     const [fileName, setFileName] = React.useState();
-    
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        MitreDataService.createLayer(formData).then(function (response) {
-            console.log(layer);
-            setLayer(response.data);
-        }).catch(function (error) {
-            alert(error.response['status'] + ": " + error.response['statusText']);
-        })
+
+    const handleInput = event  => {
+      setLayerText(event.target.value);
+      setValidated(false);
+      if (event.target.value === ""){
+        setValidated(true);
+      }
     }
 
-    const handleInput = (event) => {
+    const handleFile = event => {
+      setFile(event.target.files[0]);
+      setValidated(false);
+    }
+
+    const handleFileName = (event) => {
         setFileName(event.target.value);
     }
+    
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      if (file !== undefined) {
+          const formData = new FormData();
+          formData.append("file", file);
+          MitreDataService.createHeatmap(formData).then(function (response) {
+              formatResults(response.data);
+            }).catch(function (error) {
+                alert(error);
+            })
+            
+        }
+        else{
+        //rule text wip
+        const formData = new FormData();
+        formData.append("layer_text", layerText);
+        MitreDataService.createHeatmap(formData).then(function (response) {
+          formatResults(response.data);
+        }).catch(function (error) {
+          alert(error);
+        })
+      }
+    }
 
-    function saveLayer(){
-        const blob = new Blob([layer], { type: "application/json" });
+    function formatResults(result) {
+      setResults(result['results']);
+      setVisualization(result['visualization']);
+    }
+
+    function saveVisualization(){
+        const blob = new Blob([visualization], { type: "application/xml" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.download = `${fileName}.json`;
+        link.download = `${fileName}.svg`;
         link.href = url;
         link.click();
     }
+
     
+
     return (
-        <Container>
+            <Container className="mb-5">
+              <div className="input-group d-flex justify-content-center">
+                <h5 className="mt-3">Upload layer file or paste layer text below.</h5>
+              </div>
+              <div className="mt-3">
+                <Form onSubmit={handleSubmit}>
+                  <div className="d-flex justify-content-center">
+                    <Form.Control onChange={handleFile} className="w-50" type="file" required={validated}/>
+                  </div>
+                  <Form.Group className="mt-3 mb-1">
+                    <textarea
+                      className="w-50"
+                      id="rules-text"
+                      rows={15}
+                      required={validated}
+                      placeholder="Enter rules here..."
+                      style={{ width: 200 }}
+                      onChange={handleInput}
+                      onKeyDown={CommonUtils.handleTab}
+                    />
 
-            <div className="d-flex justify-content-center">
-                <div className="w-50 mt-3">
-                    <h5>Generate a MITRE layer.</h5>
-                    <a href="https://github.com/mitre-attack/attack-navigator/tree/master/layers">MITRE Layer Information</a>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3 text-start" controlId="formLayerName">
-                                <Form.Label>Layer Name</Form.Label>
-                            <Form.Control type="text" required placeholder="Enter layer name" name="layer_name" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3 text-start" controlId="formLayerDescription">
-                                <Form.Label>Layer Description</Form.Label>
-                            <Form.Control type="text" required placeholder="Enter layer description" name="layer_description" />
-                        </Form.Group>
-                        <hr/>
-                        <h5>Choose which countermeasures to include in layer generation.</h5>
-                        <Form.Group className="mt-3 mb-3 text-start" controlId="formRuleSelections">
-                        <Form.Check 
-                            type="checkbox"
-                            id="yaraCheck"
-                            name="yara_check"
-                            label="Include Yara Rules"
-                            defaultChecked="true"
-                        />
-                        <Form.Check 
-                            type="checkbox"
-                            id="snortCheck"
-                            name="snort_check"
-                            label="Include Snort Rules"
-                            defaultChecked="true"
-                        />
-                        <Form.Check 
-                            type="checkbox"
-                            id="sigmaCheck"
-                            name="sigma_check"
-                            label="Include Sigma Rules"
-                            defaultChecked="true"
-                        />
-                        </Form.Group>
-                        <div className="text-start mt-3">
-                            <Button type="submit">Generate Layer</Button>
+                  </Form.Group>
+                  <div className="d-flex justify-content-center mt-3">
+                    <div className="w-50">
+                        <div className="d-grid gap-2">
+                            <Button className="" variant="primary" type="submit">Submit</Button>
                         </div>
-                    </Form>
-                <hr/>
+                    </div>
                 </div>
-            </div>
-            {layer && 
-                <TextareaAutosize
-                disabled
-                className="container text-dark"
-                defaultValue={layer}/>}
-                <div className="d-flex justify-content-center">
+                </Form>
+                </div>
+                <hr/>
+                {results &&
+                    <div className="d-flex justify-content-center">
                     <div className="w-50 mt-3">
-                    <h5>Save Layer to File</h5>
+                    <h5>Save heatmap to File</h5>
+                    <p>{results}</p>
                     <Form.Group className="mb-3 text-start" controlId="formLayerDescription">
                         <Form.Label>File Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter file name" onChange={handleInput}/>
+                        <Form.Control type="text" placeholder="Enter file name" onChange={handleFileName}/>
                     </Form.Group>
                     <div className="text-start mt-3 mb-3">
-                        <Button onClick={() => saveLayer(layer)}>Save Layer to File</Button>
+                        <Button onClick={() => saveVisualization(visualization)}>Save heatmap to File</Button>  
                     </div>
                     </div>
                 </div>
-        </Container>
+                }
+            </Container>
+            
     )
 }
