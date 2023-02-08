@@ -36,6 +36,17 @@ export default function App(){
                         </Card.Body>
                     </Card>
                 </Col>
+                <Col>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Rule Builder</Card.Title>
+                            <Card.Text>
+                                Tool to aid in the creation of new Snort rules.
+                            </Card.Text>
+                            <Button variant="primary" onClick={() => navigate(`/snort/rule-builder`)}>View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
             </Row>
         </Container>
         
