@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.mitre import services
 from src.yara.models import YaraRule
-from mitreattack.navlayers import Layer, ToSvg, SVGConfig
+from mitreattack.navlayers import Layer, ToSvg, SVGConfig, ToExcel
 import json
 from src.yara.schemas import YaraSchema
 from src.snort.models import SnortRule
@@ -259,3 +259,20 @@ def generate_heatmap(file: UploadFile | None = None, layer_text: str = Form(None
     
 
     return {"results": "Layer created with countermeasure data.", "visualization": file_text}
+
+@router.post("/mitre/layer/convert_xlsx", tags=['mitre'])
+def layer_to_xlsx(file: UploadFile | None = None, layer_text: str = Form(None)):
+
+    if file is not None:
+        layer_text = file.file.read().decode()
+
+    layer = Layer()
+    layer.from_dict(json.loads(layer_text))
+
+    x = ToExcel(domain="enterprise",
+        source="local",
+        resource="src/mitre/data/mitre-enterprise-attack.json")
+    
+    x.to_xlsx(layerInit=layer, filepath="src/mitre/viz/testing.xlsx")
+
+    return "Excel sheet created."

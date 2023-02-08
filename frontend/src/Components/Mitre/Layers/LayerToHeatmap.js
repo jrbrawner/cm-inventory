@@ -108,7 +108,6 @@ export default function App(){
                 {results &&
                     <div className="d-flex justify-content-center">
                     <div className="w-50 mt-3">
-                    <h5>Save heatmap to File</h5>
                     <p>{results}</p>
                     <Form.Group className="mb-3 text-start" controlId="formLayerDescription">
                         <Form.Label>File Name</Form.Label>

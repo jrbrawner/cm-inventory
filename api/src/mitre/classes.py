@@ -10,6 +10,12 @@ class TechniqueLayerObject:
         self.technique_id = technique_id
         self.count = count
 
+    def __repr__(self) -> str:
+        return f"TechniqueLayerObject: rule_type: {self.rule_type}, technique_id: {self.technique_id}, count: {self.count}."
+    
+    def get_count(self) -> int:
+        return self.count
+
 
 class LayerGenerator:
     """Class that can take rule objects and be used to generate mitre layers."""
@@ -86,10 +92,6 @@ class LayerGenerator:
     def __compile_techniques(self):
         """Build final lists to be used in generating a mitre layer."""
 
-        print(self.yara_technique_list)
-        print(self.snort_technique_list)
-        print(self.sigma_technique_list)
-
         for technique in self.yara_technique_list:
             if technique in self.snort_technique_list and technique in self.sigma_technique_list:
 
@@ -146,7 +148,7 @@ class LayerGenerator:
 
                 technique_layer_index = self.__find_technique_layer("Snort", technique)
                 technique_layer = self.snort_layer_list[technique_layer_index]
-                count += technique_layer.count
+                count = technique_layer.count
                 self.snort_layer_list.remove(technique_layer)
 
                 technique_layer_index = self.__find_technique_layer("Sigma", technique)
@@ -155,6 +157,25 @@ class LayerGenerator:
                 self.sigma_layer_list.remove(technique_layer)
 
                 technique_layer = TechniqueLayerObject("Snort, Sigma", technique, count)
+                self.final_list.append(technique_layer)
+            elif technique not in self.sigma_technique_list and technique not in self.yara_technique_list:
+
+                technique_layer_index = self.__find_technique_layer("Snort", technique)
+                technique_layer = self.snort_layer_list[technique_layer_index]
+                count = technique_layer.count
+                self.snort_layer_list.remove(technique_layer)
+
+                technique_layer = TechniqueLayerObject("Snort", technique, count)
+                self.final_list.append(technique_layer)
+
+        for technique in self.sigma_technique_list:
+            if technique not in self.snort_technique_list and technique not in self.yara_technique_list:
+                technique_layer_index = self.__find_technique_layer("Sigma", technique)
+                technique_layer = self.sigma_layer_list[technique_layer_index]
+                count = technique_layer.count
+                self.sigma_layer_list.remove(technique_layer)
+
+                technique_layer = TechniqueLayerObject("Sigma", technique, count)
                 self.final_list.append(technique_layer)
 
     def __generate_techniques(self) -> list[str]:
@@ -167,8 +188,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
-                    "showSubtechniques": True
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
                 }
             )
 
@@ -177,8 +197,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
-                    "showSubtechniques": True
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
                 }
             )
 
@@ -187,8 +206,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
-                    "showSubtechniques": True
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
                 }
             )
         
@@ -197,8 +215,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
-                    "showSubtechniques": True
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
                 }
             )
 
