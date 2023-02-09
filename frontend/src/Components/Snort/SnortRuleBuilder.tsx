@@ -34,6 +34,10 @@ export default function App(){
     const [optionsAdded, setOptionsAdded] = React.useState(0);
 
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
+
+    const selectActionRef = React.useRef<any>();
+    const selectProtocolRef = React.useRef<any>();
+    const selectDirectionRef = React.useRef<any>();
     
     
     const ruleActionOptions = [
@@ -115,7 +119,6 @@ export default function App(){
     }
 
     const onSelect = (option: any, actionMeta: any) => {
-        console.log('on select called');
         if (actionMeta.name === "action-select"){
             setRuleAction(option.value);
         }
@@ -228,11 +231,14 @@ export default function App(){
         formData.append("rule_string", ruleText);
         SnortDataService.deconstructRule(formData).then((response) => {
             let data = response.data['rule'];
-            setRuleAction(data['action']);
+
+            //setRuleAction(data['action']);
             //setRuleProtocol(data['protocol']);
 
-            let idk = document.getElementById('action-select');
-            idk.
+            selectActionRef.current.setValue({value: data['action'], label: data['action']});
+            selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
+
+            setRuleSourceIP(data['source_ip']);
             
         })
      }
@@ -265,7 +271,7 @@ export default function App(){
                                 Action
                             </Form.Label>
                             <Col sm="10">
-                                <Select className="text-start" name="action-select" options={ruleActionOptions} onChange={onSelect}/>
+                                <Select ref={selectActionRef} className="text-start" options={ruleActionOptions} onChange={onSelect}/>
                             </Col>
                         </Form.Group>
 
@@ -274,7 +280,7 @@ export default function App(){
                                 Protocol
                             </Form.Label>
                             <Col sm="10">
-                                <Select className="text-start" name="protocol-select" options={ruleProtocolOptions} onChange={onSelect}/>
+                                <Select ref={selectProtocolRef} className="text-start" name="protocol-select" options={ruleProtocolOptions} onChange={onSelect}/>
                             </Col>
                         </Form.Group>
 
@@ -283,7 +289,7 @@ export default function App(){
                                 Source IP
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control name="source-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $HOME_NET, [192.168.1.0/24,10.1.1.0/24])"
+                                <Form.Control defaultValue={ruleSourceIP} name="source-ip" id="source-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $HOME_NET, [192.168.1.0/24,10.1.1.0/24])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -334,7 +340,7 @@ export default function App(){
                                 Option 
                             </Form.Label>
                             <Col>
-                                <Select className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
+                                <Select ref={selectDirectionRef} className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
                             </Col>
                             <Col>
                                 <Form.Control name="rule-option-0" type="text" placeholder="Enter option text"
