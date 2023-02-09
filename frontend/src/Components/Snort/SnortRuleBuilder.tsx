@@ -31,6 +31,7 @@ export default function App(){
     const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
     const [optionKVPList, setOptionKVPList] = React.useState<{[key: string]: IOptionKVP}>({});
     const [optionString, setOptionString] = React.useState("");
+    const [optionsAdded, setOptionsAdded] = React.useState(0);
 
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
     
@@ -76,8 +77,7 @@ export default function App(){
       }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, optionString])
 
     React.useEffect(() => {
-        console.log('something');
-    }, [ruleOptions])
+    }, [optionsAdded])
 
     const updateOptionString = () => {
         let optionString = ""
@@ -87,13 +87,15 @@ export default function App(){
             }
 
             if (entry[1].text !== undefined){
-                optionString += '"' + entry[1].text + '"' + ";"
+                optionString += '"' + entry[1].text + '"' + "; "
             }
         })
 
         if (optionString !== "") {
             optionString = "(" + optionString + ")";
         }
+
+        console.log(optionString);
 
         setOptionString(optionString);
     }
@@ -191,7 +193,6 @@ export default function App(){
      }
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-        console.log('button clicked');
         let list = ruleOptions;
         let index = ruleOptions.length + 1;
         let newRuleTextName = `rule-text-${index}`
@@ -206,23 +207,38 @@ export default function App(){
                             Option 
                         </Form.Label>
                         <Col>
-                            <Select className="text-start" name={newRuleTextName} options={options} onChange={onSelect}/>
+                            <Select className="text-start" name={newRuleTextName} options={options} onChange={handleRuleOptionSelect}/>
                         </Col>
                         <Col>
                             <Form.Control name={newRuleOptionName} type="text" placeholder="Enter option text"
-                            onChange={handleInput} />
+                            onChange={handleRuleOptionInput} autoComplete="off" />
                         </Col>
                     </Form.Group>
             }
         )
 
         setRuleOptions(list);
+        setOptionsAdded(optionsAdded + 1);
+     }
+
+     const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
+
      }
 
     return (
         
             <Container className="mt-3">
-                <h4>Create New Snort Rule</h4>
+                <div className="">
+                    <Row>
+                        <Col lg={{ span: 6, offset: 3 }}>
+                            <h4>Snort Rule Builder</h4>
+                        </Col>
+                        <Col>
+                            <Button variant="outline-secondary" onClick={() => deconstructRule}>Deconstruct Rule</Button>
+                        </Col>
+                    </Row>
+                    
+                </div>
                     <TextareaAutosize
                     className="container mt-3 w-75"
                     name="rule-text"
