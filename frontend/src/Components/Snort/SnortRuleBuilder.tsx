@@ -73,9 +73,12 @@ export default function App(){
         setRuleText(
             `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
         );
-      }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, ruleOptions, optionString])
+      }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, optionString])
 
-    
+    React.useEffect(() => {
+        console.log('something');
+    }, [ruleOptions])
+
     const updateOptionString = () => {
         let optionString = ""
         Object.entries(optionKVPList).map((entry) => {
@@ -103,6 +106,8 @@ export default function App(){
 
         SnortDataService.testRule(formData).then((response) => {
             setTestResult(response.data);
+        }).catch((error) => {
+            alert(error['name'] + error['message']);
         })
 
     }
@@ -186,31 +191,32 @@ export default function App(){
      }
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log('button clicked');
         let list = ruleOptions;
-
-        let newRuleTextName = `rule-text-${ruleOptions.length + 1}`
-        let newRuleOptionName = `rule-option-${ruleOptions.length + 1}`
+        let index = ruleOptions.length + 1;
+        let newRuleTextName = `rule-text-${index}`
+        let newRuleOptionName = `rule-option-${index}`
 
         list.push(
-            <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm="2">
-                    Option 
-                </Form.Label>
-                <Col>
-                    <Select className="text-start" name={newRuleTextName} options={options} onChange={onSelect}/>
-                </Col>
-                <Col>
-                    <Form.Control name={newRuleOptionName} type="text" placeholder="Enter option text"
-                    onChange={handleInput} />
-                </Col>
-            </Form.Group>
+            {
+                id : index,
+                result: 
+                    <Form.Group key={index} as={Row} className="mb-3">
+                        <Form.Label column sm="2">
+                            Option 
+                        </Form.Label>
+                        <Col>
+                            <Select className="text-start" name={newRuleTextName} options={options} onChange={onSelect}/>
+                        </Col>
+                        <Col>
+                            <Form.Control name={newRuleOptionName} type="text" placeholder="Enter option text"
+                            onChange={handleInput} />
+                        </Col>
+                    </Form.Group>
+            }
         )
 
         setRuleOptions(list);
-
-        console.log(newRuleOptionName);
-        console.log(newRuleTextName);
-
      }
 
     return (
@@ -218,7 +224,7 @@ export default function App(){
             <Container className="mt-3">
                 <h4>Create New Snort Rule</h4>
                     <TextareaAutosize
-                    className="container mt-3"
+                    className="container mt-3 w-75"
                     name="rule-text"
                     defaultValue={ruleText}
                     onChange={handleRuleTextChange}/>
@@ -311,8 +317,8 @@ export default function App(){
                         {ruleOptions && 
                             ruleOptions.map((ruleOption) => {
                                 return (
-                                    <div>
-                                        {ruleOption}
+                                    <div key={ruleOption.id}>
+                                        {ruleOption.result}
                                     </div>
                                 )
                             })
@@ -320,7 +326,7 @@ export default function App(){
 
                         <Form.Group as={Row} className="mb-3">
                             <Col>
-                                <Button onClick={addRuleOption} id="rule-option-0" 
+                                <Button onClick={addRuleOption}  
                                 className="shadow-none mt-2" variant=""><span><FontAwesomeIcon icon={faPlus} /></span></Button>
                             </Col>
                         </Form.Group>
@@ -329,10 +335,13 @@ export default function App(){
                 </div>
                 <Button type="submit">Test Rule</Button>
             </Form>
+            <hr/>
             {testResult &&
-                <ListGroup className="mt-2">
+            <div>
+                <ListGroup className="mt-3 mb-5">
                     <ListGroup.Item variant={testResult.variant}>{testResult.msg}</ListGroup.Item>
                 </ListGroup>
+            </div>
             }
             
             </Container>
