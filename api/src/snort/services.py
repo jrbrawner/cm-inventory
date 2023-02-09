@@ -204,3 +204,13 @@ def test_snort_rule(rule_string: str) -> str:
         return {"msg": parser.error_log[0], "variant": "danger"}
     else:
         return {"msg": "Rule compiled successfully.", "variant": "success"}
+
+def deconstruct_snort_rule(rule_string: str) -> str:
+    """Attempt to parse a rule string to see if it passes."""
+    parser = SnortParser()
+    rule = parser.parse_rules(rule_string.strip())[0]
+    
+    if len(parser.error_log) != 0:
+        return {"msg": parser.error_log[0], "variant": "danger"}
+    else:
+        return {"rule": rule.__dict__, "variant": "success"}

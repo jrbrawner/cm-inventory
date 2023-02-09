@@ -33,6 +33,10 @@ class SnortDataService {
     testRule(data) {
         return axios.post(`/snort/test`, data, {"Content-Type": "multipart/form-data"})
     }
+
+    deconstructRule(data) {
+        return axios.post(`/snort/deconstruct`, data, {"Content-Type": "multipart/form-data"})
+    }
 }
 
 export default new SnortDataService();

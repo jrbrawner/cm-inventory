@@ -152,8 +152,15 @@ def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     return msg
 
 @router.post("/snort/test", response_model=dict, tags=['snort'])
-def test_snort_rule(rule_string: str = Form()) -> str:
+def test_snort_rule(rule_string: str = Form()) -> dict:
     msg = services.test_snort_rule(rule_string)
     if msg is None:
         raise HTTPException(400, 'Error in testing rule.')
+    return msg
+
+@router.post("/snort/deconstruct", response_model=dict, tags=['snort'])
+def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
+    msg = services.deconstruct_snort_rule(rule_string)
+    if msg is None:
+        raise HTTPException(400, 'Error in deconstructing rule.')
     return msg

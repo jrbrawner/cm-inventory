@@ -115,6 +115,7 @@ export default function App(){
     }
 
     const onSelect = (option: any, actionMeta: any) => {
+        console.log('on select called');
         if (actionMeta.name === "action-select"){
             setRuleAction(option.value);
         }
@@ -222,7 +223,18 @@ export default function App(){
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
+        console.log(ruleText);
+        const formData = new FormData()
+        formData.append("rule_string", ruleText);
+        SnortDataService.deconstructRule(formData).then((response) => {
+            let data = response.data['rule'];
+            setRuleAction(data['action']);
+            //setRuleProtocol(data['protocol']);
 
+            let idk = document.getElementById('action-select');
+            idk.
+            
+        })
      }
 
     return (
@@ -234,7 +246,7 @@ export default function App(){
                             <h4>Snort Rule Builder</h4>
                         </Col>
                         <Col>
-                            <Button variant="outline-secondary" onClick={() => deconstructRule}>Deconstruct Rule</Button>
+                            <Button variant="outline-secondary" onClick={deconstructRule}>Deconstruct Rule</Button>
                         </Col>
                     </Row>
                     
@@ -247,13 +259,13 @@ export default function App(){
             <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="w-75">
+
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column>
                                 Action
                             </Form.Label>
                             <Col sm="10">
                                 <Select className="text-start" name="action-select" options={ruleActionOptions} onChange={onSelect}/>
-                            
                             </Col>
                         </Form.Group>
 
