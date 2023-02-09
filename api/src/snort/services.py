@@ -194,3 +194,13 @@ def get_rule_str(db: Session, id: int) -> str:
         body_options=rebuilt_options,
     )
     return rebuilt_rule
+
+def test_snort_rule(rule_string: str) -> str:
+    """Attempt to parse a rule string to see if it passes."""
+    print(rule_string)
+    parser = SnortParser()
+    parser.parse_rules(rule_string)
+    if len(parser.error_log) != 0:
+        return {"msg": parser.error_log[0], "variant": "danger"}
+    else:
+        return {"msg": "Rule compiled successfully.", "variant": "success"}

@@ -150,3 +150,10 @@ def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     if msg is None:
         raise HTTPException(400, "Error in deleting rule.")
     return msg
+
+@router.post("/snort/test", response_model=dict, tags=['snort'])
+def test_snort_rule(rule_string: str = Form()) -> str:
+    msg = services.test_snort_rule(rule_string)
+    if msg is None:
+        raise HTTPException(400, 'Error in testing rule.')
+    return msg

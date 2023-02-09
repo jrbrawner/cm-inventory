@@ -2,22 +2,22 @@ import React, { SyntheticEvent } from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useNavigate } from 'react-router-dom';
-import { OnChangeValue } from 'react-select';
 import { TextareaAutosize } from '@mui/base';
 import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import Popover from 'react-bootstrap/Popover';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-
+import SnortDataService from '../../services/snort.service';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 export default function App(){
-
-    const navigate = useNavigate();
+    
+    interface IOptionKVP {
+        id: any,
+        option?: string,
+        text?: string
+    }
 
     const [ruleText, setRuleText] = React.useState("");
     const [ruleAction, setRuleAction] = React.useState("");
@@ -28,9 +28,13 @@ export default function App(){
     const [ruleDestinationIP, setRuleDestinationIP] = React.useState("");
     const [ruleDestinationPort, setRuleDestinationPort] = React.useState("");
 
-    const [ruleOptions, setRuleOptions] = React.useState([""]);
-    
+    const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
+    const [optionKVPList, setOptionKVPList] = React.useState<{[key: string]: IOptionKVP}>({});
+    const [optionString, setOptionString] = React.useState("");
 
+    const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
+    
+    
     const ruleActionOptions = [
         {value: "alert", label: "alert"},
         {value: "block", label: "block"},
@@ -51,16 +55,56 @@ export default function App(){
         {value: "<->", label: "<->"}
     ]
 
+    const options = [
+        {value: "msg", label: "msg"},
+        {value: "reference", label: "reference"},
+        {value: "gid", label: "gid"},
+        {value: "sid", label: "sid"},
+        {value: "rev", label: "rev"},
+        {value: "classtype", label: "classtype"},
+        {value: "priority", label: "priority"},
+        {value: "metadata", label: "metadata"},
+        {value: "service", label: "service"},
+        {value: "rem", label: "rem"},
+        {value: "file_meta", label: "file_meta"}
+    ]
+
     React.useEffect(() => {
         setRuleText(
-            `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort}`
+            `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
         );
-      }, [ruleAction, ruleProtocol, ruleSourceIP, ruleDirection, ruleDestinationIP, ruleDestinationPort])
+      }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, ruleOptions, optionString])
 
-
-    const handleSubmit = (event: React.SyntheticEvent) => {
-        event.preventDefault();
     
+    const updateOptionString = () => {
+        let optionString = ""
+        Object.entries(optionKVPList).map((entry) => {
+            if (entry[1].option !== undefined){
+                optionString += entry[1].option + ":" 
+            }
+
+            if (entry[1].text !== undefined){
+                optionString += '"' + entry[1].text + '"' + ";"
+            }
+        })
+
+        if (optionString !== "") {
+            optionString = "(" + optionString + ")";
+        }
+
+        setOptionString(optionString);
+    }
+
+
+    const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append("rule_string", ruleText);
+
+        SnortDataService.testRule(formData).then((response) => {
+            setTestResult(response.data);
+        })
+
     }
 
     const onSelect = (option: any, actionMeta: any) => {
@@ -93,25 +137,79 @@ export default function App(){
         if (event.target.name === "destination-port"){
             setRuleDestinationPort(event.target.value);
         }
+     }
 
+     const handleRuleTextChange = (event : React.ChangeEvent<HTMLTextAreaElement>) => {
+        setRuleText(event.target.value);
+     }
+
+     const handleRuleOptionSelect = (option: any, actionMeta: any) => {
+        let index = actionMeta.name.replace(/\D/g, '');
+        let optionList = optionKVPList;
+        
+        if (optionList[index] === undefined){
+            optionList[index] = {
+                id: index,
+                option: option.value
+            }
+        }
+        else{
+            optionList[index] =  {
+                id: index,
+                option: option.value,
+                text: optionList[index].text
+            } 
+        }
+        setOptionKVPList(optionList);
+        updateOptionString();
+     }
+
+     const handleRuleOptionInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let index = event.target.name.replace(/\D/g, '');
+        let optionList = optionKVPList;
+
+        if (optionList[index] === undefined){
+            optionList[index] = {
+                id: index,
+                text: event.target.value
+            }
+        }
+        else{
+            optionList[index] = {
+                id: index,
+                option: optionList[index].option,
+                text: event.target.value
+            } 
+        }
+        setOptionKVPList(optionList);
+        updateOptionString();
      }
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-        let list = []
+        let list = ruleOptions;
 
-        list.push(event.currentTarget.id);
-        setRuleOptions(list);
-
+        let newRuleTextName = `rule-text-${ruleOptions.length + 1}`
         let newRuleOptionName = `rule-option-${ruleOptions.length + 1}`
-        console.log(newRuleOptionName);
-        return (
+
+        list.push(
             <Form.Group as={Row} className="mb-3">
+                <Form.Label column sm="2">
+                    Option 
+                </Form.Label>
                 <Col>
-                    <Button onClick={addRuleOption} id={newRuleOptionName} 
-                    className="shadow-none mt-2" variant=""><span><FontAwesomeIcon icon={faPlus} /></span></Button>
+                    <Select className="text-start" name={newRuleTextName} options={options} onChange={onSelect}/>
+                </Col>
+                <Col>
+                    <Form.Control name={newRuleOptionName} type="text" placeholder="Enter option text"
+                    onChange={handleInput} />
                 </Col>
             </Form.Group>
         )
+
+        setRuleOptions(list);
+
+        console.log(newRuleOptionName);
+        console.log(newRuleTextName);
 
      }
 
@@ -121,8 +219,10 @@ export default function App(){
                 <h4>Create New Snort Rule</h4>
                     <TextareaAutosize
                     className="container mt-3"
-                    defaultValue={ruleText}/>
-            <Form>
+                    name="rule-text"
+                    defaultValue={ruleText}
+                    onChange={handleRuleTextChange}/>
+            <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="w-75">
                         <Form.Group as={Row} className="mb-3">
@@ -150,7 +250,7 @@ export default function App(){
                             </Form.Label>
                             <Col sm="10">
                                 <Form.Control name="source-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $HOME_NET, [192.168.1.0/24,10.1.1.0/24])"
-                                onChange={handleInput} />
+                                onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
 
@@ -160,7 +260,7 @@ export default function App(){
                             </Form.Label>
                             <Col sm="10">
                                 <Form.Control name="source-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
-                                onChange={handleInput} />
+                                onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
 
@@ -179,7 +279,7 @@ export default function App(){
                             </Form.Label>
                             <Col sm="10">
                                 <Form.Control name="destination-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $EXTERNAL_NET, [192.168.1.0/24,10.1.1.0/24])"
-                                onChange={handleInput} />
+                                onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
                         
@@ -189,23 +289,52 @@ export default function App(){
                             </Form.Label>
                             <Col sm="10">
                                 <Form.Control name="destination-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
-                                onChange={handleInput} />
+                                onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
                         <hr/>
-                        <h5>Add Rule Options</h5>
-                        
+                        <h5 className="mt-3 mb-3">Add Rule Options</h5>
+
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column sm="2">
+                                Option 
+                            </Form.Label>
+                            <Col>
+                                <Select className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
+                            </Col>
+                            <Col>
+                                <Form.Control name="rule-option-0" type="text" placeholder="Enter option text"
+                                onChange={handleRuleOptionInput} autoComplete="off" />
+                            </Col>
+                        </Form.Group>
+
+                        {ruleOptions && 
+                            ruleOptions.map((ruleOption) => {
+                                return (
+                                    <div>
+                                        {ruleOption}
+                                    </div>
+                                )
+                            })
+                        }
+
                         <Form.Group as={Row} className="mb-3">
                             <Col>
-                                <Button onClick={addRuleOption} id="rule-option-1" 
+                                <Button onClick={addRuleOption} id="rule-option-0" 
                                 className="shadow-none mt-2" variant=""><span><FontAwesomeIcon icon={faPlus} /></span></Button>
                             </Col>
                         </Form.Group>
 
                     </div>
                 </div>
+                <Button type="submit">Test Rule</Button>
             </Form>
-    
+            {testResult &&
+                <ListGroup className="mt-2">
+                    <ListGroup.Item variant={testResult.variant}>{testResult.msg}</ListGroup.Item>
+                </ListGroup>
+            }
+            
             </Container>
         
     )
