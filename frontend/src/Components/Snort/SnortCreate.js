@@ -117,7 +117,7 @@ export default function App(){
                   <Form.Group className="mt-3 mb-1">
 
                     <textarea
-                      className="w-50"
+                      className="w-50 form-control"
                       id="rules-text"
                       name="rules-text"
                       rows={15}

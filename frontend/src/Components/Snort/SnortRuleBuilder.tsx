@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -7,7 +7,7 @@ import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import SnortDataService from '../../services/snort.service';
 import ListGroup from 'react-bootstrap/ListGroup';
 
@@ -74,10 +74,12 @@ export default function App(){
         {value: "file_meta", label: "file_meta"}
     ]
 
-    React.useEffect(() => { 
-        setRuleText(
-            `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
-        );
+    React.useEffect(() => {
+        if (ruleText){
+            setRuleText(
+                `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
+            );
+        }
       }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, optionString])
 
     React.useEffect(() => {
@@ -91,14 +93,13 @@ export default function App(){
             }
 
             if (entry[1].text !== undefined){
-                optionString += '"' + entry[1].text + '"' + "; "
+                optionString += entry[1].text + "; "
             }
         })
 
         if (optionString !== "") {
             optionString = "(" + optionString + ")";
         }
-
         setOptionString(optionString);
     }
 
@@ -172,7 +173,7 @@ export default function App(){
         updateOptionString();
      }
 
-     const handleRuleOptionInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+     const handleRuleOptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         let index = event.target.name.replace(/\D/g, '');
         let optionList = optionKVPList;
 
@@ -193,9 +194,59 @@ export default function App(){
         updateOptionString();
      }
 
+     const handleRuleOptionManual = (index: number, option: string, text: string) => {
+        let optionList = optionKVPList;
+        optionList[index] = {
+            id: index,
+            option: option,
+            text: text
+        }
+        
+        setOptionKVPList(optionList);
+        updateOptionString();
+     }
+
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
         let list = ruleOptions;
         let index = ruleOptions.length + 1;
+        let newRuleTextName = `rule-text-${index}`
+        let newRuleOptionName = `rule-option-${index}`
+
+        list.push(
+            {
+                id : index,
+                result: 
+                    <Form.Group key={index} as={Row} className="mb-3">
+                        <Form.Label id={`label-${index}`} column sm="2">
+                            Option 
+                        </Form.Label>
+                        <Col>
+                            <Select className="text-start" id={newRuleTextName} name={newRuleTextName}
+                             options={options} onChange={handleRuleOptionSelect}/>
+                        </Col>
+                        <Col>
+                            <TextareaAutosize style={{ minHeight: 1}}className="container form-control" id={newRuleOptionName}
+                             name={newRuleOptionName} placeholder="Enter option text"
+                             onChange={handleRuleOptionInput}/>
+                        </Col>
+                        <Col sm={1}>
+                            <Button onClick={deleteRow}  name={`row-${index}-delete`} id={`row-${index}-delete`}
+                                className="shadow-none" variant=""><span><FontAwesomeIcon icon={faCircleXmark} /></span></Button>
+                        </Col>
+                    </Form.Group>
+            }
+        )
+
+        setRuleOptions(list);
+        setOptionsAdded(optionsAdded + 1);
+     }
+
+     const addRuleOptionManual = (option: string, text: string) => {
+        
+        let list = ruleOptions;
+        let index = ruleOptions.length + 1;
+        
+
         let newRuleTextName = `rule-text-${index}`
         let newRuleOptionName = `rule-option-${index}`
 
@@ -208,11 +259,16 @@ export default function App(){
                             Option 
                         </Form.Label>
                         <Col>
-                            <Select className="text-start" name={newRuleTextName} options={options} onChange={handleRuleOptionSelect}/>
+                            <Select className="text-start" value={{value: `${option}`, label: `${option}`}} id={newRuleTextName} name={newRuleTextName}
+                             options={options} onChange={handleRuleOptionSelect}/>
                         </Col>
                         <Col>
-                            <Form.Control name={newRuleOptionName} type="text" placeholder="Enter option text"
-                            onChange={handleRuleOptionInput} autoComplete="off" />
+                            <TextareaAutosize style={{ minHeight: 1}} className="container form-control" id={newRuleOptionName} name={newRuleOptionName} placeholder="Enter option text"
+                             onChange={handleRuleOptionInput} value={text}/>
+                        </Col>
+                        <Col sm={1}>
+                            <Button onClick={deleteRow} name={`row-${index}-delete`} id={`row-${index}-delete`} 
+                            className="shadow-none" variant=""><span><FontAwesomeIcon icon={faCircleXmark} /></span></Button>
                         </Col>
                     </Form.Group>
             }
@@ -220,6 +276,7 @@ export default function App(){
 
         setRuleOptions(list);
         setOptionsAdded(optionsAdded + 1);
+        handleRuleOptionManual(index, option, text);
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -227,7 +284,7 @@ export default function App(){
         formData.append("rule_string", ruleText);
         SnortDataService.deconstructRule(formData).then((response) => {
             let data = response.data['rule'];
-
+            
             selectActionRef.current.setValue({value: data['action'], label: data['action']});
             selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
             setRuleSourceIP(data['source_ip']);
@@ -237,8 +294,43 @@ export default function App(){
             setRuleDestinationPort(data['dest_port'])
 
             const options = JSON.parse(data['body_options']);
-    
+            
+
+            for (let [key, value] of Object.entries<string>(options)) {
+                for (let [option, text] of Object.entries<string>(value)) {
+                    addRuleOptionManual(option, text);
+                }
+            }
+
+            updateOptionString();
+            
+           
         })
+        
+     }
+
+     const deleteRow = (event: React.MouseEvent<HTMLButtonElement>) => {
+        
+        let index = event.currentTarget.name.replace(/\D/g, '');
+        var button = document.getElementById(event.currentTarget.name);
+        var optionSelect = document.getElementById(`rule-option-${index}`);
+        var optionText = document.getElementById(`rule-text-${index}`);
+        var label = document.getElementById(`label-${index}`);
+        if (button !== null){
+            button.remove();
+        }
+
+        if (optionSelect !== null){
+            optionSelect.remove();
+        }
+
+        if (optionText !== null){
+            optionText.remove()
+        }
+
+        if (label !== null){
+            label.remove();
+        }
         
      }
 
@@ -257,8 +349,8 @@ export default function App(){
                     
                 </div>
                     <TextareaAutosize
+                    minRows={5}
                     className="container mt-3 w-75"
-                    name="rule-text"
                     value={ruleText}
                     onChange={handleRuleTextChange}/>
 
@@ -335,7 +427,8 @@ export default function App(){
                         <hr/>
                         <h5 className="mt-3 mb-3">Add Rule Options</h5>
 
-                        <Form.Group as={Row} className="mb-3">
+                        {!ruleOptions &&
+                            <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm="2">
                                 Option 
                             </Form.Label>
@@ -345,8 +438,10 @@ export default function App(){
                             <Col>
                                 <Form.Control name="rule-option-0" type="text" placeholder="Enter option text"
                                 onChange={handleRuleOptionInput} autoComplete="off" />
+
                             </Col>
                         </Form.Group>
+                        }
 
                         {ruleOptions && 
                             ruleOptions.map((ruleOption) => {
