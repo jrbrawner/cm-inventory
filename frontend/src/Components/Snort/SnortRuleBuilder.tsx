@@ -74,7 +74,7 @@ export default function App(){
         {value: "file_meta", label: "file_meta"}
     ]
 
-    React.useEffect(() => {
+    React.useEffect(() => { 
         setRuleText(
             `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
         );
@@ -99,11 +99,8 @@ export default function App(){
             optionString = "(" + optionString + ")";
         }
 
-        console.log(optionString);
-
         setOptionString(optionString);
     }
-
 
     const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -226,21 +223,23 @@ export default function App(){
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
-        console.log(ruleText);
         const formData = new FormData()
         formData.append("rule_string", ruleText);
         SnortDataService.deconstructRule(formData).then((response) => {
             let data = response.data['rule'];
 
-            //setRuleAction(data['action']);
-            //setRuleProtocol(data['protocol']);
-
             selectActionRef.current.setValue({value: data['action'], label: data['action']});
             selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
-
             setRuleSourceIP(data['source_ip']);
-            
+            setRuleSourcePort(data['source_port'])
+            selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']})
+            setRuleDestinationIP(data['dest_ip'])
+            setRuleDestinationPort(data['dest_port'])
+
+            const options = JSON.parse(data['body_options']);
+    
         })
+        
      }
 
     return (
@@ -260,8 +259,9 @@ export default function App(){
                     <TextareaAutosize
                     className="container mt-3 w-75"
                     name="rule-text"
-                    defaultValue={ruleText}
+                    value={ruleText}
                     onChange={handleRuleTextChange}/>
+
             <Form onSubmit={handleSubmit}>
                 <div className="d-flex justify-content-center mt-3">
                     <div className="w-75">
@@ -271,7 +271,7 @@ export default function App(){
                                 Action
                             </Form.Label>
                             <Col sm="10">
-                                <Select ref={selectActionRef} className="text-start" options={ruleActionOptions} onChange={onSelect}/>
+                                <Select ref={selectActionRef} className="text-start" name="action-select" options={ruleActionOptions} onChange={onSelect}/>
                             </Col>
                         </Form.Group>
 
@@ -299,7 +299,7 @@ export default function App(){
                                 Source Port 
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control name="source-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
+                                <Form.Control defaultValue={ruleSourcePort} name="source-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -309,7 +309,7 @@ export default function App(){
                                 Direction
                             </Form.Label>
                             <Col sm="10">
-                                <Select className="text-start" name="direction-select" options={ruleDirectionOptions} onChange={onSelect}/>
+                                <Select ref={selectDirectionRef} className="text-start" name="direction-select" options={ruleDirectionOptions} onChange={onSelect}/>
                             </Col>
                         </Form.Group>
 
@@ -318,7 +318,7 @@ export default function App(){
                                 Destination IP
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control name="destination-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $EXTERNAL_NET, [192.168.1.0/24,10.1.1.0/24])"
+                                <Form.Control defaultValue={ruleDestinationIP} name="destination-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $EXTERNAL_NET, [192.168.1.0/24,10.1.1.0/24])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -328,7 +328,7 @@ export default function App(){
                                 Destination Port 
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control name="destination-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
+                                <Form.Control defaultValue={ruleDestinationPort} name="destination-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -340,7 +340,7 @@ export default function App(){
                                 Option 
                             </Form.Label>
                             <Col>
-                                <Select ref={selectDirectionRef} className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
+                                <Select className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
                             </Col>
                             <Col>
                                 <Form.Control name="rule-option-0" type="text" placeholder="Enter option text"

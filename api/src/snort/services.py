@@ -209,7 +209,7 @@ def deconstruct_snort_rule(rule_string: str) -> str:
     """Attempt to parse a rule string to see if it passes."""
     parser = SnortParser()
     rule = parser.parse_rules(rule_string.strip())[0]
-    
+    rule.body_options = json.dumps(rule.body_options)
     if len(parser.error_log) != 0:
         return {"msg": parser.error_log[0], "variant": "danger"}
     else:
