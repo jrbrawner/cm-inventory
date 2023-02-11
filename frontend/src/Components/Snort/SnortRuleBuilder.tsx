@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import SnortDataService from '../../services/snort.service';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Stack from 'react-bootstrap/Stack';
 
 export default function App(){
     
@@ -75,34 +76,58 @@ export default function App(){
     ]
 
     React.useEffect(() => {
-        if (ruleText){
-            setRuleText(
-                `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
+
+        setRuleText(
+            `${ruleAction} ${ruleProtocol} ${ruleSourceIP} ${ruleSourcePort} ${ruleDirection} ${ruleDestinationIP} ${ruleDestinationPort} ${optionString}`
             );
-        }
+
       }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, optionString])
 
     React.useEffect(() => {
-    }, [optionsAdded])
+        updateOptionString();
+    }, [optionsAdded, optionKVPList])
 
     const updateOptionString = () => {
         let optionString = ""
-        Object.entries(optionKVPList).map((entry) => {
-            if (entry[1].option !== undefined){
-                optionString += entry[1].option + ":" 
+        for (let [key, value] of Object.entries<IOptionKVP>(optionKVPList)) {
+            if (value.option !== undefined){
+                optionString += value.option + ":" 
             }
 
-            if (entry[1].text !== undefined){
-                optionString += entry[1].text + "; "
+            if (value.text !== undefined){
+                optionString += value.text + "; "
             }
-        })
+
+        }
+    
+        if (optionString !== "") {
+            optionString = "(" + optionString + ")";
+        }
+        setOptionString(optionString);
+        setOptionsAdded(optionsAdded + 1);
+    }
+
+    const updateOptionString1 = (optionKVP : {[key : number]: IOptionKVP}) => {
+        let optionString = ""
+        for (let [key, value] of Object.entries<IOptionKVP>(optionKVP)) {
+            if (value.option !== undefined){
+                optionString += value.option + ":" 
+            }
+
+            if (value.text !== undefined){
+                optionString += value.text + "; "
+            }
+
+        }
 
         if (optionString !== "") {
             optionString = "(" + optionString + ")";
         }
         setOptionString(optionString);
+        setOptionsAdded(optionsAdded + 1);
     }
 
+    
     const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData();
@@ -170,7 +195,7 @@ export default function App(){
             } 
         }
         setOptionKVPList(optionList);
-        updateOptionString();
+        //updateOptionString();
      }
 
      const handleRuleOptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -191,19 +216,7 @@ export default function App(){
             } 
         }
         setOptionKVPList(optionList);
-        updateOptionString();
-     }
-
-     const handleRuleOptionManual = (index: number, option: string, text: string) => {
-        let optionList = optionKVPList;
-        optionList[index] = {
-            id: index,
-            option: option,
-            text: text
-        }
-        
-        setOptionKVPList(optionList);
-        updateOptionString();
+        //updateOptionString();
      }
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -241,71 +254,83 @@ export default function App(){
         setOptionsAdded(optionsAdded + 1);
      }
 
-     const addRuleOptionManual = (option: string, text: string) => {
+     const addRuleOptionManual = (optionsKVP : {[key : number] : IOptionKVP}) => {
         
-        let list = ruleOptions;
-        let index = ruleOptions.length + 1;
+        let list = [];
         
-
-        let newRuleTextName = `rule-text-${index}`
-        let newRuleOptionName = `rule-option-${index}`
-
-        list.push(
-            {
-                id : index,
-                result: 
-                    <Form.Group key={index} as={Row} className="mb-3">
-                        <Form.Label column sm="2">
-                            Option 
-                        </Form.Label>
-                        <Col>
-                            <Select className="text-start" value={{value: `${option}`, label: `${option}`}} id={newRuleTextName} name={newRuleTextName}
-                             options={options} onChange={handleRuleOptionSelect}/>
-                        </Col>
-                        <Col>
-                            <TextareaAutosize style={{ minHeight: 1}} className="container form-control" id={newRuleOptionName} name={newRuleOptionName} placeholder="Enter option text"
-                             onChange={handleRuleOptionInput} value={text}/>
-                        </Col>
-                        <Col sm={1}>
-                            <Button onClick={deleteRow} name={`row-${index}-delete`} id={`row-${index}-delete`} 
-                            className="shadow-none" variant=""><span><FontAwesomeIcon icon={faCircleXmark} /></span></Button>
-                        </Col>
-                    </Form.Group>
-            }
-        )
-
+        for (let [key, value] of Object.entries<IOptionKVP>(optionsKVP)) {
+            let newRuleTextName = `rule-text-${key}`
+            let newRuleOptionName = `rule-option-${key}`
+            list.push(
+                {
+                    id : key,
+                    result: 
+                        <Form.Group key={key} as={Row} className="mb-3">
+                            <Form.Label id={`label-${key}`} column sm="2">
+                                Option 
+                            </Form.Label>
+                            <Col>
+                                <Select className="text-start" defaultValue={{value: `${value.option}`, label: `${value.option}`}} id={newRuleTextName} name={newRuleTextName}
+                                options={options} onChange={handleRuleOptionSelect}/>
+                            </Col>
+                            <Col>
+                                <TextareaAutosize style={{ minHeight: 1}} className="container form-control" id={newRuleOptionName} name={newRuleOptionName} placeholder="Enter option text"
+                                onChange={handleRuleOptionInput} defaultValue={value.text}/>
+                            </Col>
+                            <Col sm={1}>
+                                <Button onClick={deleteRow} name={`row-${key}-delete`} id={`row-${key}-delete`} 
+                                className="shadow-none" variant=""><span><FontAwesomeIcon icon={faCircleXmark} /></span></Button>
+                            </Col>
+                        </Form.Group>
+                }
+            )
+            setOptionsAdded(optionsAdded + 1);
+        }
+        
         setRuleOptions(list);
-        setOptionsAdded(optionsAdded + 1);
-        handleRuleOptionManual(index, option, text);
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
         const formData = new FormData()
         formData.append("rule_string", ruleText);
+        clearOptionState();
         SnortDataService.deconstructRule(formData).then((response) => {
             let data = response.data['rule'];
-            
+
+            for (let i = 0; i < ruleOptions.length; i++){
+                deleteRowManual(i + 1);
+            }
+
             selectActionRef.current.setValue({value: data['action'], label: data['action']});
             selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
             setRuleSourceIP(data['source_ip']);
-            setRuleSourcePort(data['source_port'])
-            selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']})
-            setRuleDestinationIP(data['dest_ip'])
-            setRuleDestinationPort(data['dest_port'])
+            setRuleSourcePort(data['source_port']);
+            selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']});
+            setRuleDestinationIP(data['dest_ip']);
+            setRuleDestinationPort(data['dest_port']);
+            const returnedOptions = JSON.parse(data['body_options']);
 
-            const options = JSON.parse(data['body_options']);
+            var optionsKVP : {[key: number]: IOptionKVP} = {}
             
+            var index = 0;
 
-            for (let [key, value] of Object.entries<string>(options)) {
+            for (let [key, value] of Object.entries<string>(returnedOptions)) {
                 for (let [option, text] of Object.entries<string>(value)) {
-                    addRuleOptionManual(option, text);
+                    
+                    optionsKVP[index] = {
+                        id: index,
+                        option: option,
+                        text: text
+                    }
+                    index += 1;
                 }
             }
-
-            updateOptionString();
             
-           
+            addRuleOptionManual(optionsKVP);
+            updateOptionString1(optionsKVP);
+
         })
+        
         
      }
 
@@ -316,6 +341,38 @@ export default function App(){
         var optionSelect = document.getElementById(`rule-option-${index}`);
         var optionText = document.getElementById(`rule-text-${index}`);
         var label = document.getElementById(`label-${index}`);
+        if (button !== null){
+            button.remove();
+        }
+
+        if (optionSelect !== null){
+            optionSelect.remove();
+        }
+
+        if (optionText !== null){
+            optionText.remove()
+        }
+
+        if (label !== null){
+            label.remove();
+        }
+        
+     }
+
+     const clearOptionState = () => {
+        setOptionString("");
+        setRuleOptions([[]]);
+        setOptionKVPList({});
+        setOptionsAdded(0);
+     }
+
+     const deleteRowManual = (index: number) => {
+        
+        var button = document.getElementById(`row-${index}-delete`);
+        var optionSelect = document.getElementById(`rule-option-${index}`);
+        var optionText = document.getElementById(`rule-text-${index}`);
+        var label = document.getElementById(`label-${index}`);
+
         if (button !== null){
             button.remove();
         }
@@ -424,27 +481,13 @@ export default function App(){
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
-                        <hr/>
-                        <h5 className="mt-3 mb-3">Add Rule Options</h5>
+                        <Stack>
 
-                        {!ruleOptions &&
-                            <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm="2">
-                                Option 
-                            </Form.Label>
-                            <Col>
-                                <Select className="text-start" name="rule-text-0" options={options} onChange={handleRuleOptionSelect}/>
-                            </Col>
-                            <Col>
-                                <Form.Control name="rule-option-0" type="text" placeholder="Enter option text"
-                                onChange={handleRuleOptionInput} autoComplete="off" />
-
-                            </Col>
-                        </Form.Group>
-                        }
-
+                            <hr/>
+                            <h5 className="mt-3 mb-3">Add Rule Options</h5>
                         {ruleOptions && 
                             ruleOptions.map((ruleOption) => {
+                                //console.log(ruleOption);
                                 return (
                                     <div key={ruleOption.id}>
                                         {ruleOption.result}
@@ -452,6 +495,7 @@ export default function App(){
                                 )
                             })
                         }
+                        </Stack>
 
                         <Form.Group as={Row} className="mb-3">
                             <Col>
@@ -472,6 +516,7 @@ export default function App(){
                 </ListGroup>
             </div>
             }
+
             
             </Container>
         
