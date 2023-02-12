@@ -28,10 +28,10 @@ export default function App(){
     const [ruleDirection, setRuleDirection] = React.useState("");
     const [ruleDestinationIP, setRuleDestinationIP] = React.useState("");
     const [ruleDestinationPort, setRuleDestinationPort] = React.useState("");
+    const [optionString, setOptionString] = React.useState("");
 
     const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
-    const [optionKVPList, setOptionKVPList] = React.useState<{[key: string]: IOptionKVP}>({});
-    const [optionString, setOptionString] = React.useState("");
+    const [optionKVPList, setOptionKVPList] = React.useState<{[key: number]: IOptionKVP}>({});
     const [optionsAdded, setOptionsAdded] = React.useState(0);
 
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
@@ -84,27 +84,24 @@ export default function App(){
       }, [ruleAction, ruleProtocol, ruleSourceIP, ruleSourcePort, ruleDirection, ruleDestinationIP, ruleDestinationPort, optionString])
 
     React.useEffect(() => {
-        updateOptionString();
-    }, [optionsAdded, optionKVPList])
+    }, [optionsAdded])
 
     const updateOptionString = () => {
-        let optionString = ""
+        var tempOptionString = ""
         for (let [key, value] of Object.entries<IOptionKVP>(optionKVPList)) {
             if (value.option !== undefined){    
-                optionString += value.option + ":" 
+                tempOptionString += value.option + ":" 
             }
 
             if (value.text !== undefined){
-                optionString += value.text + "; "
+                tempOptionString += value.text + "; "
             }
-
         }
     
-        if (optionString !== "") {
-            optionString = "(" + optionString + ")";
+        if (tempOptionString !== "") {
+            tempOptionString = "(" + tempOptionString + ")";
         }
-        setOptionString(optionString);
-        setOptionsAdded(optionsAdded + 1);
+        setOptionString(tempOptionString);
     }
 
     const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
@@ -157,50 +154,50 @@ export default function App(){
      }
 
      const handleRuleOptionSelect = (option: any, actionMeta: any) => {
-        let index = actionMeta.name.replace(/\D/g, '');
-        let optionList = optionKVPList;
-        console.log(optionList[index]);
-        if (optionList[index] === undefined){
-            optionList[index] = {
+        let index = parseInt(actionMeta.name.replace(/\D/g, ''));
+        if (optionKVPList[index] === undefined){
+            optionKVPList[index] = {
                 id: index,
                 option: option.value
             }
         }
         else{
-            optionList[index] =  {
+            optionKVPList[index] =  {
                 id: index,
                 option: option.value,
-                text: optionList[index].text
+                text: optionKVPList[index].text
             } 
         }
-        setOptionKVPList(optionList);
-        //updateOptionString();
+        setOptionKVPList(optionKVPList);
+        updateOptionString();
      }
 
      const handleRuleOptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        let index = event.target.name.replace(/\D/g, '');
-        let optionList = optionKVPList;
+        let index = parseInt(event.target.name.replace(/\D/g, ''));
         
-        if (optionList[index] === undefined){
-            optionList[index] = {
+        if (optionKVPList[index] === undefined){
+            optionKVPList[index] = {
                 id: index,
                 text: event.target.value
             }
         }
         else{
-            optionList[index] = {
+            optionKVPList[index] = {
                 id: index,
-                option: optionList[index].option,
+                option: optionKVPList[index].option,
                 text: event.target.value
             } 
         }
-        setOptionKVPList(optionList);
-        //updateOptionString();
+        setOptionKVPList(optionKVPList);
+        updateOptionString();
      }
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
         let list = ruleOptions;
         let index = ruleOptions.length + 1;
+        if (index === 1){
+            index = 0;
+        }
         let newRuleTextName = `rule-text-${index}`
         let newRuleOptionName = `rule-option-${index}`
 
@@ -240,7 +237,7 @@ export default function App(){
         for (let [key, value] of Object.entries<IOptionKVP>(optionsKVP)) {
             let newRuleTextName = `rule-text-${key}`
             let newRuleOptionName = `rule-option-${key}`
-            list.push(
+            ruleOptions.push(
                 {
                     id : key,
                     result: 
@@ -265,8 +262,7 @@ export default function App(){
             )
             setOptionsAdded(optionsAdded + 1);
         }
-        
-        setRuleOptions(list);
+        setRuleOptions(ruleOptions);
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -275,14 +271,14 @@ export default function App(){
         {
             const formData = new FormData()
             formData.append("rule_string", ruleText);
+            for (let i = 0; i < ruleOptions.length; i++)
+            {
+                deleteRowManual(ruleOptions[i].id);
+            }
             clearOptionState();
             SnortDataService.deconstructRule(formData).then((response) => {
                 let data = response.data['rule'];
                 
-                for (let i = 0; i < ruleOptions.length; i++)
-                {
-                    deleteRowManual(i + 1);
-                }
 
             selectActionRef.current.setValue({value: data['action'], label: data['action']});
             selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
@@ -293,14 +289,12 @@ export default function App(){
             setRuleDestinationPort(data['dest_port']);
             const returnedOptions = JSON.parse(data['body_options']);
             
-            var optionsKVP : {[key: number]: IOptionKVP} = {}
-            
             var index = 0;
             
             for (let [key, value] of Object.entries<string>(returnedOptions)) {
                 for (let [option, text] of Object.entries<string>(value)) {
                     
-                    optionsKVP[index] = {
+                    optionKVPList[index] = {
                         id: index,
                         option: option,
                         text: text
@@ -309,45 +303,33 @@ export default function App(){
                 }
             }
             
-            setOptionKVPList(optionsKVP);
-            addRuleOptionManual(optionsKVP);
+            //setOptionKVPList(optionKVPList);
+            addRuleOptionManual(optionKVPList);
+            updateOptionString();
+            //setOptionsAdded(optionsAdded + 1);
             
             })}
             
         }
 
      const deleteRow = (event: React.MouseEvent<HTMLButtonElement>) => {
-        console.log(optionKVPList);
-        let index = event.currentTarget.name.replace(/\D/g, '');
-        var button = document.getElementById(event.currentTarget.name);
-        var optionSelect = document.getElementById(`rule-option-${index}`);
-        var optionText = document.getElementById(`rule-text-${index}`);
-        var label = document.getElementById(`label-${index}`);
-        if (button !== null){
-            button.remove();
-        }
-
-        if (optionSelect !== null){
-            optionSelect.remove();
-        }
-
-        if (optionText !== null){
-            optionText.remove()
-        }
-
-        if (label !== null){
-            label.remove();
-        }
-
-        let optionList = optionKVPList;
-        optionList[index] = {
+    
+        let index = parseInt(event.currentTarget.name.replace(/\D/g, ''));
+        var div = document.getElementById(`div-option-${index}`);
+        
+       if (div !== null){
+            div.remove();
+       }
+        optionKVPList[index] = {
             id: undefined,
             option: undefined,
             text: undefined
         }
-        setOptionKVPList(optionList);
-
         
+        
+        setOptionsAdded(optionsAdded - 1);
+        updateOptionString();
+
      }
 
      const clearOptionState = () => {
@@ -359,27 +341,10 @@ export default function App(){
 
      const deleteRowManual = (index: number) => {
         
-        var button = document.getElementById(`row-${index}-delete`);
-        var optionSelect = document.getElementById(`rule-option-${index}`);
-        var optionText = document.getElementById(`rule-text-${index}`);
-        var label = document.getElementById(`label-${index}`);
-
-        if (button !== null){
-            button.remove();
+        var div = document.getElementById(`div-option-${index}`);
+        if (div !== null){
+            div.remove();
         }
-
-        if (optionSelect !== null){
-            optionSelect.remove();
-        }
-
-        if (optionText !== null){
-            optionText.remove()
-        }
-
-        if (label !== null){
-            label.remove();
-        }
-        
      }
 
     return (
@@ -485,9 +450,9 @@ export default function App(){
                             
                             ruleOptions.map((ruleOption) => {
                                 return (
-                                        <div key={ruleOption.id}>{ruleOption.result}</div>
+                                    <div id={`div-option-${ruleOption.id}`} key={ruleOption.id}>{ruleOption.result}</div>
                                     )
-                                
+                                    
                                 })
                             }
                     </Stack>
