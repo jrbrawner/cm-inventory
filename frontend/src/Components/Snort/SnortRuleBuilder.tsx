@@ -90,7 +90,7 @@ export default function App(){
     const updateOptionString = () => {
         let optionString = ""
         for (let [key, value] of Object.entries<IOptionKVP>(optionKVPList)) {
-            if (value.option !== undefined){
+            if (value.option !== undefined){    
                 optionString += value.option + ":" 
             }
 
@@ -107,27 +107,6 @@ export default function App(){
         setOptionsAdded(optionsAdded + 1);
     }
 
-    const updateOptionString1 = (optionKVP : {[key : number]: IOptionKVP}) => {
-        let optionString = ""
-        for (let [key, value] of Object.entries<IOptionKVP>(optionKVP)) {
-            if (value.option !== undefined){
-                optionString += value.option + ":" 
-            }
-
-            if (value.text !== undefined){
-                optionString += value.text + "; "
-            }
-
-        }
-
-        if (optionString !== "") {
-            optionString = "(" + optionString + ")";
-        }
-        setOptionString(optionString);
-        setOptionsAdded(optionsAdded + 1);
-    }
-
-    
     const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData();
@@ -180,7 +159,7 @@ export default function App(){
      const handleRuleOptionSelect = (option: any, actionMeta: any) => {
         let index = actionMeta.name.replace(/\D/g, '');
         let optionList = optionKVPList;
-        
+        console.log(optionList[index]);
         if (optionList[index] === undefined){
             optionList[index] = {
                 id: index,
@@ -201,7 +180,7 @@ export default function App(){
      const handleRuleOptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         let index = event.target.name.replace(/\D/g, '');
         let optionList = optionKVPList;
-
+        
         if (optionList[index] === undefined){
             optionList[index] = {
                 id: index,
@@ -234,12 +213,12 @@ export default function App(){
                             Option 
                         </Form.Label>
                         <Col>
-                            <Select className="text-start" id={newRuleTextName} name={newRuleTextName}
+                            <Select className="text-start" id={newRuleOptionName} name={newRuleOptionName}
                              options={options} onChange={handleRuleOptionSelect}/>
                         </Col>
                         <Col>
-                            <TextareaAutosize style={{ minHeight: 1}}className="container form-control" id={newRuleOptionName}
-                             name={newRuleOptionName} placeholder="Enter option text"
+                            <TextareaAutosize style={{ minHeight: 1}}className="container form-control" id={newRuleTextName}
+                             name={newRuleTextName} placeholder="Enter option text"
                              onChange={handleRuleOptionInput}/>
                         </Col>
                         <Col sm={1}>
@@ -270,11 +249,11 @@ export default function App(){
                                 Option 
                             </Form.Label>
                             <Col>
-                                <Select className="text-start" defaultValue={{value: `${value.option}`, label: `${value.option}`}} id={newRuleTextName} name={newRuleTextName}
+                                <Select className="text-start" defaultValue={{value: `${value.option}`, label: `${value.option}`}} id={newRuleOptionName} name={newRuleOptionName}
                                 options={options} onChange={handleRuleOptionSelect}/>
                             </Col>
                             <Col>
-                                <TextareaAutosize style={{ minHeight: 1}} className="container form-control" id={newRuleOptionName} name={newRuleOptionName} placeholder="Enter option text"
+                                <TextareaAutosize style={{ minHeight: 1}} className="container form-control" id={newRuleTextName} name={newRuleTextName} placeholder="Enter option text"
                                 onChange={handleRuleOptionInput} defaultValue={value.text}/>
                             </Col>
                             <Col sm={1}>
@@ -291,15 +270,19 @@ export default function App(){
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const formData = new FormData()
-        formData.append("rule_string", ruleText);
-        clearOptionState();
-        SnortDataService.deconstructRule(formData).then((response) => {
-            let data = response.data['rule'];
-
-            for (let i = 0; i < ruleOptions.length; i++){
-                deleteRowManual(i + 1);
-            }
+        
+        if (ruleText !== "       ")
+        {
+            const formData = new FormData()
+            formData.append("rule_string", ruleText);
+            clearOptionState();
+            SnortDataService.deconstructRule(formData).then((response) => {
+                let data = response.data['rule'];
+                
+                for (let i = 0; i < ruleOptions.length; i++)
+                {
+                    deleteRowManual(i + 1);
+                }
 
             selectActionRef.current.setValue({value: data['action'], label: data['action']});
             selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
@@ -309,11 +292,11 @@ export default function App(){
             setRuleDestinationIP(data['dest_ip']);
             setRuleDestinationPort(data['dest_port']);
             const returnedOptions = JSON.parse(data['body_options']);
-
+            
             var optionsKVP : {[key: number]: IOptionKVP} = {}
             
             var index = 0;
-
+            
             for (let [key, value] of Object.entries<string>(returnedOptions)) {
                 for (let [option, text] of Object.entries<string>(value)) {
                     
@@ -326,16 +309,15 @@ export default function App(){
                 }
             }
             
+            setOptionKVPList(optionsKVP);
             addRuleOptionManual(optionsKVP);
-            updateOptionString1(optionsKVP);
-
-        })
-        
-        
-     }
+            
+            })}
+            
+        }
 
      const deleteRow = (event: React.MouseEvent<HTMLButtonElement>) => {
-        
+        console.log(optionKVPList);
         let index = event.currentTarget.name.replace(/\D/g, '');
         var button = document.getElementById(event.currentTarget.name);
         var optionSelect = document.getElementById(`rule-option-${index}`);
@@ -356,6 +338,15 @@ export default function App(){
         if (label !== null){
             label.remove();
         }
+
+        let optionList = optionKVPList;
+        optionList[index] = {
+            id: undefined,
+            option: undefined,
+            text: undefined
+        }
+        setOptionKVPList(optionList);
+
         
      }
 
@@ -481,21 +472,25 @@ export default function App(){
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
-                        <Stack>
 
                             <hr/>
                             <h5 className="mt-3 mb-3">Add Rule Options</h5>
+                            </div>
+                        </div>
+                    <div className="d-flex justify-content-center mt-3">
+                        <div className="w-75">
+
+                    <Stack>
                         {ruleOptions && 
+                            
                             ruleOptions.map((ruleOption) => {
-                                //console.log(ruleOption);
                                 return (
-                                    <div key={ruleOption.id}>
-                                        {ruleOption.result}
-                                    </div>
-                                )
-                            })
-                        }
-                        </Stack>
+                                        <div key={ruleOption.id}>{ruleOption.result}</div>
+                                    )
+                                
+                                })
+                            }
+                    </Stack>
 
                         <Form.Group as={Row} className="mb-3">
                             <Col>
@@ -503,7 +498,6 @@ export default function App(){
                                 className="shadow-none mt-2" variant=""><span><FontAwesomeIcon icon={faPlus} /></span></Button>
                             </Col>
                         </Form.Group>
-
                     </div>
                 </div>
                 <Button type="submit">Test Rule</Button>
