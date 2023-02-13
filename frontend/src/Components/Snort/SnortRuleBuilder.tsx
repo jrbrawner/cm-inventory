@@ -275,38 +275,38 @@ export default function App(){
             {
                 deleteRowManual(ruleOptions[i].id);
             }
-            clearOptionState();
             SnortDataService.deconstructRule(formData).then((response) => {
+                clearOptionState();
                 let data = response.data['rule'];
                 
 
-            selectActionRef.current.setValue({value: data['action'], label: data['action']});
-            selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
-            setRuleSourceIP(data['source_ip']);
-            setRuleSourcePort(data['source_port']);
-            selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']});
-            setRuleDestinationIP(data['dest_ip']);
-            setRuleDestinationPort(data['dest_port']);
-            const returnedOptions = JSON.parse(data['body_options']);
-            
-            var index = 0;
-            
-            for (let [key, value] of Object.entries<string>(returnedOptions)) {
-                for (let [option, text] of Object.entries<string>(value)) {
-                    
-                    optionKVPList[index] = {
-                        id: index,
-                        option: option,
-                        text: text
+                selectActionRef.current.setValue({value: data['action'], label: data['action']});
+                selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
+                setRuleSourceIP(data['source_ip']);
+                setRuleSourcePort(data['source_port']);
+                selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']});
+                setRuleDestinationIP(data['dest_ip']);
+                setRuleDestinationPort(data['dest_port']);
+                const returnedOptions = JSON.parse(data['body_options']);
+                
+                var index = 0;
+                
+                for (let [key, value] of Object.entries<string>(returnedOptions)) {
+                    for (let [option, text] of Object.entries<string>(value)) {
+                        
+                        optionKVPList[index] = {
+                            id: index,
+                            option: option,
+                            text: text
+                        }
+                        index += 1;
                     }
-                    index += 1;
                 }
-            }
-            
-            //setOptionKVPList(optionKVPList);
-            addRuleOptionManual(optionKVPList);
-            updateOptionString();
-            //setOptionsAdded(optionsAdded + 1);
+                
+                //setOptionKVPList(optionKVPList);
+                addRuleOptionManual(optionKVPList);
+                updateOptionString();
+                //setOptionsAdded(optionsAdded + 1);
             
             })}
             
@@ -319,7 +319,7 @@ export default function App(){
         
        if (div !== null){
             div.remove();
-       }
+        }
         optionKVPList[index] = {
             id: undefined,
             option: undefined,
@@ -342,9 +342,11 @@ export default function App(){
      const deleteRowManual = (index: number) => {
         
         var div = document.getElementById(`div-option-${index}`);
+        console.log(div);
         if (div !== null){
             div.remove();
         }
+        
      }
 
     return (
@@ -450,7 +452,7 @@ export default function App(){
                             
                             ruleOptions.map((ruleOption) => {
                                 return (
-                                    <div id={`div-option-${ruleOption.id}`} key={ruleOption.id}>{ruleOption.result}</div>
+                                        <div id={`div-option-${ruleOption.id}`} key={ruleOption.id}>{ruleOption.result}</div>
                                     )
                                     
                                 })
