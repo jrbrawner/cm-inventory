@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { TextareaAutosize } from '@mui/base';
-import Select from 'react-select';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +10,8 @@ import { faPlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import SnortDataService from '../../services/snort.service';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Stack from 'react-bootstrap/Stack';
+import CreatableSelect from 'react-select/creatable';
+import Select from 'react-select';
 
 export default function App(){
     
@@ -212,7 +213,7 @@ export default function App(){
                             Option 
                         </Form.Label>
                         <Col>
-                            <Select className="text-start" id={newRuleOptionName} name={newRuleOptionName}
+                            <CreatableSelect className="text-start" id={newRuleOptionName} name={newRuleOptionName}
                              options={options} onChange={handleRuleOptionSelect}/>
                         </Col>
                         <Col>
@@ -250,7 +251,7 @@ export default function App(){
                                 Option 
                             </Form.Label>
                             <Col>
-                                <Select className="text-start" defaultValue={{value: `${value.option}`, label: `${value.option}`}} id={newRuleOptionName} name={newRuleOptionName}
+                                <CreatableSelect className="text-start" defaultValue={{value: `${value.option}`, label: `${value.option}`}} id={newRuleOptionName} name={newRuleOptionName}
                                 options={options} onChange={handleRuleOptionSelect}/>
                             </Col>
                             <Col>
@@ -359,12 +360,13 @@ export default function App(){
                     
                 </div>
                     <TextareaAutosize
+                    spellCheck="false"
                     minRows={5}
                     className="container mt-3 w-75"
                     value={ruleText}
                     onChange={handleRuleTextChange}/>
 
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} spellCheck="false">
                 <div className="d-flex justify-content-center mt-3">
                     <div className="w-75">
 
@@ -391,7 +393,7 @@ export default function App(){
                                 Source IP
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control defaultValue={ruleSourceIP} name="source-ip" id="source-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $HOME_NET, [192.168.1.0/24,10.1.1.0/24])"
+                                <Form.Control value={ruleSourceIP} name="source-ip" id="source-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $HOME_NET, [192.168.1.0/24,10.1.1.0/24])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -401,7 +403,7 @@ export default function App(){
                                 Source Port 
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control defaultValue={ruleSourcePort} name="source-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
+                                <Form.Control value={ruleSourcePort} name="source-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -420,7 +422,7 @@ export default function App(){
                                 Destination IP
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control defaultValue={ruleDestinationIP} name="destination-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $EXTERNAL_NET, [192.168.1.0/24,10.1.1.0/24])"
+                                <Form.Control value={ruleDestinationIP} name="destination-ip" type="text" placeholder="(any, 192.168.0.5, 192.168.1.0/24, $EXTERNAL_NET, [192.168.1.0/24,10.1.1.0/24])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
@@ -430,7 +432,7 @@ export default function App(){
                                 Destination Port 
                             </Form.Label>
                             <Col sm="10">
-                                <Form.Control defaultValue={ruleDestinationPort} name="destination-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
+                                <Form.Control value={ruleDestinationPort} name="destination-port" type="text" placeholder="(any, 80, $HTTP_PORTS, 1:1024, [1:1024,5555,$HTTP_PORTS])"
                                 onChange={handleInput} autoComplete="off" />
                             </Col>
                         </Form.Group>
