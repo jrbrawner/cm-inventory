@@ -33,6 +33,7 @@ export default function App(){
     const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
     const [optionKVPList, setOptionKVPList] = React.useState<{[key: number]: IOptionKVP}>({});
     const [optionsAdded, setOptionsAdded] = React.useState(0);
+    var optionsGenerated = 0;
 
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
 
@@ -200,10 +201,10 @@ export default function App(){
         }
         let newRuleTextName = `rule-text-${index}`
         let newRuleOptionName = `rule-option-${index}`
-
         list.push(
             {
                 id : index,
+                number: optionsAdded,
                 result: 
                     <Form.Group key={index} as={Row} className="mb-3">
                         <Form.Label id={`label-${index}`} column sm="2">
@@ -234,14 +235,17 @@ export default function App(){
         
         let list = [];
         
-        for (let [key, value] of Object.entries<IOptionKVP>(optionsKVP)) {
+        var temp = optionsAdded;
+        for (let [key, value] of Object.entries<IOptionKVP>(optionsKVP)) 
+        {
             let newRuleTextName = `rule-text-${key}`
             let newRuleOptionName = `rule-option-${key}`
             ruleOptions.push(
                 {
                     id : key,
+                    number : temp,
                     result: 
-                        <Form.Group key={key} as={Row} className="mb-3">
+                        <Form.Group as={Row} className="mb-3">
                             <Form.Label id={`label-${key}`} column sm="2">
                                 Option 
                             </Form.Label>
@@ -260,8 +264,9 @@ export default function App(){
                         </Form.Group>
                 }
             )
-            setOptionsAdded(optionsAdded + 1);
+            temp++;
         }
+        setOptionsAdded(temp);
         setRuleOptions(ruleOptions);
      }
 
@@ -269,14 +274,15 @@ export default function App(){
         
         if (ruleText !== "       ")
         {
+            
             const formData = new FormData()
             formData.append("rule_string", ruleText);
-            for (let i = 0; i < ruleOptions.length; i++)
-            {
-                deleteRowManual(ruleOptions[i].id);
-            }
             SnortDataService.deconstructRule(formData).then((response) => {
-                clearOptionState();
+                for (let i = 0; i < ruleOptions.length; i++)
+                {
+                    deleteRowManual(ruleOptions[i].id);
+                }
+                //clearOptionState();
                 let data = response.data['rule'];
                 
 
@@ -342,7 +348,6 @@ export default function App(){
      const deleteRowManual = (index: number) => {
         
         var div = document.getElementById(`div-option-${index}`);
-        console.log(div);
         if (div !== null){
             div.remove();
         }
@@ -451,8 +456,9 @@ export default function App(){
                         {ruleOptions && 
                             
                             ruleOptions.map((ruleOption) => {
+                                console.log(ruleOption.number);
                                 return (
-                                        <div id={`div-option-${ruleOption.id}`} key={ruleOption.id}>{ruleOption.result}</div>
+                                        <div id={`div-option-${ruleOption.id}`} key={ruleOption.number}>{ruleOption.result}</div>
                                     )
                                     
                                 })
