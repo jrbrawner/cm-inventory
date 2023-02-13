@@ -33,8 +33,6 @@ export default function App(){
     const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
     const [optionKVPList, setOptionKVPList] = React.useState<{[key: number]: IOptionKVP}>({});
     const [optionsAdded, setOptionsAdded] = React.useState(0);
-    var optionsGenerated = 0;
-
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
 
     const selectActionRef = React.useRef<any>();
@@ -156,13 +154,16 @@ export default function App(){
 
      const handleRuleOptionSelect = (option: any, actionMeta: any) => {
         let index = parseInt(actionMeta.name.replace(/\D/g, ''));
-        if (optionKVPList[index] === undefined){
+
+        if (optionKVPList[index] === undefined)
+        {
             optionKVPList[index] = {
                 id: index,
                 option: option.value
             }
         }
-        else{
+        else
+        {
             optionKVPList[index] =  {
                 id: index,
                 option: option.value,
@@ -176,13 +177,15 @@ export default function App(){
      const handleRuleOptionInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         let index = parseInt(event.target.name.replace(/\D/g, ''));
         
-        if (optionKVPList[index] === undefined){
+        if (optionKVPList[index] === undefined)
+        {
             optionKVPList[index] = {
                 id: index,
                 text: event.target.value
             }
         }
-        else{
+        else
+        {
             optionKVPList[index] = {
                 id: index,
                 option: optionKVPList[index].option,
@@ -195,18 +198,16 @@ export default function App(){
 
      const addRuleOption = (event: React.MouseEvent<HTMLButtonElement>) => {
         let list = ruleOptions;
-        let index = ruleOptions.length + 1;
-        if (index === 1){
-            index = 0;
-        }
-        let newRuleTextName = `rule-text-${index}`
-        let newRuleOptionName = `rule-option-${index}`
+        let index = ruleOptions.length;
+        let newRuleTextName = `rule-text-${index}`;
+        let newRuleOptionName = `rule-option-${index}`;
+        let temp = optionsAdded + 1;    
         list.push(
             {
                 id : index,
-                number: optionsAdded,
+                number: temp,
                 result: 
-                    <Form.Group key={index} as={Row} className="mb-3">
+                    <Form.Group as={Row} className="mb-3">
                         <Form.Label id={`label-${index}`} column sm="2">
                             Option 
                         </Form.Label>
@@ -228,19 +229,18 @@ export default function App(){
         )
 
         setRuleOptions(list);
-        setOptionsAdded(optionsAdded + 1);
+        setOptionsAdded(temp + 1);
      }
 
      const addRuleOptionManual = (optionsKVP : {[key : number] : IOptionKVP}) => {
-        
-        let list = [];
-        
-        var temp = optionsAdded;
+                
+        let temp = optionsAdded;
+        let tempRuleOptions = [...ruleOptions]
         for (let [key, value] of Object.entries<IOptionKVP>(optionsKVP)) 
         {
             let newRuleTextName = `rule-text-${key}`
             let newRuleOptionName = `rule-option-${key}`
-            ruleOptions.push(
+            tempRuleOptions.push(
                 {
                     id : key,
                     number : temp,
@@ -267,14 +267,13 @@ export default function App(){
             temp++;
         }
         setOptionsAdded(temp);
-        setRuleOptions(ruleOptions);
+        setRuleOptions(tempRuleOptions);
      }
 
      const deconstructRule = (event: React.MouseEvent<HTMLButtonElement>) => {
         
         if (ruleText !== "       ")
         {
-            
             const formData = new FormData()
             formData.append("rule_string", ruleText);
             SnortDataService.deconstructRule(formData).then((response) => {
@@ -282,7 +281,7 @@ export default function App(){
                 {
                     deleteRowManual(ruleOptions[i].id);
                 }
-                //clearOptionState();
+                clearOptionState();
                 let data = response.data['rule'];
                 
 
@@ -295,7 +294,7 @@ export default function App(){
                 setRuleDestinationPort(data['dest_port']);
                 const returnedOptions = JSON.parse(data['body_options']);
                 
-                var index = 0;
+                let index = 0;
                 
                 for (let [key, value] of Object.entries<string>(returnedOptions)) {
                     for (let [option, text] of Object.entries<string>(value)) {
@@ -309,11 +308,9 @@ export default function App(){
                     }
                 }
                 
-                //setOptionKVPList(optionKVPList);
                 addRuleOptionManual(optionKVPList);
                 updateOptionString();
-                //setOptionsAdded(optionsAdded + 1);
-            
+                
             })}
             
         }
@@ -321,19 +318,12 @@ export default function App(){
      const deleteRow = (event: React.MouseEvent<HTMLButtonElement>) => {
     
         let index = parseInt(event.currentTarget.name.replace(/\D/g, ''));
-        var div = document.getElementById(`div-option-${index}`);
+        let div = document.getElementById(`div-option-${index}`);
         
        if (div !== null){
             div.remove();
         }
-        optionKVPList[index] = {
-            id: undefined,
-            option: undefined,
-            text: undefined
-        }
-        
-        
-        setOptionsAdded(optionsAdded - 1);
+        delete optionKVPList[index];
         updateOptionString();
 
      }
@@ -341,16 +331,16 @@ export default function App(){
      const clearOptionState = () => {
         setOptionString("");
         setRuleOptions([[]]);
-        setOptionKVPList({});
         setOptionsAdded(0);
      }
 
      const deleteRowManual = (index: number) => {
         
-        var div = document.getElementById(`div-option-${index}`);
+        let div = document.getElementById(`div-option-${index}`);
         if (div !== null){
             div.remove();
         }
+        delete optionKVPList[index];
         
      }
 
@@ -456,7 +446,6 @@ export default function App(){
                         {ruleOptions && 
                             
                             ruleOptions.map((ruleOption) => {
-                                console.log(ruleOption.number);
                                 return (
                                         <div id={`div-option-${ruleOption.id}`} key={ruleOption.number}>{ruleOption.result}</div>
                                     )
