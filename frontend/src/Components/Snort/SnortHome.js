@@ -41,7 +41,7 @@ export default function App(){
                         <Card.Body>
                             <Card.Title>Rule Builder</Card.Title>
                             <Card.Text>
-                                Tool to aid in the creation of new Snort rules.
+                                Build new rules, deconstruct existing ones, and test rule compilation.
                             </Card.Text>
                             <Button variant="primary" onClick={() => navigate(`/snort/rule-builder`)}>View</Button>
                         </Card.Body>

@@ -55,7 +55,7 @@ export default function App() {
     return (
         <Container>
                     <div className="text-end">
-                        <Button variant="outline-success" onClick={() => navigate(`/yara/test/${yaraRule.id}`)}>Test</Button>
+                        <Button variant="outline-success" onClick={() => navigate(`/yara/test/${yaraRule.id}`)}>Test Rule</Button>
                         <Button variant="outline-primary" onClick={() => navigate(`/yara/update/${yaraRule.id}`)}>Update</Button>
                         
                         <DeleteDialogModal buttonName={"Delete"} modalTitle={"Delete Yara Rule"}

@@ -79,8 +79,8 @@ export default function App() {
     return (
         <Container>
                     <div className="text-end">
+                    <Button variant="outline-success" onClick={() => navigate(`/snort/rule-builder/${snortRule.id}`)}>Deconstruct Rule</Button>
                         <Button variant="outline-primary" onClick={() => navigate(`/snort/update/${snortRule.id}`)}>Update</Button>
-                        
                         <DeleteDialogModal buttonName={"Delete"} modalTitle={"Delete Snort Rule"}
                          modalBody={"Are you sure you want to delete this rule? All information regarding this rule will be lost. This action cannot be undone."}
                         onSuccess={deleteRule}/>

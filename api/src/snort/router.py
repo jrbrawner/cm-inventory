@@ -29,6 +29,12 @@ def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_d
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
 
+@router.get("/snort/deconstruct/{id}", response_model=dict, tags=['snort'])
+def deconstruct_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
+    msg = services.deconstruct_snort_rule_id(db, id)
+    if msg is None:
+        raise HTTPException(400, 'Error in deconstructing rule.')
+    return msg
 
 @router.get("/snort/rebuild/{id}", response_model=str, tags=["snort"])
 def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
@@ -164,3 +170,4 @@ def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
     if msg is None:
         raise HTTPException(400, 'Error in deconstructing rule.')
     return msg
+

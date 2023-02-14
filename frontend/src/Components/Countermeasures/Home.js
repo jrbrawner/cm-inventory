@@ -1,6 +1,4 @@
-import React from 'react';
 import Card from 'react-bootstrap/Card';
-import CardGroup from 'react-bootstrap/CardGroup';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -12,55 +10,55 @@ export default function App() {
     const navigate = useNavigate();
 
     return (
-        <>
-            <Container className="mt-2">
-                <Row md={3}>
-                    <Col>
-                        <Card className="mb-2" bg="light">
+        <Container className="mt-3">
+            <Row md={4}>
+                <Col xxl>
+                    <Card className="mb-2" bg="light">
                             <Card.Body>
                                 <Card.Title>Yara</Card.Title>
-                                <Card.Text>
-                                    Create and manage Yara rules.
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => navigate(`/yara/home`)}>View</Button>
+                                 <Card.Text>Create, manage Yara rules and view Yara tools.</Card.Text>
                             </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col sm>
-                        <Card className="mb-2" bg="light">
-                            <Card.Body>
-                                <Card.Title>Snort</Card.Title>
-                                <Card.Text>
-                                    Create and manage Snort rules.
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => navigate(`/snort/home`)}>View</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col sm>
-                        <Card className="mb-2" bg="light">
-                            <Card.Body>
-                                <Card.Title>Sigma</Card.Title>
-                                <Card.Text>
-                                    Create and manage Sigma rules.
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => navigate(`/sigma/home`)}>View</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col sm>
-                        <Card className="mb-2" bg="light">
-                            <Card.Body>
-                                <Card.Title>Mitre</Card.Title>
-                                <Card.Text>
-                                    Explore Mitre data and mappings.
-                                </Card.Text>
-                                <Button variant="primary" onClick={() => navigate(`/mitre`)}>View</Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
-        </>
+                            
+                            <Card.Footer className="d-grid">
+                                <Button variant="outline-warning" onClick={() => navigate(`/yara/home`)}>View</Button>
+                            </Card.Footer>
+                    </Card>
+                </Col>
+                <Col xxl>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Snort</Card.Title>
+                            <Card.Text>Create, manage Snort rules and view Snort tools.</Card.Text>
+                        </Card.Body>
+                        <Card.Footer className="d-grid">
+                            <Button variant="outline-dark" onClick={() => navigate(`/snort/home`)}>View</Button>
+                        </Card.Footer>
+                    </Card>
+                </Col>
+                <Col xxl>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Sigma</Card.Title>
+                            <Card.Text>Create, manage Sigma rules and view Sigma tools.</Card.Text>
+                        </Card.Body>
+                        <Card.Footer className="d-grid">
+                            <Button variant="outline-danger" onClick={() => navigate(`/sigma/home`)}>View</Button>
+                        </Card.Footer>
+                    </Card>
+                </Col>
+                <Col xxl>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Mitre</Card.Title>
+                            <Card.Text>Explore Mitre data, countermeasure mappings, and Mitre tools.</Card.Text>
+                        </Card.Body>
+                        <Card.Footer className="d-grid">
+                            <Button variant="outline-primary" onClick={() => navigate(`/mitre`)}>View</Button>
+                        </Card.Footer>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+        
     )
 }

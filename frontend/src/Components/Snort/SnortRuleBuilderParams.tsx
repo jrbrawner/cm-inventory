@@ -12,6 +12,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Stack from 'react-bootstrap/Stack';
 import CreatableSelect from 'react-select/creatable';
 import Select from 'react-select';
+import { useParams } from 'react-router-dom';
 
 export default function App(){
     
@@ -21,6 +22,7 @@ export default function App(){
         text?: string
     }
 
+    
     const [ruleText, setRuleText] = React.useState("");
     const [ruleAction, setRuleAction] = React.useState("");
     const [ruleProtocol, setRuleProtocol] = React.useState("");
@@ -30,15 +32,21 @@ export default function App(){
     const [ruleDestinationIP, setRuleDestinationIP] = React.useState("");
     const [ruleDestinationPort, setRuleDestinationPort] = React.useState("");
     const [optionString, setOptionString] = React.useState("");
-
+    
     const [ruleOptions, setRuleOptions] = React.useState<any[]>([]);
     const [optionKVPList, setOptionKVPList] = React.useState<{[key: number]: IOptionKVP}>({});
     const [optionsAdded, setOptionsAdded] = React.useState(0);
     const [testResult, setTestResult] = React.useState<{[key: string]: string}>({});
-
+    
     const selectActionRef = React.useRef<any>();
     const selectProtocolRef = React.useRef<any>();
     const selectDirectionRef = React.useRef<any>();
+
+    const params = useParams();
+    
+    React.useEffect(() => {
+        initialDeconstructRule(params.id);
+    }, []);
 
     const ruleActionOptions = [
         {value: "alert", label: "alert"},
@@ -292,6 +300,43 @@ export default function App(){
                 selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']});
                 setRuleDestinationIP(data['dest_ip']);
                 setRuleDestinationPort(data['dest_port']);
+                const returnedOptions = JSON.parse(data['body_options']);
+                
+                let index = 0;
+                
+                for (let [key, value] of Object.entries<string>(returnedOptions)) {
+                    for (let [option, text] of Object.entries<string>(value)) {
+                        
+                        optionKVPList[index] = {
+                            id: index,
+                            option: option,
+                            text: text
+                        }
+                        index += 1;
+                    }
+                }
+                
+                addRuleOptionManual(optionKVPList);
+                updateOptionString();
+                
+            })}
+            
+        }
+
+    const initialDeconstructRule = (id: any) => {
+        if (id !== undefined)
+        {
+            SnortDataService.deconstructRuleId(id).then((response) => {
+                
+                let data = response.data['rule'];
+                
+                selectActionRef.current.setValue({value: data['action'], label: data['action']});
+                selectProtocolRef.current.setValue({value: data['protocol'], label: data['protocol']})
+                setRuleSourceIP(data['src_ip']);
+                setRuleSourcePort(data['src_port']);
+                selectDirectionRef.current.setValue({value: data['direction'], label: data['direction']});
+                setRuleDestinationIP(data['dst_ip']);
+                setRuleDestinationPort(data['dst_port']);
                 const returnedOptions = JSON.parse(data['body_options']);
                 
                 let index = 0;

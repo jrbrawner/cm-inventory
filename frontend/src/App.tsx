@@ -44,6 +44,7 @@ import LayersHomePage from './Pages/Mitre/Layers/LayersHomePage';
 import CreateLayerPage from './Pages/Mitre/Layers/CreateLayerPage';
 import LayerToHeatmapPage from './Pages/Mitre/Layers/LayerToHeatmapPage';
 import SnortRuleBuilderPage from './Pages/Snort/SnortRuleBuilderPage';
+import SnortRuleBuilderParam from './Pages/Snort/SnortRuleBuilderParams';
 
 export default function App() {
   return (
@@ -91,6 +92,7 @@ export default function App() {
             <Route path="/snort/:id" element={<SnortRulePage/>}/>
             <Route path="/snort/update/:id" element={<SnortUpdatePage/>}/>
             <Route path="/snort/rule-builder" element={<SnortRuleBuilderPage/>}/>
+            <Route path="/snort/rule-builder/:id" element={<SnortRuleBuilderParam/>}/>
 
             <Route path="/sigma/home" element={<SigmaHomePage/>}/>
             <Route path="/sigma/:id" element={<SigmaRulePage/>}/>

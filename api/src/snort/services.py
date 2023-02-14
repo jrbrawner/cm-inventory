@@ -214,3 +214,15 @@ def deconstruct_snort_rule(rule_string: str) -> str:
         return {"msg": parser.error_log[0], "variant": "danger"}
     else:
         return {"rule": rule.__dict__, "variant": "success"}
+    
+def deconstruct_snort_rule_id(db: Session, id: int ) -> str:
+    """Attempt to parse a rule string to see if it passes."""
+    rule = db.query(SnortRule).get(id)
+    #parser = SnortParser()
+    #rule = parser.parse_rules(rule)[0]
+    #rule.body_options = json.dumps(rule.body_options)
+    print(rule.__dict__)
+    if rule is None:
+        return {"msg": "No rule found with that id.", "variant": "danger"}
+    else:
+        return {"rule": rule.__dict__, "variant": "success"}
