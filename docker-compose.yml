@@ -2,15 +2,10 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: Dockerfile.testing
     image: cm-api
-    working_dir: /code
-    command: uvicorn api.src.main:app --host 0.0.0.0 --reload
     tty: true
     ports: 
     - "8000:8000"
     volumes:
-    - .:/code
-    restart: on-failure
-    #environment:
-    #  - WATCHFILES_FORCE_POLLING=true
+    - ./api:/code/api
