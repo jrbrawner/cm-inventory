@@ -43,6 +43,7 @@ add_pagination(app)
 
 @app.on_event("startup")
 def startup():
+    print('hello1235')
     Base.metadata.create_all(bind=engine)
     if SessionLocal().query(Tactic).first() is None:
         from src.mitre.utils import (
