@@ -58,4 +58,4 @@ def startup():
         get_mitre_techniques(SessionLocal())
         get_mitre_subtechniques(SessionLocal())
         et = time.time()
-        print(f"Execution time:{et - st}")
+        print(f"Execution time: {et - st}")

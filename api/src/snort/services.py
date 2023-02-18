@@ -146,9 +146,11 @@ def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
 
     # checking for mitre att&ck designations in rem option
     # need to put these in a class at some point?
-    if "rem" in str(rule.body_options):
+    if "rem" or "msg" in str(rule.body_options):
         for option in rule.body_options:
             for key, value in option.items():
+                if key == "msg":
+                    rule.msg = value
                 if key == "rem":
                     value = value.replace('"', "")
                     mitre = value.split(",")
@@ -197,7 +199,6 @@ def get_rule_str(db: Session, id: int) -> str:
 
 def test_snort_rule(rule_string: str) -> str:
     """Attempt to parse a rule string to see if it passes."""
-    print(rule_string)
     parser = SnortParser()
     parser.parse_rules(rule_string)
     if len(parser.error_log) != 0:
@@ -218,10 +219,6 @@ def deconstruct_snort_rule(rule_string: str) -> str:
 def deconstruct_snort_rule_id(db: Session, id: int ) -> str:
     """Attempt to parse a rule string to see if it passes."""
     rule = db.query(SnortRule).get(id)
-    #parser = SnortParser()
-    #rule = parser.parse_rules(rule)[0]
-    #rule.body_options = json.dumps(rule.body_options)
-    print(rule.__dict__)
     if rule is None:
         return {"msg": "No rule found with that id.", "variant": "danger"}
     else:

@@ -27,6 +27,8 @@ from sqlalchemy.orm import Session
 basedir = path.abspath(path.dirname(__file__))
 path = basedir
 
+#download_path = 'src/mitre/data/mitre-enterprise-attack.json' # local
+download_path = '/code/api/src/mitre/data/mitre-enterprise-attack.json' # docker
 
 def convert_tactic(v) -> str | None:
     tactics = {
@@ -52,15 +54,14 @@ def convert_tactic(v) -> str | None:
 
 def get_mitre_data():
 
-    if os.path.exists("src/mitre/data/mitre-enterprise-attack.json") is False:
-
+    if os.path.exists(download_path) is False:
         stix = requests.get(
             "https://raw.githubusercontent.com/mitre \
         /cti/master/enterprise-attack/enterprise-attack.json"
         ).json()
 
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "w", encoding="utf-8"
+            download_path, "w", encoding="utf-8"
         ) as file:
             json.dump(stix, file, ensure_ascii=False, indent=4)
         print("Enterprise attack data downloaded.")
@@ -72,9 +73,9 @@ def get_mitre_tactics(db: Session):
     """Get MITRE Enterprise Attack Tactics and populate database."""
 
     # check to see if mitre data has been downloaded
-    if os.path.exists("src/mitre/data/mitre-enterprise-attack.json"):
+    if os.path.exists(download_path):
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()
@@ -82,7 +83,7 @@ def get_mitre_tactics(db: Session):
     else:
         get_mitre_data()
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()
@@ -134,16 +135,16 @@ def get_mitre_tactics(db: Session):
 
 def get_mitre_techniques(db: Session):
 
-    if os.path.exists("src/mitre/data/mitre-enterprise-attack.json"):
+    if os.path.exists(download_path):
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()
     else:
         get_mitre_data()
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()
@@ -262,16 +263,16 @@ def get_mitre_techniques(db: Session):
 
 def get_mitre_subtechniques(db: Session):
 
-    if os.path.exists("src/mitre/data/mitre-enterprise-attack.json"):
+    if os.path.exists(download_path):
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()
     else:
         get_mitre_data()
         with open(
-            "src/mitre/data/mitre-enterprise-attack.json", "r", encoding="utf-8"
+            download_path, "r", encoding="utf-8"
         ) as file:
             stix = json.load(file)
         file.close()

@@ -171,3 +171,5 @@ def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
         raise HTTPException(400, 'Error in deconstructing rule.')
     return msg
 
+
+
