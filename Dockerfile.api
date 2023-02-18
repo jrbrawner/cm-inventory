@@ -1,21 +1,15 @@
 FROM python:3.10
 
-#Downloading yara for use in project
-#WORKDIR /usr/local/lib
-#RUN apt-get install automake \
-#    libtool \
-#    make \ 
-#    gcc \ 
-#    pkg-config
+#Download yara
+
+
+
 # Set up Fast API
 WORKDIR /code
 
-COPY api/requirements.txt /code/api/
+COPY /api/requirements.txt /code/api/
 RUN pip install --no-cache-dir --upgrade -r /code/api/requirements.txt
 COPY /api /code/api
 
 #have to create a soft link to installed yara library
 RUN ln -s /usr/local/lib/python3.10/site-packages/usr/local/lib/libyara.so /usr/local/lib/libyara.so && ldconfig
-ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
-
-CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
