@@ -20,4 +20,4 @@ RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/li
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

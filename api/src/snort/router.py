@@ -9,7 +9,7 @@ from fastapi_pagination import Page
 
 router = APIRouter()
 
-@router.post("/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"])
+@router.post("/api/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"])
 def create_snort_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     snort_rules_list = services.create_snort_rules(db, rules_text)
     if snort_rules_list is None:
@@ -17,7 +17,7 @@ def create_snort_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     return snort_rules_list
 
 @router.post(
-    "/snort/file", response_model=list[Union[SnortSchema, dict]], tags=["snort"]
+    "/api/snort/file", response_model=list[Union[SnortSchema, dict]], tags=["snort"]
 )
 def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_db)):
     rules_text = []
@@ -29,21 +29,21 @@ def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_d
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
 
-@router.get("/snort/deconstruct/{id}", response_model=dict, tags=['snort'])
+@router.get("/api/snort/deconstruct/{id}", response_model=dict, tags=['snort'])
 def deconstruct_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     msg = services.deconstruct_snort_rule_id(db, id)
     if msg is None:
         raise HTTPException(400, 'Error in deconstructing rule.')
     return msg
 
-@router.get("/snort/rebuild/{id}", response_model=str, tags=["snort"])
+@router.get("/api/snort/rebuild/{id}", response_model=str, tags=["snort"])
 def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
     str_rule = services.get_rule_str(db, id)
     if str_rule is None:
         raise HTTPException(400, "Error in retrieving string of that rule.")
     return str_rule
 
-@router.get("/snort/{field}/{value}", response_model=Page[SnortSchema], tags=["snort"])
+@router.get("/api/snort/{field}/{value}", response_model=Page[SnortSchema], tags=["snort"])
 def get_snort_rules(
     field: SnortRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
@@ -133,14 +133,14 @@ def get_snort_rules(
         return snort_rules_list
     
 
-@router.get("/snort/{id}", response_model=SnortSchema, tags=['snort'])
+@router.get("/api/snort/{id}", response_model=SnortSchema, tags=['snort'])
 def get_snort_rule(id: int, db: Session = Depends(get_db)):
     rule = services.get_snort_rule_id(db, id)
     if rule is None:
         raise HTTPException(400, 'Error in retrieving rule.')
     return rule
 
-@router.put("/snort/{id}", response_model=SnortSchema, tags=["snort"])
+@router.put("/api/snort/{id}", response_model=SnortSchema, tags=["snort"])
 def update_snort_rule(
     id: int, rule_text: str = Form(), db: Session = Depends(get_db)
 ) -> SnortSchema:
@@ -150,21 +150,21 @@ def update_snort_rule(
     return updated_rule
 
 
-@router.delete("/snort/{id}", response_model=dict, tags=["snort"])
+@router.delete("/api/snort/{id}", response_model=dict, tags=["snort"])
 def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     msg = services.delete_snort_rule(db, id)
     if msg is None:
         raise HTTPException(400, "Error in deleting rule.")
     return msg
 
-@router.post("/snort/test", response_model=dict, tags=['snort'])
+@router.post("/api/snort/test", response_model=dict, tags=['snort'])
 def test_snort_rule(rule_string: str = Form()) -> dict:
     msg = services.test_snort_rule(rule_string)
     if msg is None:
         raise HTTPException(400, 'Error in testing rule.')
     return msg
 
-@router.post("/snort/deconstruct", response_model=dict, tags=['snort'])
+@router.post("/api/snort/deconstruct", response_model=dict, tags=['snort'])
 def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
     msg = services.deconstruct_snort_rule(rule_string)
     if msg is None:

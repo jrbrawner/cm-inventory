@@ -9,7 +9,7 @@ from src.sigma.constants import SigmaRuleFieldSearch
 
 router = APIRouter()
 
-@router.post("/sigma", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
+@router.post("/api/sigma", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
 def create_sigma_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     
     sigma_rule_list = services.create_sigma_rules_text(db, rules_text)
@@ -17,7 +17,7 @@ def create_sigma_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
-@router.post("/sigma/file", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
+@router.post("/api/sigma/file", response_model=list[Union[SigmaSchema, dict]], tags=["sigma"])
 def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_db)):
     rules_text = []
     for file in files:
@@ -28,7 +28,7 @@ def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_d
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
-@router.get("/sigma/{field}/{value}", response_model=Page[SigmaSchema], tags=["sigma"])
+@router.get("/api/sigma/{field}/{value}", response_model=Page[SigmaSchema], tags=["sigma"])
 def sigma_rules_search(
     field: SigmaRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
@@ -110,28 +110,28 @@ def sigma_rules_search(
             )
         return sigma_rule_list
     
-@router.get("/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
+@router.get("/api/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
 def get_rule_id(id: int, db: Session = Depends(get_db)):
     rule = services.get_sigma_rule_id(db, id)
     if rule is None:
         raise HTTPException(400, 'Error in retrieving sigma rule.')
     return rule
 
-@router.get("/sigma/rebuild/{id}", response_model=str, tags=['sigma'])
+@router.get("/api/sigma/rebuild/{id}", response_model=str, tags=['sigma'])
 def rebuild_rule(id: int, db: Session = Depends(get_db)):
     rule_string = services.rebuild_sigma_rule(db, id)
     if rule_string is None:
         raise HTTPException(400, 'Error in rebuilding sigma rule.')
     return rule_string
 
-@router.put("/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
+@router.put("/api/sigma/{id}", response_model=SigmaSchema, tags=['sigma'])
 def update_rule(id: int, rule_text: str = Form(), db: Session = Depends(get_db)):
     updated_rule = services.update_sigma_rule(db, rule_text, id)
     if updated_rule is None:
         raise HTTPException(400, 'Error in updating sigma rule.')
     return updated_rule
 
-@router.delete("/sigma/{id}", response_model=dict, tags=['sigma'])
+@router.delete("/api/sigma/{id}", response_model=dict, tags=['sigma'])
 def delete_rule(id: int, db: Session = Depends(get_db)):
     deleted_rule_msg = services.delete_sigma_rule(db, id)
     if deleted_rule_msg is None:

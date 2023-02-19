@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.api
     image: cm-api
+    command: uvicorn api.src.main:app --root-path /api --host 0.0.0.0 --port 8000
+    restart: always
     tty: true
     volumes:
     - ./api:/code/api
@@ -12,6 +14,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     image: cm-frontend
+    restart: always
     tty: true
     ports:
-      - "3000:3000"
+      - "3000:80"
