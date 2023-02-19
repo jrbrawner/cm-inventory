@@ -31,7 +31,7 @@ import tempfile
 router = APIRouter()
 
 
-@router.get("/mitre/tactics", response_model=list[TacticBase], tags=["mitre"])
+@router.get("/api/mitre/tactics", response_model=list[TacticBase], tags=["mitre"])
 def get_mitre_tactics(db: Session = Depends(get_db)):
     """Get all mitre tactics."""
     mitre_tactics = services.get_mitre_tactics(db)
@@ -40,7 +40,7 @@ def get_mitre_tactics(db: Session = Depends(get_db)):
     return mitre_tactics
 
 
-@router.get("/mitre/tactics/{id}", response_model=TacticBase, tags=['mitre'])
+@router.get("/api/mitre/tactics/{id}", response_model=TacticBase, tags=['mitre'])
 def get_mitre_tactic_id(id: str, db: Session = Depends(get_db)):
     """Get a specific mitre tactic."""
     tactic = services.get_mitre_tactic_id(db, id)
@@ -48,7 +48,7 @@ def get_mitre_tactic_id(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving tactic.')
     return tactic
 
-@router.get("/mitre/tactic/{id}/techniques", response_model=TacticTechnique, tags=['mitre'])
+@router.get("/api/mitre/tactic/{id}/techniques", response_model=TacticTechnique, tags=['mitre'])
 def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
     """Get a specific mitre tactic and all associated techniques."""
     techniques = services.get_mitre_tactic_techniques(db, id)
@@ -56,7 +56,7 @@ def get_mitre_tactic_techniques(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving techniques associated with that tactic.')
     return techniques
 
-@router.get("/mitre/tactic/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
+@router.get("/api/mitre/tactic/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
 def get_tactic_yara_rules(id: str, db: Session = Depends(get_db)):
     """Get all Yara rules associated with a mitre tactic ID."""
     yara_rules = services.get_mitre_tactic_yara(db, id)
@@ -64,7 +64,7 @@ def get_tactic_yara_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving yara rules.')
     return yara_rules
 
-@router.get("/mitre/tactic/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+@router.get("/api/mitre/tactic/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
 def get_tactic_snort_rules(id: str, db: Session = Depends(get_db)):
     """Get all Snort rules associated with a mitre tactic ID."""
     snort_rules = services.get_mitre_tactic_snort(db, id)
@@ -72,7 +72,7 @@ def get_tactic_snort_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving snort rules.')
     return snort_rules
 
-@router.get("/mitre/tactic/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+@router.get("/api/mitre/tactic/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
 def get_tactic_sigma_rules(id: str, db: Session = Depends(get_db)):
     """Get all Sigma rules associated with a mitre tactic ID."""
     sigma_rules = services.get_mitre_tactic_sigma(db, id)
@@ -80,7 +80,7 @@ def get_tactic_sigma_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving sigma rules.')
     return sigma_rules
 
-@router.get("/mitre/technique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
+@router.get("/api/mitre/technique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
 def get_technique_yara_rules(id: str, db: Session = Depends(get_db)):
     """Get all Yara rules associated with a mitre technique ID."""
     yara_rules = services.get_mitre_technique_yara(db, id)
@@ -88,7 +88,7 @@ def get_technique_yara_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving yara rules.')
     return yara_rules
 
-@router.get("/mitre/technique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+@router.get("/api/mitre/technique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
 def get_technique_snort_rules(id: str, db: Session = Depends(get_db)):
     """Get all Snort rules associated with a mitre technique ID."""
     snort_rules = services.get_mitre_technique_snort(db, id)
@@ -96,7 +96,7 @@ def get_technique_snort_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving snort rules.')
     return snort_rules
 
-@router.get("/mitre/technique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+@router.get("/api/mitre/technique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
 def get_technique_sigma_rules(id: str, db: Session = Depends(get_db)):
     """Get all Sigma rules associated with a mitre technique ID."""
     sigma_rules = services.get_mitre_technique_sigma(db, id)
@@ -104,7 +104,7 @@ def get_technique_sigma_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving sigma rules.')
     return sigma_rules
 
-@router.get("/mitre/subtechnique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
+@router.get("/api/mitre/subtechnique/{id}/yara", response_model=Page[YaraSchema], tags=['mitre'])
 def get_subtechnique_yara_rules(id: str, db: Session = Depends(get_db)):
     """Get all Yara rules associated with a mitre technique ID."""
     yara_rules = services.get_mitre_subtechnique_yara(db, id)
@@ -112,7 +112,7 @@ def get_subtechnique_yara_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving yara rules.')
     return yara_rules
 
-@router.get("/mitre/subtechnique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
+@router.get("/api/mitre/subtechnique/{id}/snort", response_model=Page[SnortSchema], tags=['mitre'])
 def get_subtechnique_snort_rules(id: str, db: Session = Depends(get_db)):
     """Get all Snort rules associated with a mitre technique ID."""
     snort_rules = services.get_mitre_subtechnique_snort(db, id)
@@ -120,7 +120,7 @@ def get_subtechnique_snort_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving snort rules.')
     return snort_rules
 
-@router.get("/mitre/subtechnique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
+@router.get("/api/mitre/subtechnique/{id}/sigma", response_model=Page[SigmaSchema], tags=['mitre'])
 def get_subtechnique_sigma_rules(id: str, db: Session = Depends(get_db)):
     """Get all Sigma rules associated with a mitre technique ID."""
     sigma_rules = services.get_mitre_subtechnique_sigma(db, id)
@@ -128,7 +128,7 @@ def get_subtechnique_sigma_rules(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving sigma rules.')
     return sigma_rules
 
-@router.get("/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
+@router.get("/api/mitre/tactic/{type}/{term}", response_model=TacticBase, tags=["mitre"])
 def get_mitre_tactic(
     type: MitreLookup, term: str, db: Session = Depends(get_db)
 ) -> TacticBase:
@@ -144,7 +144,7 @@ def get_mitre_tactic(
             raise HTTPException(404, "No tactic found with that name.")
         return tactic
 
-@router.get("/mitre/techniques", response_model=list[TechniqueTactics], tags=['mitre'])
+@router.get("/api/mitre/techniques", response_model=list[TechniqueTactics], tags=['mitre'])
 def get_mitre_techniques(db: Session = Depends(get_db)):
     """Get all mitre techniques."""
     techniques = services.get_mitre_techniques(db)
@@ -152,7 +152,7 @@ def get_mitre_techniques(db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving techniques.')
     return techniques
 
-@router.get("/mitre/technique/{id}", response_model=TechniqueExtended, tags=['mitre'])
+@router.get("/api/mitre/technique/{id}", response_model=TechniqueExtended, tags=['mitre'])
 def get_mitre_technique(id: str, db: Session = Depends(get_db)):
     """Get a specific mitre technique and all associated objects."""
     technique = services.get_mitre_technique(db, id)
@@ -160,7 +160,7 @@ def get_mitre_technique(id: str, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving technique.')
     return technique
 
-@router.get("/mitre/subtechniques", response_model=list[SubTechniqueBase], tags=['mitre'])
+@router.get("/api/mitre/subtechniques", response_model=list[SubTechniqueBase], tags=['mitre'])
 def get_mitre_subtechniques(db: Session = Depends(get_db)):
     """Get all mitre subtechniques."""
     subtechniques = services.get_mitre_subtechniques(db)
@@ -168,7 +168,7 @@ def get_mitre_subtechniques(db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving subtechniques.')
     return subtechniques
 
-@router.get("/mitre/subtechnique/{id}", response_model=SubTechniqueExtended, tags=['mitre'])
+@router.get("/api/mitre/subtechnique/{id}", response_model=SubTechniqueExtended, tags=['mitre'])
 def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
     """Get a specific mitre subtechnique and all associated objects."""
     subtechnique = services.get_mitre_subtechnique(db, id)
@@ -178,7 +178,7 @@ def get_mitre_subtechnique(id: str, db: Session = Depends(get_db)):
 
 
 
-@router.post("/mitre/layer", tags=['mitre'])
+@router.post("/api/mitre/layer", tags=['mitre'])
 def create_mitre_layer(form_data : LayerRequest = Depends(LayerRequest.as_form), db: Session = Depends(get_db)):
 
     yara_rules = None
@@ -214,7 +214,7 @@ def create_mitre_layer(form_data : LayerRequest = Depends(LayerRequest.as_form),
     
     return json.dumps(layer)
 
-@router.post("/mitre/heatmap", tags=["mitre"])
+@router.post("/api/mitre/heatmap", tags=["mitre"])
 def generate_heatmap(file: UploadFile | None = None, layer_text: str = Form(None), db: Session = Depends(get_db)):
     """Generate a layer based on countermeasure mitre coverage."""
 
@@ -260,7 +260,7 @@ def generate_heatmap(file: UploadFile | None = None, layer_text: str = Form(None
 
     return {"results": "Layer created with countermeasure data.", "visualization": file_text}
 
-@router.post("/mitre/layer/convert_xlsx", tags=['mitre'])
+@router.post("/api/mitre/layer/convert_xlsx", tags=['mitre'])
 def layer_to_xlsx(file: UploadFile | None = None, layer_text: str = Form(None)):
 
     if file is not None:

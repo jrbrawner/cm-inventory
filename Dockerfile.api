@@ -1,18 +1,23 @@
-FROM python:3.10
+FROM ubuntu:23.04
 
-#Download yara
+RUN apt-get update
+RUN apt-get install -y \
+    python3.11 \
+    python3-pip \
+    yara \
+    libpcre3 \
+    libpcre3-dev
 
+# Fast API
 
-
-# Set up Fast API
 WORKDIR /code
 
 COPY api/requirements.txt /code/api/
 RUN pip install --no-cache-dir --upgrade -r /code/api/requirements.txt
-COPY . /code
-ENV PYTHONPATH "${PYTHONPATH}:/code/api"
+COPY ./api /code/api/
+ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
+RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/libyara.so && ldconfig
 
-#have to create a soft link to installed yara library
-RUN ln -s /usr/local/lib/python3.10/site-packages/usr/local/lib/libyara.so /usr/local/lib/libyara.so && ldconfig
+EXPOSE 8000
 
 CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
