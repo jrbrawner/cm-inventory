@@ -1,0 +1,74 @@
+FROM ubuntu:23.04
+
+ENV PREFIX_DIR=/usr/local
+ENV HOME=/root
+
+ARG SNORT_VERSION=3.1.55.0
+#ARG DAQ_VERSION=libdaq-3.0.10
+
+RUN apt-get update
+RUN apt-get install -y \
+    python3.11 \
+    python3-pip \
+    tcpdump \
+    automake autoconf \
+    libtool \
+    cmake \
+    git \
+    build-essential make flex bison \
+    libpcap-dev libpcre3-dev \
+    libcap-ng-dev libdumbnet-dev \
+    zlib1g-dev liblzma-dev openssl libssl-dev \
+    libnghttp2-dev libluajit-5.1-dev && ldconfig
+
+RUN apt-get install -y libhwloc-dev
+RUN apt-get install -y less nano
+
+# download, build, and install Snort from source
+RUN mkdir -p /snort/snort-${SNORT_VERSION} && mkdir -p /etc/snort
+WORKDIR /snort
+
+# DAQ.
+ADD https://www.snort.org/downloads/snortplus/libdaq-3.0.10.tar.gz libdaq-3.0.10.tar.gz
+RUN tar -zxf libdaq-3.0.10.tar.gz && cd libdaq-3.0.10 && ./bootstrap && ./configure && make && make install
+
+# Snort
+#https://github.com/snort3/snort3/archive/refs/tags/3.1.55.0.tar.gz
+WORKDIR /snort
+RUN git clone https://github.com/snort3/snort3
+RUN cd snort3 && ./configure_cmake.sh --prefix=/usr/local && cd build && make -j $(nproc) install && ldconfig
+RUN mkdir pcap
+RUN mkdir log
+RUN mkdir rules
+RUN mkdir conf
+
+# configure snort, permissions, & folders
+#RUN groupadd snort
+#RUN useradd snort -r -s /sbin/nologin -c SNORT_IDS -g snort
+#USER snort
+#RUN mkdir -p /etc/snort/rules
+#RUN mkdir /var/log/snort
+#RUN mkdir /usr/local/lib/snort_dynamicrules
+#RUN chmod -R 5775 /etc/snort
+#RUN chmod -R 5775 /var/log/snort
+#RUN chmod -R 5775 /usr/local/lib/snort_dynamicrules
+#RUN chown -R snort:snort /etc/snort
+#RUN chown -R snort:snort /var/log/snort
+#RUN chown -R snort:snort /usr/local/lib/snort_dynamicrules
+#RUN chmod chmod u=rwx /snort/pcap 
+#RUN touch /etc/snort/rules/white_list.rules
+#RUN touch /etc/snort/rules/black_list.rules
+#RUN touch /etc/snort/rules/local.rules && ldconfig
+
+# Fast API
+
+WORKDIR /code
+ADD https://github.com/jrbrawner/SnortEngine /code/
+COPY snort-engine/requirements.txt /code/snort-engine/
+RUN pip install --no-cache-dir --upgrade -r /code/snort-engine/requirements.txt
+COPY . /code/snort-engine
+ENV PYTHONPATH "${PYTHONPATH}:/code/snort-engine/"
+
+EXPOSE 5000
+
+CMD ["uvicorn", "snort-engine.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "5000"]
