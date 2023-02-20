@@ -6,3 +6,4 @@ __pycache__
 /*.pytest_cache
 src/mitre/viz/*
 src/mitre/layers/*
+/cm-data

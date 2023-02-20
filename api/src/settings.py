@@ -2,10 +2,15 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_URI: str = 'sqlite:///development.db'
-    SECRET_KEY: str = '09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'
-    ALGORITHM: str = 'HS256'
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    DB_URI: str 
+    SECRET_KEY: str 
+    ALGORITHM: str 
+    ACCESS_TOKEN_EXPIRE_MINUTES: int 
+    POSTGRES_SERVER: str 
+    POSTGRES_USER: str 
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_PORT: str 
 
     class Config:
         env_file = ".env"

@@ -245,10 +245,12 @@ def generate_heatmap(file: UploadFile | None = None, layer_text: str = Form(None
         border=0.104,
     )
 
+    #local path = 'src/mitre/data/mitre-enterprise-attack.json'
+    path = 'api/src/mitre/data/mitre-enterprise-attack.json' #docker path
     viz = ToSvg(
         domain="enterprise",
         source="local",
-        resource="src/mitre/data/mitre-enterprise-attack.json",
+        resource=path,
         config=config,
     )
     file_text = ""
