@@ -23,12 +23,14 @@ from src.mitre.models import (
     SubtechniqueDefenseBypassed,
 )
 from sqlalchemy.orm import Session
+from src.settings import settings
 
 basedir = path.abspath(path.dirname(__file__))
 path = basedir
-
-#download_path = 'src/mitre/data/mitre-enterprise-attack.json' # local
-download_path = '/code/api/src/mitre/data/mitre-enterprise-attack.json' # docker
+if settings.ENVIRONMENT == "docker":
+    download_path = '/code/api/src/mitre/data/mitre-enterprise-attack.json' # docker
+elif settings.ENVIRONMENT == "local":
+    download_path = 'src/mitre/data/mitre-enterprise-attack.json' # local
 
 def convert_tactic(v) -> str | None:
     tactics = {

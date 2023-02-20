@@ -28,6 +28,8 @@ services:
       dockerfile: Dockerfile.snort-engine
     image: cm-snortengine
     tty: true
+    ports: 
+      - 5000:5000
   api:
     build:
       context: .

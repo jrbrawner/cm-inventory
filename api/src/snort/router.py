@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, APIRouter, File, UploadFile, Form
+from fastapi.responses import PlainTextResponse
 from src.snort.schemas import SnortSchema
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
@@ -6,6 +7,7 @@ from src.snort import services
 from src.snort.constants import SnortRuleFieldSearch
 from typing import Union
 from fastapi_pagination import Page
+import requests
 
 router = APIRouter()
 
@@ -28,6 +30,7 @@ def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_d
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
+
 
 @router.get("/api/snort/deconstruct/{id}", response_model=dict, tags=['snort'])
 def deconstruct_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
@@ -170,6 +173,11 @@ def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
     if msg is None:
         raise HTTPException(400, 'Error in deconstructing rule.')
     return msg
+
+@router.get("/api/snort/idk", response_class=PlainTextResponse, tags=['snort'])
+def testing():
+    idk = requests.get('http://localhost:5000/configuration').content
+    return idk
 
 
 

@@ -6,6 +6,7 @@ from src.mitre.router import router as mitre_router
 from src.yara.router import router as yara_router
 from src.snort.router import router as snort_router
 from src.sigma.router import router as sigma_router
+from src.snort_engine.router import router as snort_engine_router
 import time
 from fastapi_pagination import add_pagination
 
@@ -27,9 +28,13 @@ tags_metadata = [
         "description": "Create and manage snort rules.",
     },
     {
+        "name": "snort-engine",
+        "description": "Utilize snort software from a fast api application.",
+    },
+    {
         "name": "sigma",
         "description": "Create and manage sigma rules.",
-    },
+    }
 ]
 
 app = FastAPI(debug=False)
@@ -38,6 +43,7 @@ app.include_router(user_router)
 app.include_router(mitre_router)
 app.include_router(yara_router)
 app.include_router(snort_router)
+app.include_router(snort_engine_router)
 app.include_router(sigma_router)
 add_pagination(app)
 
