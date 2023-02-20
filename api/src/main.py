@@ -43,7 +43,7 @@ add_pagination(app)
 
 @app.on_event("startup")
 def startup():
-    print('restart')
+    #fix_plyara_imports()
     Base.metadata.create_all(bind=engine)
     if SessionLocal().query(Tactic).first() is None:
         from src.mitre.utils import (
@@ -59,4 +59,41 @@ def startup():
         get_mitre_techniques(SessionLocal())
         get_mitre_subtechniques(SessionLocal())
         et = time.time()
-        print(f"Execution time: {et - st}")
+        print(f"Startup database seeding time: {et - st}")
+
+
+def fix_plyara_imports():
+    """DO NOT RECOMMEND."""
+    try:
+        path = '../venv/Lib/site-packages/plyara/core.py'
+        core = open(path).read()
+
+        old_import = """
+        IMPORT_OPTIONS = {'pe',
+                        'elf',
+                        'cuckoo',
+                        'magic',
+                        'hash',
+                        'math',
+                        'dotnet',
+                        'time',
+                        'androguard'}"""
+
+        new_import = """
+        IMPORT_OPTIONS = {'pe',
+                        'elf',
+                        'cuckoo',
+                        'magic',
+                        'hash',
+                        'math',
+                        'dotnet',
+                        'time',
+                        'androguard',
+                        'macho',
+                        'console'}"""
+
+        testing = core.replace(old_import, new_import)
+        
+        open(path, 'w').write(testing)
+    except:
+        print('Error fixing plyara imports.')

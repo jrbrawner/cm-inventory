@@ -9,6 +9,8 @@ class YaraSchema(BaseModel):
     meta: str | None = None
     strings: str | None = None
     conditions: str
+    imports: str | None = None
+    tags: str | None = None
     raw_text: str
     logic_hash: str
     author: str | None = None

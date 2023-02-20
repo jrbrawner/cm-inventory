@@ -136,17 +136,15 @@ def update_yara_rule(db: Session, id: int, rule_text: str) -> YaraRule:
     db_rule.conditions = rule["rule_conditions"]
     db_rule.raw_text = rule["raw_text"]
     db_rule.logic_hash = rule["rule_logic_hash"]
-    db_rule.author = parser.get_meta_field("author")
-    db_rule.description = parser.get_meta_field("description")
     db_rule.compiles = rule["compiles"]
-    db_rule.date_last_modified = datetime.utcnow
-
+    db_rule.date_last_modified = datetime.utcnow()
+    
     if rule["rule_meta_kvp"] is None:
-                tactic = None
-                technique = None
-                subtechnique = None
-                author = None
-                description = None
+        tactic = None
+        technique = None
+        subtechnique = None
+        author = None
+        description = None
     else:
         tactic = parser.get_meta_field(
             keyword="tactic"
@@ -233,7 +231,7 @@ def test_all_yara_rule_ioc(db: Session, ioc_text: str) -> dict:
     for rule in rules:
         yara_rule = yara.compile(source=rule.raw_text)
         result = yara_rule.match(data=ioc_text)
-        if len(result) is not 0:
+        if len(result) != 0:
             for i in result:
                 for string in i.strings:
                     rule_match.append(string)
