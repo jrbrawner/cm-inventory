@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, APIRouter, File, UploadFile, Form
 from fastapi.responses import PlainTextResponse
-import requests
+from sqlalchemy.orm import Session
 from src.snort_engine import services
+from src.dependencies import get_db
 
 router = APIRouter()
 
@@ -41,8 +42,24 @@ def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool = False
     return result
 
 
+@router.post("/api/analyze-pcap/{id}", response_class=PlainTextResponse, tags=['snort-engine'])
+def analyze_pcap_id(pcap_file: UploadFile, id: int, db: Session = Depends(get_db)):
+    """Analyze a pcap using the snort rule specified with ID."""
+    result = services.analyze_pcap_id(db, id, pcap_file)
+    if result is None:
+        raise HTTPException(400, 'Error in analyzing pcap')
+    return result
+
 @router.post("/api/analyze-pcap", response_class=PlainTextResponse, tags=['snort-engine'])
-def analyze_pcap(pcap_file: UploadFile):
+def analyze_pcap_all(pcap_file: UploadFile, db: Session = Depends(get_db)):
+    """Analyze a pcap using all snort rules in db"""
+    result = services.analyze_pcap_all(db,pcap_file)
+    if result is None:
+        raise HTTPException(400, 'Error in analyzing pcap')
+    return result
+
+@router.post("/api/analyze-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
+def analyze_pcap_detailed(pcap_file: UploadFile):
     result = services.analyze_pcap(pcap_file)
     if result is None:
         raise HTTPException(400, 'Error in analyzing pcap')

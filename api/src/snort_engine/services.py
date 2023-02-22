@@ -1,6 +1,9 @@
 import requests
 from fastapi import UploadFile
 import tempfile
+from sqlalchemy.orm import Session
+from src.snort.models import SnortRule
+from src.snort.services import get_rule_str
 
 snort_url = 'https://jrbrawner-vigilant-space-broccoli-qg9qw4vg5gghx4rr-80.preview.app.github.dev'
 
@@ -23,7 +26,7 @@ def create_configuration(config_name: str, HOME_NET: str, EXTERNAL_NET: str) -> 
     return configuration.content
 
 def read_pcap(pcap_file: UploadFile) -> str:
-    """Send a pcap file to snort engine to inspect and display the return the result."""
+    """Send a pcap file to snort engine to inspect and display the result."""
     contents = pcap_file.file.read()
     files = {'pcap_file': ('pcap_file', contents)}
     result = requests.post(f"{snort_url}/read-pcap",
@@ -31,6 +34,7 @@ def read_pcap(pcap_file: UploadFile) -> str:
     return result.content
 
 def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool) -> str:
+    """Send a pcap file to snort engine to inspect and display the result, packet by packet."""
     contents = pcap_file.file.read()
     files = {'pcap_file': ('pcap_file', contents)}
     params = {"show_raw_packet_data": show_raw_packet_data}
@@ -40,7 +44,41 @@ def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool) -> str
     
     return result.content
 
-def analyze_pcap(pcap_file: UploadFile) -> str:
+def analyze_pcap_id(db: Session, id: int, pcap_file: UploadFile) -> str:
+    """Send a pcap file to snort engine and specify rule by id to inspect the pcap file."""
+    temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
+    rule = get_rule_str(db, id)
+    print(rule)
+    f = open(temp_file_rules.name, 'w')
+    f.write(rule)
+
+    contents = pcap_file.file.read()
+    files = {'pcap_file': ('pcap_file', contents), 'rules_file': ('rules_file', temp_file_rules)}
+    f.close()
+
+    result = requests.post(f"{snort_url}/analyze-pcap",
+                           files=files)
+    
+    return result.content
+
+def analyze_pcap_all(db: Session, pcap_file: UploadFile) -> str:
+    """Send a pcap file to snort engine and specify rule by id to inspect the pcap file."""
+    temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
+    rules = db.query(SnortRule).all()
+    f = open(temp_file_rules.name, 'w')
+    for rule in rules:
+        f.writelines(get_rule_str(rule=rule))
+
+    contents = pcap_file.file.read()
+    files = {'pcap_file': ('pcap_file', contents), 'rules_file': ('rules_file', temp_file_rules)}
+    f.close()
+
+    result = requests.post(f"{snort_url}/analyze-pcap",
+                           files=files)
+    
+    return result.content
+
+def analyze_pcap_detailed(pcap_file: UploadFile) -> str:
     temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
     rules = 'alert tcp any any -> any any (msg:"This is a test";) '
     f = open(temp_file_rules.name, 'w')

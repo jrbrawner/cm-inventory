@@ -179,8 +179,25 @@ def delete_snort_rule(db: Session, id: int) -> dict:
     db.commit()
     return {"msg": f"Snort rule with id {rule_id} deleted."}
 
-def get_rule_str(db: Session, id: int) -> str:
+def get_rule_str(db: Session | None = None, id: int | None = None, rule=None) -> str:
     """Rebuild a snort rules raw text form."""
+
+    if rule is not None:
+        parser = SnortParser()
+        rebuilt_options = json.loads(rule.body_options)
+        
+        rebuilt_rule = parser.rebuild_rule(
+        action=rule.action,
+        protocol=rule.protocol,
+        source_ip=rule.src_ip,
+        source_port=rule.src_port,
+        direction=rule.direction,
+        dest_ip=rule.dst_ip,
+        dest_port=rule.dst_port,
+        body_options=rebuilt_options,
+    )
+        return rebuilt_rule
+
     rule = db.query(SnortRule).get(id)
     parser = SnortParser()
     rebuilt_options = json.loads(rule.body_options)
