@@ -25,6 +25,45 @@ def create_configuration(config_name: str, HOME_NET: str, EXTERNAL_NET: str) -> 
     
     return configuration.content
 
+def test_rule(db: Session, id: int, rule_string: str) -> str:
+    """Load rule on snort engine to ensure it compiles successfully."""
+    if rule_string is not None:
+        params = {'rule_string': rule_string}
+        result = requests.get(f"{snort_url}/test-rule",
+                                params=params)
+        return result.content 
+    rule = get_rule_str(db, id)
+    params = {'rule_string': rule}
+    result = requests.get(f"{snort_url}/test-rule",
+                          params=params)
+    return result.content
+
+def convert_rule(db: Session, id: int, rule_string: str) -> str:
+    """Convert a snort2 rule to snort3."""
+    if rule_string is not None:
+        params = {'rule_string': rule_string}
+        result = requests.post(f"{snort_url}/snort2lua/convert-rule",
+                                params=params)
+        return result.content
+    rule = get_rule_str(db, id)
+    params = {'rule_string': rule}
+    result = requests.post(f"{snort_url}/snort2lua/convert-rule",
+                          params=params)
+    return result.content
+
+def convert_all_rules(db: Session):
+    """Check all rules and if there is an error, convert the rule and save it in db."""
+    rules = db.query(SnortRule).all()
+    rule_list = []
+    for rule in rules:
+        string = get_rule_str(rule=rule)
+        test_result = test_rule(db, 1, rule_string=string)
+        if test_result != "Rule loaded successfully.":
+            rule_list.append({rule.id : test_result})
+    return rule_list
+    
+
+
 def read_pcap(pcap_file: UploadFile) -> str:
     """Send a pcap file to snort engine to inspect and display the result."""
     contents = pcap_file.file.read()
@@ -92,3 +131,4 @@ def analyze_pcap_detailed(pcap_file: UploadFile) -> str:
                            files=files)
     
     return result.content
+

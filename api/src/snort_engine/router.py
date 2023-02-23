@@ -6,6 +6,7 @@ from src.dependencies import get_db
 
 router = APIRouter()
 
+
 @router.get("/api/snort-engine/configuration", response_class=PlainTextResponse, tags=['snort-engine'])
 def get_available_configurations():
     conf = services.get_available_configurations()
@@ -25,6 +26,28 @@ def create_new_configuration(config_name: str, HOME_NET: str, EXTERNAL_NET: str 
     result = services.create_configuration(config_name, HOME_NET, EXTERNAL_NET)
     if result is None:
         raise HTTPException(400, 'Error in creating new configuration.')
+    return result
+
+@router.get("/api/snort-engine/test-rule", response_class=PlainTextResponse, tags=['snort-engine'])
+def test_rule_compilation(id: int | None = None, rule_string: str = None, db: Session = Depends(get_db)):
+    """Test rule on snort engine to see if it successfuly loads."""
+    result = services.test_rule(db, id, rule_string)
+    if result is None:
+        raise HTTPException(400, 'Error in testing snort rule.')
+    return result
+
+@router.post("/api/snort-engine/convert-rule", response_class=PlainTextResponse, tags=['snort-engine'])
+def convert_rule(id: int | None = None, rule_string: str = None, db: Session = Depends(get_db)):
+    result = services.convert_rule(db, id, rule_string)
+    if result is None:
+        raise HTTPException(400, 'Error in testing snort rule.')
+    return result
+
+@router.post("/api/snort-engine/convert-all-rules", response_class=PlainTextResponse, tags=['snort-engine'])
+def convert_all_broken_rules(db: Session = Depends(get_db)):
+    result = services.convert_all_rules(db)
+    if result is None:
+        raise HTTPException(400, 'Error in testing snort rule.')
     return result
 
 @router.post("/api/snort-engine/read-pcap", response_class=PlainTextResponse, tags=['snort-engine'])
