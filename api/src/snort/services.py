@@ -134,40 +134,44 @@ def get_snort_rules_subtechniques(db: Session, value: str) -> list[SnortRule]:
 def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
     db_rule = db.query(SnortRule).get(id)
     parser = SnortParser()
-    rule = parser.parse_rules(rule_text)[0]
-    rule_options = json.dumps(rule.body_options)
-    db_rule.action = rule.action
-    db_rule.src_ip = rule.source_ip
-    db_rule.src_port = rule.source_port
-    db_rule.direction = rule.direction
-    db_rule.dst_ip = rule.dest_ip
-    db_rule.dst_port = rule.dest_port
-    db_rule.body_options = rule_options
+    rule_list = parser.parse_rules(rule_text)
+    if len(parser.error_log) == 0:
+        rule = rule_list[0]
+        rule_options = json.dumps(rule.body_options)
+        db_rule.action = rule.action
+        db_rule.src_ip = rule.source_ip
+        db_rule.src_port = rule.source_port
+        db_rule.direction = rule.direction
+        db_rule.dst_ip = rule.dest_ip
+        db_rule.dst_port = rule.dest_port
+        db_rule.body_options = rule_options
 
-    # checking for mitre att&ck designations in rem option
-    # need to put these in a class at some point?
-    if "rem" or "msg" in str(rule.body_options):
-        for option in rule.body_options:
-            for key, value in option.items():
-                if key == "msg":
-                    rule.msg = value
-                if key == "rem":
-                    value = value.replace('"', "")
-                    mitre = value.split(",")
-                    for i in mitre:
-                        opts = i.split(":")
-                        if opts[0].strip() == "tactic":
-                            tactic_db = db.query(Tactic).get(opts[1])
-                            db_rule.tactics.append(tactic_db)
-                        if opts[0].strip() == "technique":
-                            technique_db = db.query(Technique).get(opts[1])
-                            db_rule.techniques.append(technique_db)
-                        if opts[0].strip() == "subtechnique":
-                            subtechnique_db = db.query(Subtechnique).get(opts[1])
-                            db_rule.subtechniques.append(subtechnique_db)
+        # checking for mitre att&ck designations in rem option
+        # need to put these in a class at some point?
+        if "rem" or "msg" in str(rule.body_options):
+            for option in rule.body_options:
+                for key, value in option.items():
+                    if key == "msg":
+                        db_rule.msg = value
+                    if key == "rem":
+                        value = value.replace('"', "")
+                        mitre = value.split(",")
+                        for i in mitre:
+                            opts = i.split(":")
+                            if opts[0].strip() == "tactic":
+                                tactic_db = db.query(Tactic).get(opts[1])
+                                db_rule.tactics.append(tactic_db)
+                            if opts[0].strip() == "technique":
+                                technique_db = db.query(Technique).get(opts[1])
+                                db_rule.techniques.append(technique_db)
+                            if opts[0].strip() == "subtechnique":
+                                subtechnique_db = db.query(Subtechnique).get(opts[1])
+                                db_rule.subtechniques.append(subtechnique_db)
 
-    db.commit()
-    return db_rule
+        db.commit()
+        return db_rule
+    else:
+        return None
 
 def delete_snort_rule(db: Session, id: int) -> dict:
     """Delete a single snort rule."""

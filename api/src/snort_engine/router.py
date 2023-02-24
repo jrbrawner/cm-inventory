@@ -43,7 +43,7 @@ def convert_rule(id: int | None = None, rule_string: str = None, db: Session = D
         raise HTTPException(400, 'Error in testing snort rule.')
     return result
 
-@router.post("/api/snort-engine/convert-all-rules", response_class=PlainTextResponse, tags=['snort-engine'])
+@router.post("/api/snort-engine/convert-all-rules", tags=['snort-engine'])
 def convert_all_broken_rules(db: Session = Depends(get_db)):
     result = services.convert_all_rules(db)
     if result is None:
@@ -82,8 +82,8 @@ def analyze_pcap_all(pcap_file: UploadFile, db: Session = Depends(get_db)):
     return result
 
 @router.post("/api/analyze-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
-def analyze_pcap_detailed(pcap_file: UploadFile):
-    result = services.analyze_pcap(pcap_file)
+def analyze_pcap_detailed(pcap_file: UploadFile, id: int, db: Session = Depends(get_db)):
+    result = services.analyze_pcap_detailed(db, id, pcap_file)
     if result is None:
         raise HTTPException(400, 'Error in analyzing pcap')
     return result
