@@ -15,16 +15,9 @@ export default function App() {
     const params = useParams();
     const navigate = useNavigate();
 
-    const [ruleString, setRuleString] = React.useState();
-    
     React.useEffect(() => {
         SnortDataService.get(params.id).then((response) => {
             setSnortRule(response.data);
-            
-            SnortDataService.rebuildRule(params.id).then((response) => {
-                setRuleString(response.data);
-            })
-            
         }).catch(function (error) {
             if (error.response)
                 {
@@ -102,7 +95,7 @@ export default function App() {
                             <TextareaAutosize
                             disabled
                             className="container text-dark"
-                            value={ruleString}/>
+                            value={snortRule.raw_text}/>
                             <hr/>
                             </div>
                             

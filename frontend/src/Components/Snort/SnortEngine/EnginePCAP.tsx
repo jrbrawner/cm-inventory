@@ -1,5 +1,4 @@
 import React from 'react';
-import SigmaDataService from '../../services/sigma.service';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -8,70 +7,38 @@ import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import CommonUtils from '../../lib/utils';
 
 export default function App(){
 
-    const [ruleText, setRuleText] = React.useState();
-    const [file, setFile] = React.useState();
+    const [file, setFile] = React.useState<any>();
     const [validated, setValidated] = React.useState(true);
-    const [results, setResults] = React.useState();
+    const [results, setResults] = React.useState("");
 
-    const handleInput = event  => {
-      setRuleText(event.target.value);
-      setValidated(false);
-      if (event.target.value === ""){
-        setValidated(true);
-      }
-    }
-
-    const handleFile = event => {
+    const handleFile = (event: any) => {
       setFile(event.target.files);
       setValidated(false);
     }
     
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: any) => {
       event.preventDefault();
       if (file !== undefined) {
           const formData = new FormData();
           for (let i = 0; i < file.length; i++){
             formData.append("files", file[i]);
           }
-          SigmaDataService.createFile(formData).then(function (response) {
-              formatResults(response.data);
-            }).catch(function (error) {
-                alert(error);
-            })
+            
             
         }
         else{
-        //rule text wip
-        const formData = new FormData();
-        formData.append("rules_text", ruleText);
-        SigmaDataService.createText(formData).then(function (response) {
-          formatResults(response.data);
-        }).catch(function (error) {
-          console.log(error);
-          alert(error);
-        })
+            alert('errror');
       }
     }
 
-    function formatResults(list) {
-
-      var resultList = []
-      var index = 0;
-      list.map((item) => {
-        resultList.push({id: index, result: item.msg, variant: item.variant}) 
-        index += 1;
-      })
-      setResults(resultList);
-    }
 
     return (
             <Container className="mb-5">
               <div className="input-group d-flex justify-content-center">
-                <h5 className="mt-3">Upload files of Sigma rules or enter Sigma rules in the text box below.</h5>
+                <h5 className="mt-3">Upload PCAP file to have it read by Snort</h5>
                 <OverlayTrigger
                           trigger="click"
                           key={"bottom"}
@@ -100,22 +67,6 @@ export default function App(){
                   <div className="d-flex justify-content-center">
                     <Form.Control onChange={handleFile} className="w-50" type="file" multiple required={validated}/>
                   </div>
-                  <Form.Group className="mt-3 mb-1">
-                  <div className="d-flex justify-content-center">
-                    <textarea
-                      className="w-50 form-control"
-                      id="rules-text"
-                      name="rules-text"
-                      rows={15}
-                      required={validated}
-                      placeholder="Enter rules here..."
-                      style={{ width: 200 }}
-                      onChange={handleInput}
-                      onKeyDown={CommonUtils.handleTab}
-                      />
-                    </div>
-
-                  </Form.Group>
                   <div className="d-flex justify-content-center mt-3">
                     <div className="w-50">
                         <div className="d-grid gap-2">
@@ -129,11 +80,7 @@ export default function App(){
                 <div>
                 {results &&
                   <ListGroup className="mt-2">
-                    {results.map((result) => {
-                      return (
-                        <ListGroup.Item key={result.id} variant={result.variant}>{result.result}</ListGroup.Item>
-                      )
-                    })}
+                    {results}
                   </ListGroup>
                 }
                 </div>

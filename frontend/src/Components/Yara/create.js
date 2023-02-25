@@ -124,9 +124,9 @@ export default function App(){
                     <Form.Control onChange={handleFile} className="w-50" type="file" multiple required={validated}/>
                   </div>
                   <Form.Group className="mt-3 mb-1">
-
+                  <div className="d-flex justify-content-center">
                     <textarea
-                      className="w-50"
+                      className="w-50 form-control"
                       id="rules-text"
                       name="rules-text"
                       rows={15}
@@ -135,7 +135,8 @@ export default function App(){
                       style={{ width: 200 }}
                       onChange={handleInput}
                       onKeyDown={CommonUtils.handleTab}
-                    />
+                      />
+                  </div>
 
                   </Form.Group>
                   <div className="d-flex justify-content-center mt-3">

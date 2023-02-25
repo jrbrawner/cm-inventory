@@ -8,6 +8,7 @@ from SRParser import SnortParser
 import json
 from src.mitre.models import Tactic, Technique, Subtechnique
 from src.snort.services import update_snort_rule
+import time
 
 #snort_url = 'https://jrbrawner-vigilant-space-broccoli-qg9qw4vg5gghx4rr-80.preview.app.github.dev'
 snort_url = "http://127.0.0.1:8080"
@@ -37,8 +38,8 @@ def test_rule(db: Session, id: int, rule_string: str) -> str:
         result = requests.get(f"{snort_url}/test-rule",
                                 params=params)
         return result.content 
-    rule = get_rule_str(db, id)
-    params = {'rule_string': rule}
+    rule = db.query(SnortRule).get(id)
+    params = {'rule_string': rule.raw_text}
     result = requests.get(f"{snort_url}/test-rule",
                           params=params)
     return result.content
@@ -50,32 +51,34 @@ def convert_rule(db: Session, id: int, rule_string: str) -> str:
         result = requests.post(f"{snort_url}/snort2lua/convert-rule",
                                 params=params)
         return result.content
-    rule = get_rule_str(db, id)
-    params = {'rule_string': rule}
+    rule = db.query(SnortRule).get(id)
+    params = {'rule_string': rule.raw_text}
     result = requests.post(f"{snort_url}/snort2lua/convert-rule",
                           params=params)
     return result.content
 
 def convert_all_rules(db: Session):
-    """Check all rules and if there is an error, convert the rule and save it in db."""
-    
+    """Check all rules and if there is an error, convert the rule and save it in db.\n
+       NOTE: This will likely take quite a while to execute depending on the amount of rules in db.
+    """
+    st = time.time()
     rules = db.query(SnortRule).all()
     rule_list = []
     updated_list = []
     for rule in rules:
-        string = get_rule_str(rule=rule)
-        test_result = test_rule(db, 1, rule_string=string)
+        test_result = test_rule(db, 1, rule_string=rule.raw_text)
         if "Rule loaded successfully." not in str(test_result):
-            rule_list.append({'id': rule.id, 'result' : test_result, 'rule_string': string})
+            rule_list.append({'id': rule.id, 'result' : test_result, 'rule_string': rule.raw_text})
     
     for entry in rule_list:
         new_rule_string = convert_rule(db, 0, rule_string=entry['rule_string'])
         result = update_snort_rule(db, entry['id'], new_rule_string.decode())
         if result is not None:
-            new_string = get_rule_str(rule=result)
-            updated_list.append({'id': result.id, 'updated_string': new_string})
+            updated_list.append({'id': result.id, 'updated_string': result.raw_text})
         if result is None:
             updated_list.append({'id': entry['id'], 'updated_string': 'Cant be updated, check snort.rej'})
+    et = time.time()
+    print(f'Finished, execution time - {et - st}')
     return updated_list
     
 def read_pcap(pcap_file: UploadFile) -> str:
@@ -100,9 +103,9 @@ def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool) -> str
 def analyze_pcap_id(db: Session, id: int, pcap_file: UploadFile) -> str:
     """Send a pcap file to snort engine and specify rule by id to inspect the pcap file."""
     temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
-    rule = get_rule_str(db, id)
+    rule = db.query(SnortRule).get(id)
     f = open(temp_file_rules.name, 'w')
-    f.write(rule)
+    f.write(rule.raw_text)
 
     contents = pcap_file.file.read()
     files = {'pcap_file': ('pcap_file', contents), 'rules_file': ('rules_file', temp_file_rules)}
@@ -116,18 +119,10 @@ def analyze_pcap_id(db: Session, id: int, pcap_file: UploadFile) -> str:
 def analyze_pcap_all(db: Session, pcap_file: UploadFile) -> str:
     """Send a pcap file to snort engine and specify rule by id to inspect the pcap file."""
     temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
-    successful_rules = []
     rules = db.query(SnortRule).all()
-    for rule in rules:
-        rule_string = get_rule_str(rule=rule)
-        test_result = test_rule(db, 0, rule_string=rule_string)
-        if "Rule loaded successfully." in str(test_result):
-            successful_rules.append({'id': rule.id, 'rule_string': rule_string})
-
     f = open(temp_file_rules.name, 'w')
-    for rule in successful_rules:
-        f.writelines(rule['rule_string'])
-
+    for rule in rules:
+        f.write(rule.raw_text + '\n')
     contents = pcap_file.file.read()
     files = {'pcap_file': ('pcap_file', contents), 'rules_file': ('rules_file', temp_file_rules)}
     f.close()

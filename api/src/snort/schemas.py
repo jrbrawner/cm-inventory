@@ -18,6 +18,7 @@ class SnortSchema(BaseModel):
     tactics: list[TacticBase] | None = None
     techniques: list[TechniqueBase] | None = None
     subtechniques: list[SubTechniqueBase] | None = None
+    raw_text: str
 
     class Config:
         orm_mode = True

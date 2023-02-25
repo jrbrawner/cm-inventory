@@ -31,7 +31,8 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
             direction=rule.direction,
             dst_ip=rule.dest_ip,
             dst_port=rule.dest_port,
-            body_options=rule_options,
+            raw_text=rule.raw_text,
+            body_options=rule_options
         )
         
         # checking for mitre att&ck designations in rem option
@@ -144,6 +145,7 @@ def update_snort_rule(db: Session, id: int, rule_text: str) -> SnortRule:
         db_rule.direction = rule.direction
         db_rule.dst_ip = rule.dest_ip
         db_rule.dst_port = rule.dest_port
+        db_rule.raw_text = rule.raw_text
         db_rule.body_options = rule_options
 
         # checking for mitre att&ck designations in rem option

@@ -47,6 +47,17 @@ export default function App(){
                         </Card.Body>
                     </Card>
                 </Col>
+                <Col>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Snort Engine</Card.Title>
+                            <Card.Text>
+                                Utilize capabilities of virtualized snort appliance running in Docker container.
+                            </Card.Text>
+                            <Button variant="primary" onClick={() => navigate(`/snort/engine/home`)}>View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
             </Row>
         </Container>
     )
