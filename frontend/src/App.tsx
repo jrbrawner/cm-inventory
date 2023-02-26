@@ -47,6 +47,7 @@ import SnortRuleBuilderPage from './Pages/Snort/SnortRuleBuilderPage';
 import SnortRuleBuilderParam from './Pages/Snort/SnortRuleBuilderParams';
 import EngineHomePage from './Pages/Snort/SnortEngine/EngineHomePage';
 import EnginePCAPPage from './Pages/Snort/SnortEngine/EnginePCAPPage';
+import EngineAnalyzePCAPPage from './Pages/Snort/SnortEngine/EngineAnalyzePCAPPage';
 
 export default function App() {
   return (
@@ -96,7 +97,8 @@ export default function App() {
             <Route path="/snort/rule-builder" element={<SnortRuleBuilderPage/>}/>
             <Route path="/snort/rule-builder/:id" element={<SnortRuleBuilderParam/>}/>
             <Route path="/snort/engine/home" element={<EngineHomePage/>}/>
-            <Route path="/snort/engine/pcap" element={<EnginePCAPPage/>}/>
+            <Route path="/snort/engine/read-pcap" element={<EnginePCAPPage/>}/>
+            <Route path="/snort/engine/analyze-pcap" element={<EngineAnalyzePCAPPage/>}/>
 
             <Route path="/sigma/home" element={<SigmaHomePage/>}/>
             <Route path="/sigma/:id" element={<SigmaRulePage/>}/>

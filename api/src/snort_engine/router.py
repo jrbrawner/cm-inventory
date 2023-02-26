@@ -63,7 +63,7 @@ def read_pcap(pcap_file: UploadFile):
         raise HTTPException(400, 'Error in sending pcap file or returning result.')
     return result
 
-@router.post("/api/read-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
+@router.post("/api/snort-engine/read-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
 def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool = False):
     result = services.read_pcap_detailed(pcap_file, show_raw_packet_data)
     if result is None:
@@ -71,7 +71,7 @@ def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool = False
     return result
 
 
-@router.post("/api/analyze-pcap/{id}", response_class=PlainTextResponse, tags=['snort-engine'])
+@router.post("/api/snort-engine/analyze-pcap/{id}", response_class=PlainTextResponse, tags=['snort-engine'])
 def analyze_pcap_id(pcap_file: UploadFile, id: int, db: Session = Depends(get_db)):
     """Analyze a pcap using the snort rule specified with ID."""
     result = services.analyze_pcap_id(db, id, pcap_file)
@@ -79,7 +79,7 @@ def analyze_pcap_id(pcap_file: UploadFile, id: int, db: Session = Depends(get_db
         raise HTTPException(400, 'Error in analyzing pcap')
     return result
 
-@router.post("/api/analyze-pcap", response_class=PlainTextResponse, tags=['snort-engine'])
+@router.post("/api/snort-engine/analyze-pcap", response_class=PlainTextResponse, tags=['snort-engine'])
 def analyze_pcap_all(pcap_file: UploadFile, db: Session = Depends(get_db)):
     """Analyze a pcap using all snort rules in db"""
     result = services.analyze_pcap_all(db, pcap_file)
@@ -87,7 +87,7 @@ def analyze_pcap_all(pcap_file: UploadFile, db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in analyzing pcap')
     return result
 
-@router.post("/api/analyze-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
+@router.post("/api/snort-engine/analyze-pcap-detailed", response_class=PlainTextResponse, tags=['snort-engine'])
 def analyze_pcap_detailed(pcap_file: UploadFile, id: int, db: Session = Depends(get_db)):
     result = services.analyze_pcap_detailed(db, id, pcap_file)
     if result is None:

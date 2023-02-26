@@ -13,10 +13,10 @@ snort_url = settings.SNORT_ENGINE_URL
 
 def check_status() -> dict:
     """Check if snort engine is running."""
-    status = requests.get(f'{snort_url}/configuration')
-    if status is not None:
+    try:
+        status = requests.get(f'{snort_url}/configuration')
         return {'result': 'live', 'variant': 'success'}
-    else:
+    except:
         return {'result': 'down', 'variant': 'danger'}
 
 def get_available_configurations() -> str:
@@ -123,7 +123,7 @@ def analyze_pcap_id(db: Session, id: int, pcap_file: UploadFile) -> str:
     return result.content
 
 def analyze_pcap_all(db: Session, pcap_file: UploadFile) -> str:
-    """Send a pcap file to snort engine and specify rule by id to inspect the pcap file."""
+    """Send a pcap file to snort engine and use all rules to analyze it."""
     temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
     rules = db.query(SnortRule).all()
     f = open(temp_file_rules.name, 'w')

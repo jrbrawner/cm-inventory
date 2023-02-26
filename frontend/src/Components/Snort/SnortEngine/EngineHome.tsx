@@ -38,9 +38,20 @@ export default function App(){
                         <Card.Body>
                             <Card.Title>Read PCAP</Card.Title>
                             <Card.Text>
-                                Read PCAP using Snort
+                                Read PCAP using Snort.
                             </Card.Text>
-                            <Button variant="primary" onClick={() => navigate(`/snort/engine/pcap`)}>View</Button>
+                            <Button variant="primary" onClick={() => navigate(`/snort/engine/read-pcap`)}>View</Button>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card className="mb-2" bg="light">
+                        <Card.Body>
+                            <Card.Title>Analyze PCAP</Card.Title>
+                            <Card.Text>
+                                Analyze PCAP using stored Snort rules.
+                            </Card.Text>
+                            <Button variant="primary" onClick={() => navigate(`/snort/engine/analyze-pcap`)}>View</Button>
                         </Card.Body>
                     </Card>
                 </Col>

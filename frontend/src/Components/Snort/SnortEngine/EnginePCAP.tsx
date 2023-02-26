@@ -87,7 +87,8 @@ export default function App(){
                   <h5>Upload PCAP file to have it read by Snort</h5>
                   <Form onSubmit={handleSubmit}>
                       <Form.Group className="mt-3 mb-3 text-start" controlId="formLayerName">
-                              <Form.Control onChange={handleFile} type="file" required/>
+                        <Form.Label>PCAP File</Form.Label>
+                        <Form.Control onChange={handleFile} type="file" required/>
                       </Form.Group>
 
                       <Form.Group className="mt-3 mb-3 text-start" controlId="formRuleSelections">
@@ -128,7 +129,8 @@ export default function App(){
                   <h5>Upload PCAP file to have it read by Snort</h5>
                   <Form onSubmit={handleSubmit}>
                       <Form.Group className="mt-3 mb-3 text-start" controlId="formLayerName">
-                              <Form.Control onChange={handleFile} type="file" required/>
+                          <Form.Label>PCAP File</Form.Label>
+                          <Form.Control onChange={handleFile} type="file" required/>
                       </Form.Group>
 
                       <Form.Group className="mt-3 mb-3 text-start" controlId="formRuleSelections">

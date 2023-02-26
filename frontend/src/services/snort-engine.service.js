@@ -10,9 +10,14 @@ class SnortEngineService {
     }
 
     readPcapDetailed(data, show_raw_packet_deta) {
-        return axios.post(`/api/read-pcap-detailed`, data, { params: {'show_raw_packet_data': show_raw_packet_deta}},
+        return axios.post(`/api/snort-engine/read-pcap-detailed`, data, { params: {'show_raw_packet_data': show_raw_packet_deta}},
          {"Content-Type": "multipart/form-data"})
     }
+
+    analyzePcapAll(data){
+        return axios.post(`/api/snort-engine/analyze-pcap`, data, {"Content-Type": "multipart/form-data"})
+    }
+
     
 }
 
