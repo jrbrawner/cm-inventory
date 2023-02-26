@@ -6,6 +6,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str 
     ALGORITHM: str 
     ACCESS_TOKEN_EXPIRE_MINUTES: int 
+    SNORT_ENGINE_URL: str
+
     POSTGRES_SERVER: str 
     POSTGRES_USER: str 
     POSTGRES_PASSWORD: str

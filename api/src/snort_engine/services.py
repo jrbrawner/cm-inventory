@@ -4,14 +4,20 @@ import tempfile
 from sqlalchemy.orm import Session
 from src.snort.models import SnortRule
 from src.snort.services import get_rule_str
-from SRParser import SnortParser
-import json
-from src.mitre.models import Tactic, Technique, Subtechnique
 from src.snort.services import update_snort_rule
 import time
+from src.settings import settings
 
 #snort_url = 'https://jrbrawner-vigilant-space-broccoli-qg9qw4vg5gghx4rr-80.preview.app.github.dev'
-snort_url = "http://127.0.0.1:8080"
+snort_url = settings.SNORT_ENGINE_URL
+
+def check_status() -> dict:
+    """Check if snort engine is running."""
+    status = requests.get(f'{snort_url}/configuration')
+    if status is not None:
+        return {'result': 'live', 'variant': 'success'}
+    else:
+        return {'result': 'down', 'variant': 'danger'}
 
 def get_available_configurations() -> str:
     """Display available configurations from Snort Engine."""

@@ -1,11 +1,17 @@
 from fastapi import Depends, HTTPException, APIRouter, File, UploadFile, Form
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, JSONResponse
 from sqlalchemy.orm import Session
 from src.snort_engine import services
 from src.dependencies import get_db
 
 router = APIRouter()
 
+@router.get("/api/snort-engine/status", response_class=JSONResponse, tags=['snort-engine'])
+def check_status():
+    status = services.check_status()
+    if status is None:
+        raise HTTPException(400, 'Error in retrieving available configurations.')
+    return status
 
 @router.get("/api/snort-engine/configuration", response_class=PlainTextResponse, tags=['snort-engine'])
 def get_available_configurations():
