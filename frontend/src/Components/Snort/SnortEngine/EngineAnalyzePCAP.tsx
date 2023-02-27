@@ -36,8 +36,18 @@ export default function App(){
       if (selection === "new"){
         if (ruleFile !== undefined){
           for (let i = 0; i < ruleFile.length; i++){
-            formData.append("files", file[i]);
+            formData.append("files", ruleFile [i]);
           }
+          SnortEngineService.analyzePcapInput(formData).then((response) => {
+            setResults(response.data);
+          })
+        }
+
+        else if (ruleText !== undefined){
+          formData.append("rule_text", ruleText);
+          SnortEngineService.analyzePcapInput(formData).then((response) => {
+            setResults(response.data);
+          })
         }
       }
     }

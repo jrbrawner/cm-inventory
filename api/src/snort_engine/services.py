@@ -122,6 +122,21 @@ def analyze_pcap_id(db: Session, id: int, pcap_file: UploadFile) -> str:
     
     return result.content
 
+def analyze_pcap_input(pcap_file: UploadFile, rules_text: str) -> str:
+    temp_file_rules = tempfile.NamedTemporaryFile(delete=False)
+    f = open(temp_file_rules.name, 'w')
+    f.write(rules_text)
+
+    contents = pcap_file.file.read()
+    files = {'pcap_file': ('pcap_file', contents), 'rules_file': ('rules_file', temp_file_rules)}
+    f.close()
+
+    result = requests.post(f"{snort_url}/analyze-pcap",
+                           files=files)
+    
+    return result.content
+    
+
 def analyze_pcap_all(db: Session, pcap_file: UploadFile) -> str:
     """Send a pcap file to snort engine and use all rules to analyze it."""
     temp_file_rules = tempfile.NamedTemporaryFile(delete=False)

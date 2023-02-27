@@ -5,6 +5,7 @@ class SnortEngineService {
     checkStatus() {
         return axios.get(`/api/snort-engine/status`)
     }
+
     readPcap(data){
         return axios.post(`/api/snort-engine/read-pcap`, data, {"Content-Type": "multipart/form-data"})
     }
@@ -16,6 +17,10 @@ class SnortEngineService {
 
     analyzePcapAll(data){
         return axios.post(`/api/snort-engine/analyze-pcap`, data, {"Content-Type": "multipart/form-data"})
+    }
+
+    analyzePcapInput(data){
+        return axios.post(`/api/snort-engine/analyze-pcap/input`, data, {"Content-Type": "multipart/form-data"})
     }
 
     
