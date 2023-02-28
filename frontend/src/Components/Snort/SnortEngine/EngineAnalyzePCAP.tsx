@@ -36,10 +36,10 @@ export default function App(){
       if (selection === "new"){
         if (ruleFile !== undefined){
           for (let i = 0; i < ruleFile.length; i++){
-            formData.append("files", ruleFile [i]);
+            formData.append("files", ruleFile[i]);
           }
           SnortEngineService.analyzePcapInput(formData).then((response) => {
-            setResults(response.data);
+            setResults(response.data);  
           })
         }
 

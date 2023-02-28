@@ -70,6 +70,22 @@ def read_pcap_detailed(pcap_file: UploadFile, show_raw_packet_data: bool = False
         raise HTTPException(400, 'Error in sending pcap file or returning result.')
     return result
 
+@router.post("/api/snort-engine/analyze-pcap/input", response_class=PlainTextResponse, tags=['snort-engine'])
+def analyze_pcap_input(pcap_file: UploadFile, files: list[UploadFile] | None = None, rule_text: str = Form(None)):
+    contents = ""
+    if files is not None:
+        for file in files:
+            contents += file.file.read().decode()
+        result = services.analyze_pcap_input(pcap_file, contents)
+        if result is None:
+            raise HTTPException(400, 'Error in analyzing pcap with provided rules files.')
+        return result
+    elif rule_text is not None:
+        contents = rule_text
+        result = services.analyze_pcap_input(pcap_file, contents)
+        if result is None:
+            raise HTTPException(400, 'Error in analyzing pcap with provided rules files.')
+        return result
 
 @router.post("/api/snort-engine/analyze-pcap/{id}", response_class=PlainTextResponse, tags=['snort-engine'])
 def analyze_pcap_id(pcap_file: UploadFile, id: int, db: Session = Depends(get_db)):
@@ -79,22 +95,6 @@ def analyze_pcap_id(pcap_file: UploadFile, id: int, db: Session = Depends(get_db
         raise HTTPException(400, 'Error in analyzing pcap')
     return result
 
-@router.post("/api/snort-engine/analyze-pcap/input", response_class=PlainTextResponse, tags=['snort-engine'])
-def analyze_pcap_input(pcap_file: UploadFile, files: list[UploadFile] | None = None, rule_text: str = Form(None)):
-    contents = ""
-    if files is not None:
-        for file in files:
-            contents += file.file.read().decode()
-        result = services.analyze_pcap_input(pcap_file, contents)
-        if result is not None:
-            raise HTTPException(400, 'Error in analyzing pcap with provided rules files.')
-        return result
-    elif rule_text is not None:
-        contents = rule_text
-        result = services.analyze_pcap_input(pcap_file, contents)
-        if result is not None:
-            raise HTTPException(400, 'Error in analyzing pcap with provided rules files.')
-        return result
 
 @router.post("/api/snort-engine/analyze-pcap", response_class=PlainTextResponse, tags=['snort-engine'])
 def analyze_pcap_all(pcap_file: UploadFile, db: Session = Depends(get_db)):
