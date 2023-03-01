@@ -9,6 +9,8 @@ from src.mitre.utils import convert_tactic
 import yaml
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
+from sigma.backends.elasticsearch import LuceneBackend
+from sigma.collection import SigmaCollection
 
 def create_sigma_rules(db: Session, rules_text: list) -> list[SigmaRule]:
     """Takes a list of sigma yaml strings read from files, and adds them to the database."""
@@ -233,3 +235,12 @@ def create_sigma_rules_text(db: Session, rules_text: list) -> list[SigmaRule]:
     db.commit()
 
     return sigma_rule_list
+
+def sigma_to_elasticsearch(db: Session, id: int) -> dict:
+    backend = LuceneBackend()
+    sigma_rule : SigmaRule
+    sigma_rule = db.query(SigmaRule).get(id)
+    rule = _SigmaRule.from_yaml(sigma_rule.raw_text)
+    elastic_rule = backend.convert_rule(rule)
+    result = {'elastic_query': elastic_rule}
+    return result

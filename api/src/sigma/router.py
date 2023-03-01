@@ -28,6 +28,13 @@ def create_sigma_rules_file(files: list[UploadFile], db: Session = Depends(get_d
         raise HTTPException(400, "Error in creating sigma rules.")
     return sigma_rule_list
 
+@router.get("/api/sigma/convert/{id}", response_model=dict, tags=['sigma'])
+def convert_sigma_rule(id: int, db: Session = Depends(get_db)):
+    result = services.sigma_to_elasticsearch(db, id)
+    if result is None:
+        raise HTTPException(400, 'Error in converting sigma rule to elastic rule.')
+    return result
+
 @router.get("/api/sigma/{field}/{value}", response_model=Page[SigmaSchema], tags=["sigma"])
 def sigma_rules_search(
     field: SigmaRuleFieldSearch, value: str, db: Session = Depends(get_db)
@@ -114,7 +121,7 @@ def sigma_rules_search(
 def get_rule_id(id: int, db: Session = Depends(get_db)):
     rule = services.get_sigma_rule_id(db, id)
     if rule is None:
-        raise HTTPException(400, 'Error in retrieving sigma rule.')
+        raise HTTPException(404, 'No rule found with that id.')
     return rule
 
 @router.get("/api/sigma/rebuild/{id}", response_model=str, tags=['sigma'])
