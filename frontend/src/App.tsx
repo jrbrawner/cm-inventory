@@ -48,6 +48,7 @@ import SnortRuleBuilderParam from './Pages/Snort/SnortRuleBuilderParams';
 import EngineHomePage from './Pages/Snort/SnortEngine/EngineHomePage';
 import EnginePCAPPage from './Pages/Snort/SnortEngine/EnginePCAPPage';
 import EngineAnalyzePCAPPage from './Pages/Snort/SnortEngine/EngineAnalyzePCAPPage';
+import MatrixPage from './Pages/Mitre/Matrix/MatrixPage';
 
 export default function App() {
   return (
@@ -74,6 +75,8 @@ export default function App() {
             <Route path="/mitre/countermeasure/yara/subtechnique/:id/:page" element={<YaraSubtechniquePage/>}/>
             <Route path="/mitre/countermeasure/snort/subtechnique/:id/:page" element={<SnortSubtechniquePage/>}/>
             <Route path="/mitre/countermeasure/sigma/subtechnique/:id/:page" element={<SigmaSubtechniquePage/>}/>
+
+            <Route path="/mitre/matrix" element={<MatrixPage/>}/>
 
             <Route path="/mitre/visualizations/home" element={<LayersHomePage/>}/>
             <Route path="/mitre/layer/create" element={<CreateLayerPage/>}/>
