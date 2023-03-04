@@ -54,6 +54,7 @@ class MitreDataService {
         return axios.get(`/api/mitre/technique/${id}/sigma`, {params: {page: page, size: size}})
     }
 
+
     getSubtechniqueYara(id, page, size) {
         return axios.get(`/api/mitre/subtechnique/${id}/yara`, {params: {page: page, size: size}})
     }
