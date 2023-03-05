@@ -1,0 +1,39 @@
+
+  a {
+    font-size: 13px;
+    line-height: 14px;
+    font-family: "Roboto-Regular", sans-serif;
+    text-align: left;
+    font-weight: 400;
+    white-space: normal;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    text-decoration: none;
+    background-color: transparent;
+    color: #1168c4;
+  }
+
+  .tableColumn {
+    border-collapse: collapse;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    white-space: normal;
+    line-height: 14px;
+    color: #1B8AEE;
+    font-family: "Roboto-Regular", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: left;
+    border: 1px solid;
+  }
+
+  tr {
+    border: 1px solid;
+  }
+
+  th {
+    
+  }
+  

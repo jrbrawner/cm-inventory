@@ -8,7 +8,9 @@ from src.mitre.schemas import (
     TechniqueTactics,
     TechniqueExtended,
     SubTechniqueExtended,
-    LayerRequest
+    LayerRequest,
+    TacticBasic,
+    TechniqueTacticSubtechniqueBasic
 )
 from src.mitre.models import Technique
 from src.mitre.constants import MitreLookup
@@ -30,6 +32,13 @@ import tempfile
 
 router = APIRouter()
 
+@router.get("/api/mitre/tactics/basic", response_model=list[TacticBasic], tags=["mitre"])
+def get_mitre_tactics(db: Session = Depends(get_db)):
+    """Get all mitre tactics."""
+    mitre_tactics = services.get_mitre_tactics(db)
+    if mitre_tactics is None:
+        raise HTTPException(400, 'Error in retrieving tactics.')
+    return mitre_tactics
 
 @router.get("/api/mitre/tactics", response_model=list[TacticBase], tags=["mitre"])
 def get_mitre_tactics(db: Session = Depends(get_db)):
@@ -152,7 +161,7 @@ def get_mitre_techniques(db: Session = Depends(get_db)):
         raise HTTPException(400, 'Error in retrieving techniques.')
     return techniques
 
-@router.get("/api/mitre/techniques-tactics", response_model=list[TechniqueTactics], tags=['mitre'])
+@router.get("/api/mitre/techniques-tactics-subtechniques-basic", response_model=list[TechniqueTacticSubtechniqueBasic], tags=['mitre'])
 def get_mitre_techniques_tactics(db: Session = Depends(get_db)):
     """Get all mitre techniques."""
     techniques = services.get_mitre_techniques(db)

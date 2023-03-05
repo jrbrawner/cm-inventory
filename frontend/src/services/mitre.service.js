@@ -6,6 +6,10 @@ class MitreDataService {
         return axios.get(`/api/mitre/tactics`)
     }
 
+    getTacticsBasic() {
+        return axios.get(`/api/mitre/tactics/basic`)
+    }
+
     getTactic(id) {
         return axios.get(`/api/mitre/tactics/${id}`)
     }
@@ -19,7 +23,7 @@ class MitreDataService {
     }
 
     getTechniqueTactics() {
-        return axios.get(`/api/mitre/techniques-tactics`)
+        return axios.get(`/api/mitre/techniques-tactics-subtechniques-basic`)
     }
 
     getTechnique(id) {

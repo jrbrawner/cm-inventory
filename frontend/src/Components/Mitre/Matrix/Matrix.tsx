@@ -4,19 +4,24 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import MitreDataService from '../../../services/mitre.service';
 import Spinner from 'react-bootstrap/Spinner';
+import Button from 'react-bootstrap/Button';
+import '../../../Custom/mitreMatrix.module.css';
 
 interface ITactic {
     id: string
     name: string
-    description: string
-    reference: string
+}
+
+interface ISubtechnique {
+    id: string
+    name: string
 }
 
 interface ITechnique {
     id : string
     name : string
-    description : string
     tactics : Array<ITactic>
+    subtechniques : Array<ISubtechnique>
 }
 
 export default function App() {
@@ -24,8 +29,8 @@ export default function App() {
     const navigate = useNavigate();
     const [techniques, setTechniques] = React.useState<{[key: string]: ITechnique}>({});
     const [tactics, setTactics] = React.useState<{[key: string]: ITactic}>({});
+    const [tacticsRow, setTacticsRow] = React.useState<any>();
 
-    const [tacticsOrdered, setTacticsOrdered] = React.useState<any>();
     const [credentialAccessTechniques, setCredentialAccessTechniques] = React.useState<Array<ITechnique>>([]);
     const [executionTechniques, SetExecutionTechniques] = React.useState<Array<ITechnique>>([]);
     const [impactTechniques, setImpactTechniques] = React.useState<Array<ITechnique>>([]);
@@ -49,13 +54,15 @@ export default function App() {
     }, [])
     
     React.useEffect(() => {
-        MitreDataService.getTactics().then((response => {
-            
-            Object.entries(response.data).map(([key, value]) => {
-                //convert to dict, tactic name as key
+        MitreDataService.getTacticsBasic().then((response => {
+            let tempTactics : {[key: string]: ITactic} = response.data;
+            let tacticsDict : {[key: string]: ITactic} = {}
+
+            Object.entries(tempTactics).map(([key, value]) => {
+                tacticsDict[value.name] = value;
             })
-            
-            setTactics(response.data);
+            tacticsDisplay(tacticsDict);
+            setTactics(tacticsDict);
 
 
         }))
@@ -153,173 +160,267 @@ export default function App() {
         setC2Techniques(c2Techniques);
         setInitialAccessTechniques(initialAccessTechniques);
     }
-    {/*Object.entries(tactics).map(([key, value]) => (
-               <th key={value.id}>{value.name}</th>
-    ))*/}
-    const tacticsRow = () => {
-        return (
-            Object.entries(tactics).map(([key, value]) => (
-                <th key={value.id}>{value.name}</th>
-            ))
 
+    
+    const tacticsDisplay = (data: any) => {
+
+        var tempTactics = data;
+        setTacticsRow(
+            <>
+                <a href={`/mitre/tactic/${tempTactics["Reconnaissance"].id}`}>{tempTactics["Reconnaissance"].name}</a>
+                <th>{tempTactics["Resource Development"].name}</th>
+                <th>{tempTactics["Initial Access"].name}</th>
+                <th>{tempTactics["Execution"].name}</th>
+                <th>{tempTactics["Persistence"].name}</th>
+                <th>{tempTactics["Privilege Escalation"].name}</th>
+                <th>{tempTactics["Defense Evasion"].name}</th>
+                <th>{tempTactics["Credential Access"].name}</th>
+                <th>{tempTactics["Discovery"].name}</th>
+                <th>{tempTactics["Lateral Movement"].name}</th>
+                <th>{tempTactics["Collection"].name}</th>
+                <th>{tempTactics["Command and Control"].name}</th>
+                <th>{tempTactics["Exfiltration"].name}</th>
+                <th>{tempTactics["Impact"].name}</th>
+            </>
         )
     }
 
     const credentialColumn = () => {
         return (
-            credentialAccessTechniques.map((technique) => {
-                return (
-                    <tr key={technique.id}>{technique.name}</tr>
-                    )
-            })
+            <table>
+                <tbody>
+                {credentialAccessTechniques.map((technique) => {
+                    return (
+                        <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
+                        )
+                    })}
+                </tbody>
+            </table>
         )   
     }
 
     const executionColumn = () => {
         return (
-            executionTechniques.map((technique) => {
+            <table>
+            <tbody>
+            {executionTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+            </tbody>
+        </table>
         )
     }
 
     const impactColumn = () => {
         return (
-            impactTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {impactTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const persistenceColumn = () => {
         return (
-            persistenceTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {persistenceTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const privEscColumn = () => {
         return (
-            privEscTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {privEscTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
     
     const lateralMovementColumn = () => {
         return (
-            lateralMovementTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {lateralMovementTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const defenseEvasionColumn = () => {
         return (
-            defenseEvasionTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {defenseEvasionTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const exfiltrationColumn = () => {
         return (
-            exfiltrationTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {exfiltrationTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }   
 
     const discoveryColumn = () => {
         return (
-            discoveryTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {discoveryTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const collectionColumn = () => {
         return (
-            collectionTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {collectionTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const resourceDevColumn = () => {
         return (
-            resourceDevTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {resourceDevTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <>
+                        <tr>
+                            <td key={technique.id}>
+                                <div>
+                                    
+                                    <a href={`/mitre/technique/${technique.id}`}>{technique.name}</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </>
+                    
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const reconColumn = () => {
         return (
-            reconTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {reconTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const c2Column = () => {
         return (
-            c2Techniques.map((technique) => {
+            <table>
+                <tbody>
+            {c2Techniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
     const initialAccessColumn= () => {
         return (
-            initialAccessTechniques.map((technique) => {
+            <table>
+                <tbody>
+            {initialAccessTechniques.map((technique) => {
                 return (
-                    <tr key={technique.id}>{technique.name}</tr>
+                    <tr key={technique.id}><a href={`/mitre/technique/${technique.id}`}>{technique.name}</a></tr>
                     )
-            })
+                })}
+                </tbody>
+            </table>
         )
     }
 
 
     return (
         
-        <Container className="mt-2">
-            <Table>
-                <thead>
-                    <tr>
-                        {tacticsRow()}
-                    </tr>
-                </thead>
-                <tbody>
-                    <td>{credentialColumn()}</td>
+        <Container className="mt-2 table-responsive">
+            <div>
+
+                <table className="table table-bordered">
+                    <thead>
+                        <tr>
+                            {tacticsRow}
+                        </tr>
+                    </thead>
                     
-                </tbody>
-            </Table>
+                        <td>{reconColumn()}</td>
+                        <td>{resourceDevColumn()}</td>
+                        <td>{initialAccessColumn()}</td>
+                        <td>{executionColumn()}</td>
+                        <td>{persistenceColumn()}</td>
+                        <td>{privEscColumn()}</td>
+                        <td>{defenseEvasionColumn()}</td>
+                        <td>{credentialColumn()}</td>
+                        <td>{discoveryColumn()}</td>
+                        <td>{lateralMovementColumn()}</td>
+                        <td>{collectionColumn()}</td>
+                        <td>{c2Column()}</td>
+                        <td>{exfiltrationColumn()}</td>
+                        <td>{impactColumn()}</td>
+                    
+                </table>
+            </div>
         </Container>
     
     )

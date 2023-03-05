@@ -142,11 +142,44 @@ class SubTechniqueExtended(BaseModel):
         orm_mode = True
 
 
+class TacticBasic(BaseModel):
+    id: str
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class TechniqueBasic(BaseModel):
+    id: str
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class SubtechniqueBasic(BaseModel):
+    id: str
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class TechniqueTacticSubtechniqueBasic(BaseModel):
+    id: str
+    name: str
+    tactics: list[TacticBasic]
+    subtechniques: list[SubtechniqueBasic]
+
+    class Config:
+        orm_mode = True
+
+
+
 class TacticTechnique(TacticBase):
     techniques: list[TechniqueBase]
 
     class Config:
         orm_mode = True
+
 
 class LayerRequest(BaseModel):
 
