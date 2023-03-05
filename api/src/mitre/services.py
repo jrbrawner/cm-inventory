@@ -13,7 +13,7 @@ def get_mitre_tactic_name(db: Session, tactic_name: str) -> Tactic:
 
 def get_mitre_tactics(db: Session) -> list[Tactic]:
     return db.query(Tactic).all()
-
+    
 def get_mitre_tactic_techniques(db: Session, id: str) -> list[Technique]:
     return db.query(Tactic).get(id)
     

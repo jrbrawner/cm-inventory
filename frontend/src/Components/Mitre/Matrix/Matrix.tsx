@@ -25,6 +25,7 @@ export default function App() {
     const [techniques, setTechniques] = React.useState<{[key: string]: ITechnique}>({});
     const [tactics, setTactics] = React.useState<{[key: string]: ITactic}>({});
 
+    const [tacticsOrdered, setTacticsOrdered] = React.useState<any>();
     const [credentialAccessTechniques, setCredentialAccessTechniques] = React.useState<Array<ITechnique>>([]);
     const [executionTechniques, SetExecutionTechniques] = React.useState<Array<ITechnique>>([]);
     const [impactTechniques, setImpactTechniques] = React.useState<Array<ITechnique>>([]);
@@ -49,8 +50,14 @@ export default function App() {
     
     React.useEffect(() => {
         MitreDataService.getTactics().then((response => {
-            setTactics(response.data);
             
+            Object.entries(response.data).map(([key, value]) => {
+                //convert to dict, tactic name as key
+            })
+            
+            setTactics(response.data);
+
+
         }))
     }, [])
 
@@ -148,12 +155,14 @@ export default function App() {
     }
     {/*Object.entries(tactics).map(([key, value]) => (
                <th key={value.id}>{value.name}</th>
-           ))*/}
+    ))*/}
     const tacticsRow = () => {
-        
-       return (
-           <th>{}</th>
-       )
+        return (
+            Object.entries(tactics).map(([key, value]) => (
+                <th key={value.id}>{value.name}</th>
+            ))
+
+        )
     }
 
     const credentialColumn = () => {
@@ -307,9 +316,8 @@ export default function App() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        
-                    </tr>
+                    <td>{credentialColumn()}</td>
+                    
                 </tbody>
             </Table>
         </Container>
