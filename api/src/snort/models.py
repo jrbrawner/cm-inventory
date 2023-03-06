@@ -38,6 +38,8 @@ class SnortRule(Base):
     body_options: Mapped[str] = Column(String)
     msg : Mapped[str] = Column(String) #used for rule name
     date_added: Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
+    hash : Mapped[str] = Column(String, unique=True)
+    cve : Mapped[str] = Column(String)
     raw_text: Mapped[str] = Column(String)
     tactics = relationship(
         "Tactic", secondary=tactic_snort, back_populates="snort_rules"

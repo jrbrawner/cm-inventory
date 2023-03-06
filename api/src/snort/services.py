@@ -4,8 +4,9 @@ from SRParser import SnortParser
 from src.mitre.models import Tactic, Technique, Subtechnique
 import json
 from fastapi_pagination.ext.sqlalchemy import paginate
-
+import hashlib
 import re
+from sqlite3 import IntegrityError
 
 def create_snort_rules(db: Session, rules_text: str = None, file_text: str = None) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
@@ -34,6 +35,7 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
             raw_text=rule.raw_text,
             body_options=rule_options
         )
+        db_rule.hash = hashlib.sha256(db_rule.raw_text.encode()).hexdigest()
         
         # checking for mitre att&ck designations in rem option
         # checking for name in msg
@@ -60,12 +62,14 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
                                 subtechnique_db = db.query(Subtechnique).get(opts[1])
                                 if subtechnique_db is not None:
                                     db_rule.subtechniques.append(subtechnique_db)
-
-        db.add(db_rule)
-        if db_rule.msg is None:
-            snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
+        if db.query(SnortRule).filter(SnortRule.hash == db_rule.hash) == None:
+            db.add(db_rule)
+            if db_rule.msg is None:
+                snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
+            else:
+                snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
         else:
-            snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
+            snort_rule_list.append({"msg": f"Duplicate rule detected. {db_rule.msg}" , "variant": "danger"})
     
     db.commit()
 
