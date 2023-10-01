@@ -8,6 +8,7 @@ import hashlib
 import re
 from sqlite3 import IntegrityError
 import logging
+from copy import deepcopy
 
 logging.getLogger("SRParser").setLevel(logging.WARNING)
 
@@ -25,7 +26,8 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
     for error in parser.error_log:
         snort_rule_list.append({"msg": error , "variant": "danger"})
     for rule in rules:
-        hash = hashlib.sha256(rule.raw_text.encode()).hexdigest()
+
+        hash = hashlib.sha256(rule.rebuild_rule().encode()).hexdigest()
         result = db.query(SnortRule).filter(SnortRule.hash == hash).first()
         
         if result is None:
@@ -70,14 +72,14 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
                                         db_rule.subtechniques.append(subtechnique_db)
 
             db.add(db_rule)
+            db.commit()
             if db_rule.msg is None:
                 snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
             else:
                 snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
         else:
-            snort_rule_list.append({"msg": f"Duplicate rule detected. {db_rule.msg}" , "variant": "danger"})
+            snort_rule_list.append({"msg": f"Duplicate rule detected. {result.msg}" , "variant": "danger"})
         
-    db.commit()
 
     return snort_rule_list
 
