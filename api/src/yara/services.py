@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from src.yara.models import YaraRule
 from src.mitre.models import Tactic, Technique, Subtechnique
-from YaraParser import MultiParser, SingleParser
+from YaraParser import YaraParser
+from YaraParser.YaraParser import YaraRule as _YaraRule
 import json
 import re
 import yara
@@ -19,52 +20,41 @@ def create_yara_rules(db: Session, rules_text: str = None, file_text: str = None
         for file in file_text:
             rules_text += file
 
-    parser = MultiParser(rules_text, strip_whitespace=True)
-    rules = parser.get_rules_dict()
+    parser = YaraParser(rules_text)
+    rules = parser.parse_rules()
     yara_rule_list = []
     
-    for name, rule in rules.items():
-        
+    for rule in rules:
+        rule : _YaraRule
         if (
-            db.query(YaraRule).filter(YaraRule.name == rule["rule_name"]).scalar()
+            db.query(YaraRule).filter(YaraRule.name == rule.name).scalar()
             is None
         ):
-            
             yara_rule = YaraRule(
-                name=rule["rule_name"],
-                meta=rule["rule_meta"],
-                strings=rule["rule_strings"],
-                conditions=rule["rule_conditions"],
-                raw_text=rule["raw_text"],
-                logic_hash=rule["rule_logic_hash"],
-                compiles=rule["compiles"],
-                imports=json.dumps(rule['imports']),
-                tags=json.dumps(rule['tags'])
+                name=rule.name,
+                meta=rule.meta,
+                strings=rule.strings,
+                conditions=rule.conditions,
+                raw_text=rule.raw_text,
+                logic_hash=rule.logic_hash,
+                compiles=rule.compiles,
+                imports=json.dumps(rule.imports),
+                tags=json.dumps(rule.tags)
             )
 
-            if rule["rule_meta_kvp"] is None:
+            if rule.meta_kvp is None:
                 tactic = None
                 technique = None
                 subtechnique = None
                 author = None
                 description = None
             else:
-                tactic = parser.get_meta_fields(
-                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="tactic"
-                )
-                technique = parser.get_meta_fields(
-                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="technique"
-                )
-                subtechnique = parser.get_meta_fields(
-                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="subtechnique"
-                )
-                author = parser.get_meta_fields(
-                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="author"
-                )
-                description = parser.get_meta_fields(
-                    rule_meta_kvp=rule["rule_meta_kvp"], meta_keyword="description"
-                )
-
+                tactic = rule.get_meta_field("tactic")
+                technique = rule.get_meta_field("technique")
+                subtechnique = rule.get_meta_field("subtechnique")
+                author = rule.get_meta_field("author")
+                description = rule.get_meta_field("description")
+                
             if tactic is not None:
                 
                 tactics = tactic.split(",")
@@ -260,10 +250,9 @@ def get_yara_rules_logic_hash(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the logic_hash field."""
     return paginate(db.query(YaraRule).filter(YaraRule.logic_hash.like(f"%{value}%")))
 
-
 def get_yara_rules_author(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the date added field."""
-    return paginate(db.query(YaraRule).filter(YaraRule.date_added.like(f"%{value}%")))
+    return paginate(db.query(YaraRule).filter(YaraRule.author.like(f"%{value}%")))
     
 def get_yara_rules_compiles(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the compiles field."""
@@ -279,7 +268,6 @@ def get_yara_rules_tactics(db: Session, value: str) -> list[YaraRule]:
     if tactic_id is not None:
         return paginate(db.query(YaraRule).filter(YaraRule.tactics.any(id=tactic_id)))
         
-
 def get_yara_rules_techniques(db: Session, value: str) -> list[YaraRule]:
     """Search for yara rules using the techniques ID field."""
     pattern_technique = "[T][0-9][0-9][0-9][0-9]"

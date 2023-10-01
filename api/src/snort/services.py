@@ -7,6 +7,9 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 import hashlib
 import re
 from sqlite3 import IntegrityError
+import logging
+
+logging.getLogger("SRParser").setLevel(logging.WARNING)
 
 def create_snort_rules(db: Session, rules_text: str = None, file_text: str = None) -> list[SnortRule]:
     """Method for parsing and creating snort rules."""
@@ -22,47 +25,50 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
     for error in parser.error_log:
         snort_rule_list.append({"msg": error , "variant": "danger"})
     for rule in rules:
-
-        rule_options = json.dumps(rule.body_options)
-        db_rule = SnortRule(
-            action=rule.action,
-            protocol=rule.protocol,
-            src_ip=rule.source_ip,
-            src_port=rule.source_port,
-            direction=rule.direction,
-            dst_ip=rule.dest_ip,
-            dst_port=rule.dest_port,
-            raw_text=rule.raw_text,
-            body_options=rule_options
-        )
-        db_rule.hash = hashlib.sha256(db_rule.raw_text.encode()).hexdigest()
+        hash = hashlib.sha256(rule.raw_text.encode()).hexdigest()
+        result = db.query(SnortRule).filter(SnortRule.hash == hash).first()
         
-        # checking for mitre att&ck designations in rem option
-        # checking for name in msg
-        # put these in a class at some point?
-        if "rem" or "msg" in str(rule.body_options):
-            for option in rule.body_options:
-                for key, value in option.items():
-                    if key == "msg":
-                        db_rule.msg = value
-                    if key == "rem":
-                        value = value.replace('"', "")
-                        mitre = value.split(",")
-                        for i in mitre:
-                            opts = i.split(":")
-                            if opts[0].strip() == "tactic":
-                                tactic_db = db.query(Tactic).get(opts[1])
-                                if tactic_db is not None:
-                                    db_rule.tactics.append(tactic_db)
-                            if opts[0].strip() == "technique":
-                                technique_db = db.query(Technique).get(opts[1])
-                                if technique_db is not None:
-                                    db_rule.techniques.append(technique_db)
-                            if opts[0].strip() == "subtechnique":
-                                subtechnique_db = db.query(Subtechnique).get(opts[1])
-                                if subtechnique_db is not None:
-                                    db_rule.subtechniques.append(subtechnique_db)
-        if db.query(SnortRule).filter(SnortRule.hash == db_rule.hash) == None:
+        if result is None:
+            rule_options = json.dumps(rule.body_options)
+            db_rule = SnortRule(
+                action=rule.action,
+                protocol=rule.protocol,
+                src_ip=rule.source_ip,
+                src_port=rule.source_port,
+                direction=rule.direction,
+                dst_ip=rule.dest_ip,
+                dst_port=rule.dest_port,
+                raw_text=rule.raw_text,
+                body_options=rule_options,
+                hash=hash
+            )
+            
+            # checking for mitre att&ck designations in rem option
+            # checking for name in msg
+            # put these in a class at some point?
+            if "rem" or "msg" in str(rule.body_options):
+                for option in rule.body_options:
+                    for key, value in option.items():
+                        if key == "msg":
+                            db_rule.msg = value
+                        if key == "rem":
+                            value = value.replace('"', "")
+                            mitre = value.split(",")
+                            for i in mitre:
+                                opts = i.split(":")
+                                if opts[0].strip() == "tactic":
+                                    tactic_db = db.query(Tactic).get(opts[1])
+                                    if tactic_db is not None:
+                                        db_rule.tactics.append(tactic_db)
+                                if opts[0].strip() == "technique":
+                                    technique_db = db.query(Technique).get(opts[1])
+                                    if technique_db is not None:
+                                        db_rule.techniques.append(technique_db)
+                                if opts[0].strip() == "subtechnique":
+                                    subtechnique_db = db.query(Subtechnique).get(opts[1])
+                                    if subtechnique_db is not None:
+                                        db_rule.subtechniques.append(subtechnique_db)
+
             db.add(db_rule)
             if db_rule.msg is None:
                 snort_rule_list.append({"msg": f"Rule with no name added to database." , "variant": "success"})
@@ -70,7 +76,7 @@ def create_snort_rules(db: Session, rules_text: str = None, file_text: str = Non
                 snort_rule_list.append({"msg": f"{db_rule.msg}" , "variant": "success"})
         else:
             snort_rule_list.append({"msg": f"Duplicate rule detected. {db_rule.msg}" , "variant": "danger"})
-    
+        
     db.commit()
 
     return snort_rule_list
