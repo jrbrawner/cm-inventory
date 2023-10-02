@@ -23,4 +23,4 @@ class YaraSchema(BaseModel):
     subtechniques: list[SubTechniqueBase] | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

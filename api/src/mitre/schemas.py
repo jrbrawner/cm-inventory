@@ -1,5 +1,4 @@
 from pydantic import BaseModel, HttpUrl, ValidationError, validator
-from pydantic.schema import Optional
 from typing import Optional
 from fastapi import Form
 
@@ -7,7 +6,7 @@ class TacticName(BaseModel):
     name : str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TacticBase(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Tactic."""
@@ -18,34 +17,34 @@ class TacticBase(BaseModel):
     reference: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TechniquePlatformBase(BaseModel):
     platform: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TechniqueReferenceBase(BaseModel):
     url: HttpUrl
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TechniqueDataSource(BaseModel):
     data_source: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TechniqueDefenseBypassed(BaseModel):
     defense_bypassed: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TechniqueBase(BaseModel):
@@ -56,13 +55,13 @@ class TechniqueBase(BaseModel):
     description: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TechniqueTactics(TechniqueBase):
     tactics : list[TacticBase]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class SubTechniqueBase(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Technique."""
@@ -72,7 +71,7 @@ class SubTechniqueBase(BaseModel):
     description: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TechniqueExtended(BaseModel):
     """Python (Pydantic) extended model representing a Mitre Attack Framework Technique."""
@@ -89,7 +88,7 @@ class TechniqueExtended(BaseModel):
     subtechniques : list[SubTechniqueBase]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TacticTechnique(TacticBase):
@@ -100,28 +99,28 @@ class SubTechniqueReference(BaseModel):
     url: HttpUrl
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SubTechniqueDataSource(BaseModel):
     data_source: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SubTechniqueDefenseBypassed(BaseModel):
     defense_bypassed: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SubTechniquePlatform(BaseModel):
     platform: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
@@ -139,7 +138,7 @@ class SubTechniqueExtended(BaseModel):
     defenses_bypassed: list[SubTechniqueDefenseBypassed]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TacticBasic(BaseModel):
@@ -147,21 +146,21 @@ class TacticBasic(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TechniqueBasic(BaseModel):
     id: str
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class SubtechniqueBasic(BaseModel):
     id: str
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TechniqueTacticSubtechniqueBasic(BaseModel):
     id: str
@@ -170,7 +169,7 @@ class TechniqueTacticSubtechniqueBasic(BaseModel):
     subtechniques: list[SubtechniqueBasic]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
@@ -178,7 +177,7 @@ class TacticTechnique(TacticBase):
     techniques: list[TechniqueBase]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LayerRequest(BaseModel):
