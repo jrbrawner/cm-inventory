@@ -46,4 +46,7 @@ RUN apk add --no-cache -t .build-deps py3-setuptools \
 
 WORKDIR /code/api/
 
-COPY  . /code/api
+COPY  . /code/api/
+
+RUN python3 -m venv venv && . venv/bin/activate
+RUN venv/bin/pip install --no-cache-dir --upgrade -r requirements.txt

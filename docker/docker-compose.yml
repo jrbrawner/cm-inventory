@@ -32,7 +32,7 @@ services:
   api:
     build:
       context: ../api
-      dockerfile: ../docker/Dockerfile.alpine
+      dockerfile: ../docker/Dockerfile.api
     image: cm-api
     #command: venv/bin/uvicorn src.main:app --root-path /api --host 0.0.0.0 --port 8000 --reload
     restart: always
