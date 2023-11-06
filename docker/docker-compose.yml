@@ -37,10 +37,12 @@ services:
     #command: venv/bin/uvicorn src.main:app --root-path /api --host 0.0.0.0 --port 8000 --reload
     restart: always
     tty: true
-    #env_file:
-    #  - ../api/.env
-    #volumes:
-    #- ../api:/code/api
+    env_file:
+      - ../api/.env
+    volumes:
+    - ../api:/code/api
+    expose:
+      - "8000"
     #depends_on:
     #  - db
   client:

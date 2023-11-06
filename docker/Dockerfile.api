@@ -1,52 +1,40 @@
-FROM alpine:3.16
+FROM ubuntu:23.04
 
-LABEL maintainer "https://github.com/blacktop"
+#yara \
+RUN apt update
+RUN apt install -y \
+    python3.11 \
+    python3-pip \
+    python3.11-venv \
+    libpcre3 \
+    libpcre3-dev \ 
+    libssl-dev \
+    libjansson-dev \
+    automake \
+    libtool \ 
+    make \
+    gcc \ 
+    pkg-config \
+    libmagic-dev \
+    wget \ 
+    nano
 
-ENV YARA_VERSION 4.2.3
-ENV YARA_PY_VERSION 4.2.3
+#download and install yara from source
+ADD https://github.com/VirusTotal/yara/archive/refs/tags/v4.3.2.tar.gz /usr/lib
+RUN cd /usr/lib && tar -zxf v4.3.2.tar.gz && rm v4.3.2.tar.gz
+RUN cd /usr/lib/yara-4.3.2 && ./bootstrap.sh && ./configure --enable-macho --enable-dex --enable-cuckoo --enable-magic --enable-dotnet --enable-time && make && make install
 
-RUN apk add --no-cache openssl file jansson bison python3 tini su-exec
-RUN apk add --no-cache -t .build-deps py3-setuptools \
-  openssl-dev \
-  jansson-dev \
-  python3-dev \
-  build-base \
-  libc-dev \
-  file-dev \
-  automake \
-  autoconf \
-  libtool \
-  flex \
-  git \
-  git \
-  && set -x \
-  && echo "Install Yara from source..." \
-  && cd /tmp/ \
-  && git clone --recursive --branch v$YARA_VERSION https://github.com/VirusTotal/yara.git \
-  && cd /tmp/yara \
-  && ./bootstrap.sh \
-  && sync \
-  && ./configure --with-crypto \
-  --enable-magic \
-  --enable-cuckoo \
-  --enable-dotnet \
-  && make \
-  && make install \
-  && echo "Install yara-python..." \
-  && cd /tmp/ \
-  && git clone --recursive --branch v$YARA_PY_VERSION https://github.com/VirusTotal/yara-python \
-  && cd yara-python \
-  && python3 setup.py build --dynamic-linking \
-  && python3 setup.py install \
-  && echo "Make test_rule..." \
-  && mkdir /rules \
-  && echo "rule dummy { condition: true }" > /rules/test_rule \
-  && rm -rf /tmp/* \
-  && apk del --purge .build-deps
+
+# Fast API
 
 WORKDIR /code/api/
 
-COPY  . /code/api/
-
+COPY  . /code/api
 RUN python3 -m venv venv && . venv/bin/activate
 RUN venv/bin/pip install --no-cache-dir --upgrade -r requirements.txt
+ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
+RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/libyara.so && ldconfig
+
+EXPOSE 8000
+
+CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
