@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from src.mitre.models import Tactic
 from src.db import Base, engine, SessionLocal
-from src.auth.router import router as user_router
 from src.mitre.router import router as mitre_router
 from src.yara.router import router as yara_router
 from src.snort.router import router as snort_router
@@ -39,7 +38,6 @@ tags_metadata = [
 
 app = FastAPI(debug=False)
 
-app.include_router(user_router)
 app.include_router(mitre_router)
 app.include_router(yara_router)
 app.include_router(snort_router)

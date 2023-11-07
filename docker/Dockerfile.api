@@ -1,8 +1,8 @@
 FROM ubuntu:23.04
 
 #yara \
-RUN apt update
-RUN apt install -y \
+RUN apt-get update
+RUN apt-get install -y \
     python3.11 \
     python3-pip \
     python3.11-venv \
@@ -20,21 +20,23 @@ RUN apt install -y \
     nano
 
 #download and install yara from source
-ADD https://github.com/VirusTotal/yara/archive/refs/tags/v4.3.2.tar.gz /usr/lib
-RUN cd /usr/lib && tar -zxf v4.3.2.tar.gz && rm v4.3.2.tar.gz
-RUN cd /usr/lib/yara-4.3.2 && ./bootstrap.sh && ./configure --enable-macho --enable-dex --enable-cuckoo --enable-magic --enable-dotnet --enable-time && make && make install
+ADD https://github.com/VirusTotal/yara/archive/refs/tags/v4.3.0-rc1.tar.gz /usr/lib
+RUN cd /usr/lib && tar -zxf v4.3.0-rc1.tar.gz && rm v4.3.0-rc1.tar.gz
+RUN cd /usr/lib/yara-4.3.0-rc1 && ./bootstrap.sh && ./configure --enable-macho --enable-dex --enable-cuckoo --enable-magic --enable-dotnet --enable-time && make && make install
 
 
 # Fast API
 
-WORKDIR /code/api/
+WORKDIR /code/api
 
-COPY  . /code/api
-RUN python3 -m venv venv && . venv/bin/activate
-RUN venv/bin/pip install --no-cache-dir --upgrade -r requirements.txt
-ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
+COPY requirements.txt /code/api/
+RUN python3 -m venv venv
+RUN . venv/bin/activate && pip install --no-cache-dir --upgrade -r requirements.txt
+COPY . /code/api/
+#ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
 RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/libyara.so && ldconfig
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+
+#CMD ["uvicorn", "api.src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
