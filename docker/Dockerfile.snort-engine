@@ -4,12 +4,13 @@ ENV PREFIX_DIR=/usr/local
 ENV HOME=/root
 
 ARG SNORT_VERSION=3.1.55.0
-#ARG DAQ_VERSION=libdaq-3.0.10
+ARG DAQ_VERSION=libdaq-3.0.12
 
 RUN apt-get update
 RUN apt-get install -y \
     python3.11 \
     python3-pip \
+    python3.11-venv \
     tcpdump \
     automake autoconf \
     libtool \
@@ -29,8 +30,8 @@ RUN mkdir -p /snort/snort-${SNORT_VERSION} && mkdir -p /etc/snort
 WORKDIR /snort
 
 # DAQ.
-ADD https://www.snort.org/downloads/snortplus/libdaq-3.0.10.tar.gz libdaq-3.0.10.tar.gz
-RUN tar -zxf libdaq-3.0.10.tar.gz && cd libdaq-3.0.10 && ./bootstrap && ./configure && make && make install
+ADD https://www.snort.org/downloads/snortplus/${DAQ_VERSION}.tar.gz ${DAQ_VERSION}.tar.gz
+RUN tar -zxf ${DAQ_VERSION}.tar.gz && cd ${DAQ_VERSION} && ./bootstrap && ./configure && make && make install
 
 # Snort
 #https://github.com/snort3/snort3/archive/refs/tags/3.1.55.0.tar.gz
@@ -46,9 +47,11 @@ RUN mkdir conf
 
 WORKDIR /code
 RUN git clone https://github.com/jrbrawner/SnortEngine
-RUN pip install --no-cache-dir --upgrade -r /code/SnortEngine/snort-engine/requirements.txt
-ENV PYTHONPATH "${PYTHONPATH}:/code/SnortEngine/snort-engine/"
+WORKDIR /code/SnortEngine/snort-engine
+RUN python3 -m venv venv
+RUN . venv/bin/activate && pip install --no-cache-dir --upgrade -r /code/SnortEngine/snort-engine/requirements.txt
+#ENV PYTHONPATH "${PYTHONPATH}:/code/SnortEngine/snort-engine/"
 
 EXPOSE 5000
 
-CMD ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["venv/bin/uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "5000"]

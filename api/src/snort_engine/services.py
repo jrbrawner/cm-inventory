@@ -8,7 +8,6 @@ from src.snort.services import update_snort_rule
 import time
 from src.settings import settings
 
-#snort_url = 'https://jrbrawner-vigilant-space-broccoli-qg9qw4vg5gghx4rr-80.preview.app.github.dev'
 snort_url = settings.SNORT_ENGINE_URL
 
 def check_status() -> dict:

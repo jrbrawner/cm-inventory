@@ -21,14 +21,14 @@ services:
   #    - db
   #  ports:
   #    - 8080:80
-  #snort:
-  #  build:
-  #    context: .
-  #    dockerfile: Dockerfile.snort-engine
-  #  image: cm-snortengine
-  #  tty: true
-  #  ports: 
-  #    - 5000:5000
+  snort:
+    build:
+      context: .
+      dockerfile: Dockerfile.snort-engine
+    image: cm-snortengine
+    tty: true
+    ports: 
+      - 5000:5000
   api:
     build:
       context: ../api
