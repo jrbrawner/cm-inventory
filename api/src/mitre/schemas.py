@@ -2,11 +2,13 @@ from pydantic import BaseModel, HttpUrl, ValidationError, validator
 from typing import Optional
 from fastapi import Form
 
+
 class TacticName(BaseModel):
-    name : str
+    name: str
 
     class Config:
         from_attributes = True
+
 
 class TacticBase(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Tactic."""
@@ -18,6 +20,7 @@ class TacticBase(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class TechniquePlatformBase(BaseModel):
     platform: str
@@ -57,11 +60,13 @@ class TechniqueBase(BaseModel):
     class Config:
         from_attributes = True
 
+
 class TechniqueTactics(TechniqueBase):
-    tactics : list[TacticBase]
+    tactics: list[TacticBase]
 
     class Config:
         from_attributes = True
+
 
 class SubTechniqueBase(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Technique."""
@@ -72,6 +77,7 @@ class SubTechniqueBase(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class TechniqueExtended(BaseModel):
     """Python (Pydantic) extended model representing a Mitre Attack Framework Technique."""
@@ -85,7 +91,7 @@ class TechniqueExtended(BaseModel):
     detection: str | None = None
     data_sources: list[TechniqueDataSource]
     defenses_bypassed: list[TechniqueDefenseBypassed]
-    subtechniques : list[SubTechniqueBase]
+    subtechniques: list[SubTechniqueBase]
 
     class Config:
         from_attributes = True
@@ -123,8 +129,6 @@ class SubTechniquePlatform(BaseModel):
         from_attributes = True
 
 
-
-
 class SubTechniqueExtended(BaseModel):
     """Python (Pydantic) model representing a Mitre Attack Framework Technique."""
 
@@ -148,6 +152,7 @@ class TacticBasic(BaseModel):
     class Config:
         from_attributes = True
 
+
 class TechniqueBasic(BaseModel):
     id: str
     name: str
@@ -155,12 +160,14 @@ class TechniqueBasic(BaseModel):
     class Config:
         from_attributes = True
 
+
 class SubtechniqueBasic(BaseModel):
     id: str
     name: str
 
     class Config:
         from_attributes = True
+
 
 class TechniqueTacticSubtechniqueBasic(BaseModel):
     id: str
@@ -172,7 +179,6 @@ class TechniqueTacticSubtechniqueBasic(BaseModel):
         from_attributes = True
 
 
-
 class TacticTechnique(TacticBase):
     techniques: list[TechniqueBase]
 
@@ -181,23 +187,25 @@ class TacticTechnique(TacticBase):
 
 
 class LayerRequest(BaseModel):
-
-    layer_name : str
-    layer_description : str 
-    yara_check : str | None = None
-    snort_check : str | None = None
-    sigma_check : str | None = None
+    layer_name: str
+    layer_description: str
+    yara_check: str | None = None
+    snort_check: str | None = None
+    sigma_check: str | None = None
 
     @classmethod
     def as_form(
         cls,
-        layer_name : str = Form(),
-        layer_description : str = Form(),
-        yara_check : str = Form(None),
-        snort_check : str = Form(None),
-        sigma_check : str = Form(None)
-
+        layer_name: str = Form(),
+        layer_description: str = Form(),
+        yara_check: str = Form(None),
+        snort_check: str = Form(None),
+        sigma_check: str = Form(None),
     ):
-        return cls(layer_name=layer_name, layer_description=layer_description,
-                    yara_check=yara_check, snort_check = snort_check, sigma_check=sigma_check)
-
+        return cls(
+            layer_name=layer_name,
+            layer_description=layer_description,
+            yara_check=yara_check,
+            snort_check=snort_check,
+            sigma_check=sigma_check,
+        )

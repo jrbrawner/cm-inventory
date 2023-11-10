@@ -3,6 +3,7 @@ from datetime import datetime
 from src.mitre.schemas import TacticBase, TechniqueBase, SubTechniqueBase
 import json
 
+
 class SnortSchema(BaseModel):
     id: int
     action: str
@@ -14,7 +15,7 @@ class SnortSchema(BaseModel):
     dst_port: str | None = None
     body_options: str
     date_added: datetime
-    msg : str | None = None #used for rule name
+    msg: str | None = None  # used for rule name
     tactics: list[TacticBase] | None = None
     techniques: list[TechniqueBase] | None = None
     subtechniques: list[SubTechniqueBase] | None = None

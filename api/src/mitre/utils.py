@@ -28,9 +28,10 @@ from src.settings import settings
 basedir = path.abspath(path.dirname(__file__))
 path = basedir
 if settings.ENVIRONMENT == "docker":
-    download_path = '/code/api/src/mitre/data/mitre-enterprise-attack.json' # docker
+    download_path = "/code/api/src/mitre/data/mitre-enterprise-attack.json"  # docker
 elif settings.ENVIRONMENT == "local":
-    download_path = 'src/mitre/data/mitre-enterprise-attack.json' # local
+    download_path = "src/mitre/data/mitre-enterprise-attack.json"  # local
+
 
 def convert_tactic(v) -> str | None:
     tactics = {
@@ -48,23 +49,20 @@ def convert_tactic(v) -> str | None:
         "command-and-control": "Command and Control",
         "exfiltration": "Exfiltration",
         "impact": "Impact",
-        "initial_access": "Initial Access"
+        "initial_access": "Initial Access",
     }
 
     return tactics.get(v)
 
 
 def get_mitre_data():
-
     if os.path.exists(download_path) is False:
         stix = requests.get(
             "https://raw.githubusercontent.com/mitre \
         /cti/master/enterprise-attack/enterprise-attack.json"
         ).json()
 
-        with open(
-            download_path, "w", encoding="utf-8"
-        ) as file:
+        with open(download_path, "w", encoding="utf-8") as file:
             json.dump(stix, file, ensure_ascii=False, indent=4)
         print("Enterprise attack data downloaded.")
     else:
@@ -76,23 +74,18 @@ def get_mitre_tactics(db: Session):
 
     # check to see if mitre data has been downloaded
     if os.path.exists(download_path):
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
     # if mitre data not downloaded, download it
     else:
         get_mitre_data()
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
 
     # check to make sure tactics havent already been populated
     if db.query(Tactic).first() is None:
-
         # initiate memory store
         ms = MemoryStore(stix_data=stix["objects"])
         # query for tactics
@@ -102,7 +95,6 @@ def get_mitre_tactics(db: Session):
         tactic_list = []
 
         for i in tactics:
-
             # get tactics data
             references = []
             tacticName = i["name"]
@@ -136,23 +128,17 @@ def get_mitre_tactics(db: Session):
 
 
 def get_mitre_techniques(db: Session):
-
     if os.path.exists(download_path):
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
     else:
         get_mitre_data()
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
 
     if db.query(Technique).first() is None:
-
         ms = MemoryStore(stix_data=stix["objects"])
 
         techniques = ms.query([Filter("type", "=", "attack-pattern")])
@@ -160,7 +146,6 @@ def get_mitre_techniques(db: Session):
         subtechnique_list = []
 
         for technique in techniques:
-
             # skip deprecated and revoked
             if (
                 "x_mitre_deprecated" in technique and technique["x_mitre_deprecated"]
@@ -216,7 +201,6 @@ def get_mitre_techniques(db: Session):
                 # db.commit()
 
                 for i in technique["x_mitre_platforms"]:
-
                     platform = TechniquePlatform(technique_id=techniqueID, platform=i)
                     db.add(platform)
                     # db.commit()
@@ -264,29 +248,22 @@ def get_mitre_techniques(db: Session):
 
 
 def get_mitre_subtechniques(db: Session):
-
     if os.path.exists(download_path):
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
     else:
         get_mitre_data()
-        with open(
-            download_path, "r", encoding="utf-8"
-        ) as file:
+        with open(download_path, "r", encoding="utf-8") as file:
             stix = json.load(file)
         file.close()
 
     if db.query(Subtechnique).first() is None:
-
         ms = MemoryStore(stix_data=stix["objects"])
 
         techniques = ms.query([Filter("type", "=", "attack-pattern")])
 
         for technique in techniques:
-
             # skip deprecated and revoked
             if (
                 "x_mitre_deprecated" in technique and technique["x_mitre_deprecated"]
@@ -331,7 +308,6 @@ def get_mitre_subtechniques(db: Session):
                 # db.commit()
 
                 for i in technique["x_mitre_platforms"]:
-
                     platform = SubtechniquePlatform(
                         technique_id=techniqueID, platform=i
                     )

@@ -33,7 +33,7 @@ tags_metadata = [
     {
         "name": "sigma",
         "description": "Create and manage sigma rules.",
-    }
+    },
 ]
 
 app = FastAPI(debug=False)
@@ -45,9 +45,10 @@ app.include_router(snort_engine_router)
 app.include_router(sigma_router)
 add_pagination(app)
 
+
 @app.on_event("startup")
 def startup():
-    #fix_plyara_imports()
+    # fix_plyara_imports()
     Base.metadata.create_all(bind=engine)
     if SessionLocal().query(Tactic).first() is None:
         from src.mitre.utils import (
@@ -69,7 +70,7 @@ def startup():
 def fix_plyara_imports():
     """DO NOT RECOMMEND."""
     try:
-        path = '../venv/Lib/site-packages/plyara/core.py'
+        path = "../venv/Lib/site-packages/plyara/core.py"
         core = open(path).read()
 
         old_import = """
@@ -97,7 +98,7 @@ def fix_plyara_imports():
                         'console'}"""
 
         testing = core.replace(old_import, new_import)
-        
-        open(path, 'w').write(testing)
+
+        open(path, "w").write(testing)
     except:
-        print('Error fixing plyara imports.')
+        print("Error fixing plyara imports.")

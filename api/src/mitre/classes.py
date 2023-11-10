@@ -2,6 +2,7 @@ from src.yara.models import YaraRule
 from src.snort.models import SnortRule
 from src.sigma.models import SigmaRule
 
+
 class TechniqueLayerObject:
     """Object to be used by layer generator class to assist in generating mitre layers."""
 
@@ -12,7 +13,7 @@ class TechniqueLayerObject:
 
     def __repr__(self) -> str:
         return f"TechniqueLayerObject: rule_type: {self.rule_type}, technique_id: {self.technique_id}, count: {self.count}."
-    
+
     def get_count(self) -> int:
         return self.count
 
@@ -21,7 +22,6 @@ class LayerGenerator:
     """Class that can take rule objects and be used to generate mitre layers."""
 
     def __init__(self):
-
         self.yara_technique_list = []
         self.yara_layer_list = []
 
@@ -31,7 +31,6 @@ class LayerGenerator:
         self.sigma_technique_list = []
         self.sigma_layer_list = []
 
-        
         self.final_list = []
 
     def __add_technique_yara(self, technique_id: str) -> None:
@@ -93,8 +92,10 @@ class LayerGenerator:
         """Build final lists to be used in generating a mitre layer."""
 
         for technique in self.yara_technique_list:
-            if technique in self.snort_technique_list and technique in self.sigma_technique_list:
-
+            if (
+                technique in self.snort_technique_list
+                and technique in self.sigma_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Yara", technique)
                 technique_layer = self.yara_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -110,11 +111,15 @@ class LayerGenerator:
                 count += technique_layer.count
                 self.sigma_layer_list.remove(technique_layer)
 
-                technique_layer = TechniqueLayerObject("Yara, Snort, Sigma", technique, count)
+                technique_layer = TechniqueLayerObject(
+                    "Yara, Snort, Sigma", technique, count
+                )
                 self.final_list.append(technique_layer)
 
-            elif technique in self.snort_technique_list and technique not in self.sigma_technique_list:
-
+            elif (
+                technique in self.snort_technique_list
+                and technique not in self.sigma_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Yara", technique)
                 technique_layer = self.yara_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -128,8 +133,10 @@ class LayerGenerator:
                 technique_layer = TechniqueLayerObject("Yara, Snort", technique, count)
                 self.final_list.append(technique_layer)
 
-            elif technique in self.sigma_technique_list and technique not in self.snort_technique_list:
-
+            elif (
+                technique in self.sigma_technique_list
+                and technique not in self.snort_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Yara", technique)
                 technique_layer = self.yara_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -142,10 +149,12 @@ class LayerGenerator:
 
                 technique_layer = TechniqueLayerObject("Yara, Sigma", technique, count)
                 self.final_list.append(technique_layer)
-    
-        for technique in self.snort_technique_list:
-            if technique in self.sigma_technique_list and technique not in self.yara_technique_list:
 
+        for technique in self.snort_technique_list:
+            if (
+                technique in self.sigma_technique_list
+                and technique not in self.yara_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Snort", technique)
                 technique_layer = self.snort_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -158,8 +167,10 @@ class LayerGenerator:
 
                 technique_layer = TechniqueLayerObject("Snort, Sigma", technique, count)
                 self.final_list.append(technique_layer)
-            elif technique not in self.sigma_technique_list and technique not in self.yara_technique_list:
-
+            elif (
+                technique not in self.sigma_technique_list
+                and technique not in self.yara_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Snort", technique)
                 technique_layer = self.snort_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -169,7 +180,10 @@ class LayerGenerator:
                 self.final_list.append(technique_layer)
 
         for technique in self.sigma_technique_list:
-            if technique not in self.snort_technique_list and technique not in self.yara_technique_list:
+            if (
+                technique not in self.snort_technique_list
+                and technique not in self.yara_technique_list
+            ):
                 technique_layer_index = self.__find_technique_layer("Sigma", technique)
                 technique_layer = self.sigma_layer_list[technique_layer_index]
                 count = technique_layer.count
@@ -188,7 +202,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
                 }
             )
 
@@ -197,7 +211,7 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
                 }
             )
 
@@ -206,23 +220,29 @@ class LayerGenerator:
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
                 }
             )
-        
+
         for layer in self.sigma_layer_list:
             technique_list.append(
                 {
                     "techniqueID": layer.technique_id,
                     "score": layer.count,
-                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}]
+                    "metadata": [{"name": "Coverage", "value": f"{layer.rule_type}"}],
                 }
             )
 
         return technique_list
 
-    def generate_mitre_layer(self, layer_name: str, description: str, yara_rules: list[YaraRule],
-                             snort_rules: list[SnortRule], sigma_rules: list[SigmaRule]) -> str:
+    def generate_mitre_layer(
+        self,
+        layer_name: str,
+        description: str,
+        yara_rules: list[YaraRule],
+        snort_rules: list[SnortRule],
+        sigma_rules: list[SigmaRule],
+    ) -> str:
         """Generate mitre layer that can be utilized to create an SVG or imported into navigator."""
         if yara_rules is not None:
             for rule in yara_rules:
@@ -242,10 +262,10 @@ class LayerGenerator:
                     self.__add_technique_sigma(technique.id)
                 for subtechnique in rule.subtechniques:
                     self.__add_technique_sigma(subtechnique.id)
-        
-        #breaking here
+
+        # breaking here
         techniques = self.__generate_techniques()
-        
+
         layer = {
             "name": f"{layer_name}",
             "versions": {"layer": "4.3", "navigator": "4.6.5"},

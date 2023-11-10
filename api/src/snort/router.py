@@ -11,12 +11,16 @@ import requests
 
 router = APIRouter()
 
-@router.post("/api/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"])
+
+@router.post(
+    "/api/snort", response_model=list[Union[SnortSchema, dict]], tags=["snort"]
+)
 def create_snort_rules(rules_text: str = Form(), db: Session = Depends(get_db)):
     snort_rules_list = services.create_snort_rules(db, rules_text)
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
+
 
 @router.post(
     "/api/snort/file", response_model=list[Union[SnortSchema, dict]], tags=["snort"]
@@ -25,19 +29,20 @@ def create_snort_rules_file(files: list[UploadFile], db: Session = Depends(get_d
     rules_text = []
     for file in files:
         rules_text.append(file.file.read().decode())
-    
+
     snort_rules_list = services.create_snort_rules(db, file_text=rules_text)
     if snort_rules_list is None:
         raise HTTPException(400, "Error in creating rules.")
     return snort_rules_list
 
 
-@router.get("/api/snort/deconstruct/{id}", response_model=dict, tags=['snort'])
+@router.get("/api/snort/deconstruct/{id}", response_model=dict, tags=["snort"])
 def deconstruct_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
     msg = services.deconstruct_snort_rule_id(db, id)
     if msg is None:
-        raise HTTPException(400, 'Error in deconstructing rule.')
+        raise HTTPException(400, "Error in deconstructing rule.")
     return msg
+
 
 @router.get("/api/snort/rebuild/{id}", response_model=str, tags=["snort"])
 def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
@@ -46,7 +51,10 @@ def rebuild_rule(id: int, db: Session = Depends(get_db)) -> str:
         raise HTTPException(400, "Error in retrieving string of that rule.")
     return str_rule
 
-@router.get("/api/snort/{field}/{value}", response_model=Page[SnortSchema], tags=["snort"])
+
+@router.get(
+    "/api/snort/{field}/{value}", response_model=Page[SnortSchema], tags=["snort"]
+)
 def get_snort_rules(
     field: SnortRuleFieldSearch, value: str, db: Session = Depends(get_db)
 ):
@@ -134,14 +142,15 @@ def get_snort_rules(
                 404, "No snort rules found for that field with that value."
             )
         return snort_rules_list
-    
 
-@router.get("/api/snort/{id}", response_model=SnortSchema, tags=['snort'])
+
+@router.get("/api/snort/{id}", response_model=SnortSchema, tags=["snort"])
 def get_snort_rule(id: int, db: Session = Depends(get_db)):
     rule = services.get_snort_rule_id(db, id)
     if rule is None:
-        raise HTTPException(400, 'Error in retrieving rule.')
+        raise HTTPException(400, "Error in retrieving rule.")
     return rule
+
 
 @router.put("/api/snort/{id}", response_model=SnortSchema, tags=["snort"])
 def update_snort_rule(
@@ -160,24 +169,24 @@ def delete_snort_rule(id: int, db: Session = Depends(get_db)) -> dict:
         raise HTTPException(400, "Error in deleting rule.")
     return msg
 
-@router.post("/api/snort/test", response_model=dict, tags=['snort'])
+
+@router.post("/api/snort/test", response_model=dict, tags=["snort"])
 def test_snort_rule(rule_string: str = Form()) -> dict:
     msg = services.test_snort_rule(rule_string)
     if msg is None:
-        raise HTTPException(400, 'Error in testing rule.')
+        raise HTTPException(400, "Error in testing rule.")
     return msg
 
-@router.post("/api/snort/deconstruct", response_model=dict, tags=['snort'])
+
+@router.post("/api/snort/deconstruct", response_model=dict, tags=["snort"])
 def deconstruct_snort_rule(rule_string: str = Form()) -> dict:
     msg = services.deconstruct_snort_rule(rule_string)
     if msg is None:
-        raise HTTPException(400, 'Error in deconstructing rule.')
+        raise HTTPException(400, "Error in deconstructing rule.")
     return msg
 
-@router.get("/api/snort/idk", response_class=PlainTextResponse, tags=['snort'])
+
+@router.get("/api/snort/idk", response_class=PlainTextResponse, tags=["snort"])
 def testing():
-    idk = requests.get('http://localhost:5000/configuration').content
+    idk = requests.get("http://localhost:5000/configuration").content
     return idk
-
-
-

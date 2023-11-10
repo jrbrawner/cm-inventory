@@ -24,22 +24,25 @@ subtechnique_sigma = Table(
     Column("sigma_rule_id", ForeignKey("SigmaRule.id")),
 )
 
+
 class SigmaRule(Base):
     __tablename__ = "SigmaRule"
-    id : Mapped[int] = Column(Integer, primary_key=True)
-    author : Mapped[str] = Column(String())
-    logsource : Mapped[str] = Column(String())
-    detection : Mapped[str] = Column(String())
-    condition : Mapped[str] = Column(String())
-    raw_text : Mapped[str] = Column(String())
-    title : Mapped[str] = Column(String())
-    description : Mapped[str] = Column(String())
-    tactics = relationship("Tactic", secondary=tactic_sigma, back_populates="sigma_rules")
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    author: Mapped[str] = Column(String())
+    logsource: Mapped[str] = Column(String())
+    detection: Mapped[str] = Column(String())
+    condition: Mapped[str] = Column(String())
+    raw_text: Mapped[str] = Column(String())
+    title: Mapped[str] = Column(String())
+    description: Mapped[str] = Column(String())
+    tactics = relationship(
+        "Tactic", secondary=tactic_sigma, back_populates="sigma_rules"
+    )
     techniques = relationship(
         "Technique", secondary=technique_sigma, back_populates="sigma_rules"
     )
     subtechniques = relationship(
         "Subtechnique", secondary=subtechnique_sigma, back_populates="sigma_rules"
     )
-    date_added : Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
-    date_modified : Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
+    date_added: Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
+    date_modified: Mapped[DateTime] = Column(DateTime, default=datetime.utcnow)
