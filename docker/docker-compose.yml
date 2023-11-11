@@ -33,13 +33,14 @@ services:
     build:
       context: ../api
       dockerfile: ../docker/Dockerfile.api
+    command: /usr/venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
     image: cm-api
     restart: always
     tty: true
     env_file:
       - ../api/.env
-    #volumes:
-    #- ../api:/code/api
+    volumes:
+    - ../api:/code/api
     expose:
       - "8000"
     #depends_on:

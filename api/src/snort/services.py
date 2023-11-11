@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from src.snort.models import SnortRule
-from SRParser import SnortParser
+from SRParser import SnortParser, SnortRule as _SnortRule
 from src.mitre.models import Tactic, Technique, Subtechnique
 import json
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -29,7 +29,8 @@ def create_snort_rules(
     for error in parser.error_log:
         snort_rule_list.append({"msg": error, "variant": "danger"})
     for rule in rules:
-        hash = hashlib.sha256(rule.rebuild_rule().encode()).hexdigest()
+        
+        hash = hashlib.sha256(rule.raw_text.encode()).hexdigest()
         result = db.query(SnortRule).filter(SnortRule.hash == hash).first()
 
         if result is None:

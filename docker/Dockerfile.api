@@ -30,8 +30,7 @@ RUN cd /usr/lib/yara-4.3.0-rc1 && ./bootstrap.sh && ./configure --enable-macho -
 WORKDIR /code/api
 
 COPY requirements.txt /code/api/
-RUN python3 -m venv venv
-RUN . venv/bin/activate && pip install --no-cache-dir --upgrade -r requirements.txt
+RUN cd /usr/ && python3 -m venv venv && . venv/bin/activate && pip install --no-cache-dir --upgrade -r /code/api/requirements.txt
 COPY . /code/api/
 #ENV PYTHONPATH "${PYTHONPATH}:/code/api/"
 RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/libyara.so && ldconfig
@@ -39,4 +38,4 @@ RUN ln -s /usr/local/lib/python3.11/dist-packages/usr/lib/libyara.so /usr/lib/li
 EXPOSE 8000
 
 
-CMD ["venv/bin/uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["venv/bin/uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
