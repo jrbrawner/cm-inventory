@@ -13,13 +13,11 @@ snort_url = settings.SNORT_ENGINE_URL
 
 def check_status() -> dict:
     """Check if snort engine is running."""
-    # try:
-    status = requests.get(f"http://127.0.0.1:5000/version", verify=False)
-    return {"result": "live", "variant": "success"}
-    # except:
-    #    status = requests.get(f'http://127.0.0.1:5000/version'
-    #                          )
-    #    return {'result': 'down', 'variant': 'danger'}
+    try:
+        status = requests.get(f"http://{snort_url}/configuration")
+        return {"result": "live", "variant": "success"}
+    except:
+        return {'result': 'down', 'variant': 'danger'}
 
 
 def get_available_configurations() -> str:
